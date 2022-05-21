@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace FlickrNet
 {
@@ -13,6 +11,7 @@ namespace FlickrNet
         /// The request token string.
         /// </summary>
         public string Token { get; set; }
+
         /// <summary>
         /// The request token secret.
         /// </summary>
@@ -23,10 +22,10 @@ namespace FlickrNet
         /// </summary>
         /// <param name="response">A URL parameter encoded string, e.g. "oauth_token=ABC&amp;oauth_token_secret=DEF".</param>
         /// <returns></returns>
-        public static OAuthRequestToken ParseResponse(string response)
+        public static OAuthRequestToken ParseResponse(byte[] response)
         {
-            Dictionary<string, string> parameters = UtilityMethods.StringToDictionary(response);
-            var token = new OAuthRequestToken();
+            Dictionary<string, string> parameters = UtilityMethods.byteArrayToDictionary(response);
+            OAuthRequestToken token = new();
             token.Token = parameters["oauth_token"];
             token.TokenSecret = parameters["oauth_token_secret"];
             return token;

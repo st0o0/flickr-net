@@ -1,4 +1,5 @@
 ﻿using FlickrNet;
+using FlickrNet.Common;
 using NUnit.Framework;
 using Shouldly;
 using System;
@@ -66,6 +67,5 @@ namespace FlickrNetTest
             Assert.That(b.MaximumLongitude, Is.EqualTo(3M));
             Assert.That(b.MaximumLatitude, Is.EqualTo(4M));
         }
-
     }
 }

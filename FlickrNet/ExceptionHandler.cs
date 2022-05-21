@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using FlickrNet.Exceptions;
+using System;
 using System.Xml;
-using FlickrNet.Exceptions;
 
 namespace FlickrNet
 {
@@ -19,12 +17,16 @@ namespace FlickrNet
         public static Exception CreateResponseException(XmlReader reader)
         {
             if (reader == null)
-                throw new ArgumentNullException("reader");
+            {
+                throw new ArgumentNullException(nameof(reader));
+            }
 
             reader.MoveToElement();
 
             if (!reader.ReadToDescendant("err"))
-                throw new System.Xml.XmlException("No error element found in XML");
+            {
+                throw new XmlException("No error element found in XML");
+            }
 
             int code = 0;
             string msg = null;
@@ -59,29 +61,38 @@ namespace FlickrNet
             {
                 case 96:
                     return new InvalidSignatureException(message);
+
                 case 97:
                     return new MissingSignatureException(message);
+
                 case 98:
                     return new LoginFailedInvalidTokenException(message);
+
                 case 99:
                     return new UserNotLoggedInInsufficientPermissionsException(message);
+
                 case 100:
                     return new InvalidApiKeyException(message);
+
                 case 105:
                     return new ServiceUnavailableException(message);
+
                 case 111:
                     return new FormatNotFoundException(message);
+
                 case 112:
                     return new MethodNotFoundException(message);
+
                 case 116:
                     return new BadUrlFoundException(message);
+
                 case 114: // Soap Error
                 case 115: // XML-RPC error
                     return new FlickrApiException(code, message);
+
                 default:
                     return CreateExceptionFromMessage(code, message);
             }
-
         }
 
         private static FlickrApiException CreateExceptionFromMessage(int code, string message)
@@ -91,11 +102,14 @@ namespace FlickrNet
                 case "Photo not found":
                 case "Photo not found.":
                     return new PhotoNotFoundException(code, message);
+
                 case "Photoset not found":
                 case "Photoset not found.":
                     return new PhotosetNotFoundException(code, message);
+
                 case "Permission Denied":
                     return new PermissionDeniedException(code, message);
+
                 case "User not found":
                 case "User not found.":
                     return new UserNotFoundException(code, message);
@@ -103,6 +117,5 @@ namespace FlickrNet
 
             return new FlickrApiException(code, message);
         }
-
     }
 }

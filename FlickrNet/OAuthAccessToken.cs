@@ -1,6 +1,6 @@
-﻿using System;
+﻿using FlickrNet.Models.Interfaces;
+using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace FlickrNet
 {
@@ -14,18 +14,22 @@ namespace FlickrNet
         /// The access token string.
         /// </summary>
         public string Token { get; set; }
+
         /// <summary>
         /// The access token secret.
         /// </summary>
         public string TokenSecret { get; set; }
+
         /// <summary>
         /// The user id of the authenticated user.
         /// </summary>
         public string UserId { get; set; }
+
         /// <summary>
         /// The username (screenname) of the authenticated user.
         /// </summary>
         public string Username { get; set; }
+
         /// <summary>
         /// The full name of the authenticated user.
         /// </summary>
@@ -38,19 +42,33 @@ namespace FlickrNet
         /// <returns></returns>
         internal static OAuthAccessToken ParseResponse(string response)
         {
-            Dictionary<string, string> parts = UtilityMethods.StringToDictionary(response);
+            Dictionary<string, string> parts = UtilityMethods.byteArrayToDictionary(response);
 
-            var token = new OAuthAccessToken();
-            if( parts.ContainsKey("oauth_token") )
+            OAuthAccessToken token = new();
+            if (parts.ContainsKey("oauth_token"))
+            {
                 token.Token = parts["oauth_token"];
+            }
+
             if (parts.ContainsKey("oauth_token_secret"))
+            {
                 token.TokenSecret = parts["oauth_token_secret"];
+            }
+
             if (parts.ContainsKey("user_nsid"))
+            {
                 token.UserId = parts["user_nsid"];
+            }
+
             if (parts.ContainsKey("fullname"))
+            {
                 token.FullName = parts["fullname"];
+            }
+
             if (parts.ContainsKey("username"))
+            {
                 token.Username = parts["username"];
+            }
 
             return token;
         }

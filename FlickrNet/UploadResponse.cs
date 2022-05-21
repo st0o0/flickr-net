@@ -60,26 +60,9 @@ namespace FlickrNet
     /// <summary>
     /// If an error occurs then Flickr returns this object.
     /// </summary>
-    [System.Serializable]
+    [Serializable]
     public class ResponseError
     {
-        /// <summary>
-        /// The code or number of the error.
-        /// </summary>
-        /// <remarks>
-        /// 100 - Invalid Api Key.
-        /// 99  - User not logged in.
-        /// Other codes are specific to a method.
-        /// </remarks>
-        [XmlAttribute("code", Form = XmlSchemaForm.Unqualified)]
-        public int Code { get; set; }
-
-        /// <summary>
-        /// The verbose message matching the error code.
-        /// </summary>
-        [XmlAttribute("msg", Form = XmlSchemaForm.Unqualified)]
-        public string Message { get; set; }
-
         /// <summary>
         /// The default constructor for a response error.
         /// </summary>
@@ -97,6 +80,23 @@ namespace FlickrNet
             Code = code;
             Message = message;
         }
+
+        /// <summary>
+        /// The code or number of the error.
+        /// </summary>
+        /// <remarks>
+        /// 100 - Invalid Api Key.
+        /// 99  - User not logged in.
+        /// Other codes are specific to a method.
+        /// </remarks>
+        [XmlAttribute("code", Form = XmlSchemaForm.Unqualified)]
+        public int Code { get; set; }
+
+        /// <summary>
+        /// The verbose message matching the error code.
+        /// </summary>
+        [XmlAttribute("msg", Form = XmlSchemaForm.Unqualified)]
+        public string Message { get; set; }
     }
 
     /// <summary>
@@ -116,11 +116,11 @@ namespace FlickrNet
         /// </summary>
         [XmlEnum("ok")]
         Ok,
+
         /// <summary>
         /// The response returns "fail" if there is an error, such as invalid API key or login failure.
         /// </summary>
         [XmlEnum("fail")]
         Failed
     }
-
 }

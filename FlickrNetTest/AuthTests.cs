@@ -1,13 +1,12 @@
 ﻿using System.IO;
 using System.Linq;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 using System.Xml;
 using FlickrNet;
 using NUnit.Framework;
 using System;
 using Shouldly;
 using FlickrNet.Exceptions;
+using FlickrNet.Flickrs.Results;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 
@@ -134,7 +133,6 @@ namespace FlickrNetTest
             Assert.AreEqual("41888973@N00", auth.User.UserId);
             Assert.AreEqual("Sam Judson", auth.User.UserName);
             Assert.AreEqual("Sam Judson", auth.User.FullName);
-
         }
     }
 }

@@ -1,6 +1,7 @@
-﻿
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using FlickrNet;
+using FlickrNet.CollectionModels;
+using FlickrNet.Models;
 
 namespace FlickrNetTest
 {
@@ -10,7 +11,6 @@ namespace FlickrNetTest
     [TestFixture]
     public class BlogTests : BaseTest
     {
-       
         [Test]
         [Category("AccessTokenRequired")]
         public void BlogsGetListTest()
@@ -36,7 +36,7 @@ namespace FlickrNetTest
         {
             Flickr f = Instance;
 
-            BlogServiceCollection services = f.BlogsGetServices();
+            BlogServiceCollection services = f.BlogsGetServicesAsync();
 
             Assert.IsNotNull(services, "BlogServices should not be null.");
             Assert.AreNotEqual(0, services.Count, "BlogServices.Count should not be zero.");
@@ -49,7 +49,6 @@ namespace FlickrNetTest
 
             Assert.AreEqual("beta.blogger.com", services[0].Id, "First ID should be beta.blogger.com.");
             Assert.AreEqual("Blogger", services[0].Name, "First Name should be beta.blogger.com.");
-
         }
     }
 }

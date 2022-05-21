@@ -1,9 +1,4 @@
-﻿using System;
-
-using System.Collections.Generic;
-using System.Text;
-
-namespace FlickrNet.Exceptions
+﻿namespace FlickrNet.Exceptions
 {
     /// <summary>
     /// A user was included in a description or comment which Flickr rejected.
@@ -14,6 +9,5 @@ namespace FlickrNet.Exceptions
             : base(111, message)
         {
         }
-
     }
 }

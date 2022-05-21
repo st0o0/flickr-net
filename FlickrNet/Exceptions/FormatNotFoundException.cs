@@ -1,9 +1,4 @@
-﻿using System;
-
-using System.Collections.Generic;
-using System.Text;
-
-namespace FlickrNet.Exceptions
+﻿namespace FlickrNet.Exceptions
 {
     /// <summary>
     /// The specified format (e.g. json) was not found.
@@ -17,6 +12,5 @@ namespace FlickrNet.Exceptions
             : base(111, message)
         {
         }
-
     }
 }

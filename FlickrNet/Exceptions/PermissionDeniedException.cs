@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace FlickrNet.Exceptions
+﻿namespace FlickrNet.Exceptions
 {
     /// <summary>
     /// Error: Permission Denied.

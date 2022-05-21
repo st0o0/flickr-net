@@ -1,7 +1,8 @@
 ﻿using System;
-
 using NUnit.Framework;
 using FlickrNet;
+using FlickrNet.Flickrs;
+using FlickrNet.CollectionModels;
 
 namespace FlickrNetTest
 {
@@ -11,7 +12,6 @@ namespace FlickrNetTest
     [TestFixture]
     public class ContactsTests : BaseTest
     {
-        
         [Test]
         [Category("AccessTokenRequired")]
         public void ContactsGetListTestBasicTest()
@@ -113,6 +113,5 @@ namespace FlickrNetTest
 
             Assert.IsNotNull(contacts);
         }
-
     }
 }

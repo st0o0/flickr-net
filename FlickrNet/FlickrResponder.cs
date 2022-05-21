@@ -9,9 +9,7 @@ namespace FlickrNet
     /// </summary>
     public static partial class FlickrResponder
     {
-
         private const string PostContentType = "application/x-www-form-urlencoded";
-
 
         /// <summary>
         /// Returns the string for the Authorisation header to be used for OAuth authentication.
@@ -22,10 +20,8 @@ namespace FlickrNet
         public static string OAuthCalculateAuthHeader(Dictionary<string, string> parameters)
         {
             // Silverlight < 5 doesn't support modification of the Authorization header, so all data must be sent in post body.
-#if SILVERLIGHT
-            return "";
-#else
-            var sb = new StringBuilder("OAuth ");
+
+            StringBuilder sb = new("OAuth ");
             foreach (KeyValuePair<string, string> pair in parameters)
             {
                 if (pair.Key.StartsWith("oauth", StringComparison.Ordinal))
@@ -34,7 +30,6 @@ namespace FlickrNet
                 }
             }
             return sb.Remove(sb.Length - 1, 1).ToString();
-#endif
         }
 
         /// <summary>
@@ -49,17 +44,13 @@ namespace FlickrNet
             foreach (KeyValuePair<string, string> pair in parameters)
             {
                 // Silverlight < 5 doesn't support modification of the Authorization header, so all data must be sent in post body.
-#if SILVERLIGHT
-                data += pair.Key + "=" + UtilityMethods.EscapeOAuthString(pair.Value) + "&";
-#else
+
                 if (!pair.Key.StartsWith("oauth", StringComparison.Ordinal))
                 {
                     data += pair.Key + "=" + UtilityMethods.EscapeDataString(pair.Value) + "&";
                 }
-#endif
             }
             return data;
         }
-
     }
 }
