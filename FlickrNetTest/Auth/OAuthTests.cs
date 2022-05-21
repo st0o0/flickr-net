@@ -6,6 +6,7 @@ using Shouldly;
 using System.Threading.Tasks;
 using System.Threading;
 using FlickrNet.Enums;
+using FlickrNet.CollectionModels;
 
 namespace FlickrNetTest
 {
@@ -38,16 +39,18 @@ namespace FlickrNetTest
 
         [Test]
         [Ignore("Use this to generate an access token. Substitute the verifier from above test prior to running")]
-        public async Task OAuthGetAccessTokenBasicTest()
+        public async Task OAuthGetAccessTokenBasicTest(CancellationToken cancellationToken = default)
         {
             Flickr f = TestData.GetSignedInstance();
 
-            var requestToken = new OAuthRequestToken();
-            requestToken.Token = TestData.RequestToken;
-            requestToken.TokenSecret = TestData.RequestTokenSecret;
+            var requestToken = new OAuthRequestToken
+            {
+                Token = TestData.RequestToken,
+                TokenSecret = TestData.RequestTokenSecret
+            };
             string verifier = "846-116-116";
 
-            OAuthAccessToken accessToken = f.OAuthGetAccessTokenAsync(requestToken, verifier);
+            OAuthAccessToken accessToken = (await f.OAuthGetAccessTokenAsync(requestToken, verifier, cancellationToken)).Result;
 
             Console.WriteLine("access token = " + accessToken.Token);
             Console.WriteLine("access token secret = " + accessToken.TokenSecret);
