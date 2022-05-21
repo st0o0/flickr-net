@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFramework>net6.0-windows</TargetFramework>
-		<PackageId>FlickrNet.Core</PackageId>
+		<PackageId>FlickrNet.Test</PackageId>
 		<Description>.Net Core library for accessing Flickr.com Api functionality</Description>
 		<Copyright>Copyright © Sam Judson 2010</Copyright>
 		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
@@ -14,13 +14,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="NUnit" Version="3.13.3" />
-		<PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0" />
-		<PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
+	  <Compile Remove="Settings\**" />
+	  <EmbeddedResource Remove="Settings\**" />
+	  <None Remove="Settings\**" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Settings\" />
+		<PackageReference Include="NUnit" Version="3.13.3" />
+		<PackageReference Include="Shouldly" Version="4.0.3" />
+		<PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0" />
+		<PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
 	</ItemGroup>
 
 	<ItemGroup>

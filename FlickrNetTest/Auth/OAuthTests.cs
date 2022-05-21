@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using FlickrNet;
 using Shouldly;
+using System.Threading.Tasks;
+using System.Threading;
+using FlickrNet.Enums;
 
 namespace FlickrNetTest
 {
@@ -14,13 +17,11 @@ namespace FlickrNetTest
     {
         [Test]
         [Ignore("Use this to generate a require token. Then add verifier to second test")]
-        public void OAuthGetRequestTokenBasicTest()
+        public async Task OAuthGetRequestTokenBasicTest(CancellationToken cancellationToken = default)
         {
             Flickr f = TestData.GetSignedInstance();
 
-            string callback = "oob";
-
-            OAuthRequestToken requestToken = f.OAuthGetRequestToken(callback);
+            OAuthRequestToken requestToken = (await f.OAuthGetRequestTokenAsync("oob", cancellationToken)).Result;
 
             Assert.IsNotNull(requestToken);
             Assert.IsNotNull(requestToken.Token, "Token should not be null.");
@@ -37,7 +38,7 @@ namespace FlickrNetTest
 
         [Test]
         [Ignore("Use this to generate an access token. Substitute the verifier from above test prior to running")]
-        public void OAuthGetAccessTokenBasicTest()
+        public async Task OAuthGetAccessTokenBasicTest()
         {
             Flickr f = TestData.GetSignedInstance();
 
@@ -46,7 +47,7 @@ namespace FlickrNetTest
             requestToken.TokenSecret = TestData.RequestTokenSecret;
             string verifier = "846-116-116";
 
-            OAuthAccessToken accessToken = f.OAuthGetAccessToken(requestToken, verifier);
+            OAuthAccessToken accessToken = f.OAuthGetAccessTokenAsync(requestToken, verifier);
 
             Console.WriteLine("access token = " + accessToken.Token);
             Console.WriteLine("access token secret = " + accessToken.TokenSecret);
