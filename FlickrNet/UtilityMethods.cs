@@ -717,18 +717,17 @@ namespace FlickrNet
         /// e.g. ab=cd&amp;ef=gh will return a dictionary of { "ab" => "cd", "ef" => "gh" }.</remarks>
         /// <param name="response"></param>
         /// <returns></returns>
-        public static Dictionary<string, string> byteArrayToDictionary(byte[] response)
+        public static Dictionary<string, string> StringToDictionary(string response)
         {
             Dictionary<string, string> dic = new();
 
-            var r = Encoding.UTF8.GetString(response);
 
-            if (string.IsNullOrEmpty(r))
+            if (string.IsNullOrEmpty(response))
             {
                 return dic;
             }
 
-            string[] parts = r.Split('&');
+            string[] parts = response.Split('&');
 
             foreach (string part in parts)
             {
@@ -738,6 +737,7 @@ namespace FlickrNet
 
             return dic;
         }
+
 
         /// <summary>
         /// Escapes a string for use with OAuth.

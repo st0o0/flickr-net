@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 
 namespace FlickrNet.Exceptions
 {
@@ -28,11 +29,31 @@ namespace FlickrNet.Exceptions
         /// </summary>
         /// <param name="response"></param>
         /// <param name="innerException"></param>
+        public OAuthException(string response, Exception innerException) : base("OAuth Exception", innerException)
+        {
+            try
+            {
+                OAuthErrorPameters = UtilityMethods.StringToDictionary(response);
+            }
+            catch (Exception)
+            {
+                throw new Exception("Failed to parse OAuth error message: " + FullResponse, innerException);
+            }
+
+            _mess = "OAuth Exception occurred: " + OAuthErrorPameters["oauth_problem"];
+        }
+
+
+        /// <summary>
+        /// Constructor for the OAuthException class.
+        /// </summary>
+        /// <param name="response"></param>
+        /// <param name="innerException"></param>
         public OAuthException(byte[] response, Exception innerException) : base("OAuth Exception", innerException)
         {
             try
             {
-                OAuthErrorPameters = UtilityMethods.byteArrayToDictionary(response);
+                OAuthErrorPameters = UtilityMethods.StringToDictionary(Encoding.UTF8.GetString(response));
             }
             catch (Exception)
             {

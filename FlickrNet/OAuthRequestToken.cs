@@ -24,7 +24,7 @@ namespace FlickrNet
         /// <returns></returns>
         public static OAuthRequestToken ParseResponse(byte[] response)
         {
-            Dictionary<string, string> parameters = UtilityMethods.byteArrayToDictionary(response);
+            Dictionary<string, string> parameters = UtilityMethods.StringToDictionary(response);
             OAuthRequestToken token = new();
             token.Token = parameters["oauth_token"];
             token.TokenSecret = parameters["oauth_token_secret"];
