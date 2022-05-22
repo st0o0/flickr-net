@@ -1,8 +1,8 @@
 ﻿using FlickrNet.CollectionModels;
-using FlickrNet.Flickrs.Results;
 using FlickrNet.Models;
-using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNet
 {
@@ -14,7 +14,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         /// <remarks></remarks>
-        public void BlogsGetListAsync(Action<FlickrResult<BlogCollection>> callback)
+        public async Task<BlogCollection> BlogsGetListAsync(CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -22,21 +22,35 @@ namespace FlickrNet
             {
                 { "method", "flickr.blogs.getList" }
             };
-            GetResponseAsync<BlogCollection>(parameters, callback);
+
+            var t = await GetResponseAsync<BlogCollection>(parameters, cancellationToken);
+            if (t.HasError)
+            {
+                throw t.Error;
+            }
+
+            return t.Result;
         }
 
         /// <summary>
         /// Return a list of Flickr supported blogging services.
         /// </summary>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void BlogsGetServicesAsync(Action<FlickrResult<BlogServiceCollection>> callback)
+        public async Task<BlogServiceCollection> BlogsGetServicesAsync(CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.blogs.getServices" }
             };
 
-            GetResponseAsync<BlogServiceCollection>(parameters, callback);
+            var t = await GetResponseAsync<BlogServiceCollection>(parameters, cancellationToken);
+
+            if (t.HasError)
+            {
+                throw t.Error;
+            }
+
+            return t.Result;
         }
 
         /// <summary>
@@ -48,9 +62,9 @@ namespace FlickrNet
         /// <param name="title">The title of the blog post.</param>
         /// <param name="description">The body of the blog post.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void BlogsPostPhotoAsync(string blogId, string photoId, string title, string description, Action<FlickrResult<NoResponse>> callback)
+        public async Task<NoResponse> BlogsPostPhotoAsync(string blogId, string photoId, string title, string description, CancellationToken cancellationToken = default)
         {
-            BlogsPostPhotoAsync(blogId, photoId, title, description, null, callback);
+            return await BlogsPostPhotoAsync(blogId, photoId, title, description, null, cancellationToken);
         }
 
         /// <summary>
@@ -63,7 +77,7 @@ namespace FlickrNet
         /// <param name="description">The body of the blog post.</param>
         /// <param name="blogPassword">The password of the blog if it is not already stored in flickr.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void BlogsPostPhotoAsync(string blogId, string photoId, string title, string description, string blogPassword, Action<FlickrResult<NoResponse>> callback)
+        public async Task<NoResponse> BlogsPostPhotoAsync(string blogId, string photoId, string title, string description, string blogPassword, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -78,7 +92,14 @@ namespace FlickrNet
                 parameters.Add("blog_password", blogPassword);
             }
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            var t = await GetResponseAsync<NoResponse>(parameters, cancellationToken);
+
+            if (t.HasError)
+            {
+                throw t.Error;
+            }
+
+            return t.Result;
         }
     }
 }

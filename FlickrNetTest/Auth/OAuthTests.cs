@@ -63,7 +63,7 @@ namespace FlickrNetTest
         [Category("AccessTokenRequired")]
         public void OAuthPeopleGetPhotosBasicTest()
         {
-            PhotoCollection photos = AuthInstance.PeopleGetPhotos("me");
+            PhotoCollection photos = AuthInstance.PeopleGetPhotosAsync("me",);
         }
 
         [Test]

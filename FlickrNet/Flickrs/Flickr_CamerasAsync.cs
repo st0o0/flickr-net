@@ -2,6 +2,8 @@
 using FlickrNet.Flickrs.Results;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNet
 {
@@ -12,10 +14,16 @@ namespace FlickrNet
         /// </summary>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         /// <returns></returns>
-        public void CamerasGetBrandsAsync(Action<FlickrResult<BrandCollection>> callback)
+        public async Task<CameraCollection> CamerasGetBrandsAsync(CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new() { { "method", "flickr.cameras.getBrands" } };
-            GetResponseAsync(parameters, callback);
+            var t = await GetResponseAsync<CameraCollection>(parameters, cancellationToken);
+            if (t.HasError)
+            {
+                throw t.Error;
+            }
+
+            return t.Result;
         }
 
         /// <summary>
@@ -24,14 +32,21 @@ namespace FlickrNet
         /// <param name="brandId">The ID of the brand you want the models of.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         /// <returns></returns>
-        public void CamerasGetBrandModelsAsync(string brandId, Action<FlickrResult<CameraCollection>> callback)
+        public async Task<CameraCollection> CamerasGetBrandModelsAsync(string brandId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
-                                     {"method", "flickr.cameras.getBrandModels"},
-                                     {"brand", brandId}
-                                 };
-            GetResponseAsync(parameters, callback);
+                {"method", "flickr.cameras.getBrandModels"},
+                { "brand", brandId}
+        };
+
+            var t = await GetResponseAsync<CameraCollection>(parameters, cancellationToken);
+            if (t.HasError)
+            {
+                throw t.Error;
+            }
+
+            return t.Result;
         }
     }
 }

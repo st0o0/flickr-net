@@ -52,6 +52,7 @@ namespace FlickrNet
             {
                 { "method", "flickr.collections.getTree" }
             };
+
             if (collectionId != null)
             {
                 parameters.Add("collection_id", collectionId);

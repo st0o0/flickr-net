@@ -9,17 +9,17 @@ namespace FlickrNetTest
     [TestFixture]
     public class BaseTest
     {
-        Flickr _instance;
-        Flickr _authInstance;
-        Dictionary<string, string> _errorLog;
+        private Flickr _instance;
+        private Flickr _authInstance;
+        private Dictionary<string, string> _errorLog;
 
-        static int _testCount;
+        private static int _testCount;
 
         protected Flickr Instance
         {
             get
             {
-                return _instance ?? (_instance = TestData.GetInstance());
+                return _instance ??= TestData.GetInstance();
             }
         }
 
@@ -27,7 +27,7 @@ namespace FlickrNetTest
         {
             get
             {
-                return _authInstance ?? (_authInstance = TestData.GetAuthInstance());
+                return _authInstance ??= TestData.GetAuthInstance();
             }
         }
 
@@ -58,9 +58,15 @@ namespace FlickrNetTest
         [TearDown]
         public void ErrorLogging()
         {
-            if( (_testCount % 10) > 0 ) System.Threading.Thread.Sleep(200);
+            if ((_testCount % 10) > 0)
+            {
+                System.Threading.Thread.Sleep(200);
+            }
 
-            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed) return;
+            if (TestContext.CurrentContext.Result.Outcome.Status != TestStatus.Failed)
+            {
+                return;
+            }
 
             if (InstanceUsed)
             {
@@ -69,7 +75,7 @@ namespace FlickrNetTest
             }
             if (AuthInstanceUsed)
             {
-                Console.WriteLine("LastRequest (Auth): " +_authInstance.LastRequest);
+                Console.WriteLine("LastRequest (Auth): " + _authInstance.LastRequest);
                 Console.WriteLine("LastResponse (Auth): " + _authInstance.LastResponse);
             }
 
@@ -78,6 +84,5 @@ namespace FlickrNetTest
                 Console.WriteLine(line.Key + ": " + line.Value);
             }
         }
-
     }
 }
