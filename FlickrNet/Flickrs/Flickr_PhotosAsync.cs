@@ -7,6 +7,7 @@ using FlickrNet.Models;
 using FlickrNet.SearchOptions;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 #if SILVERLIGHT
 using System.Linq;
@@ -22,7 +23,7 @@ namespace FlickrNet
         /// <param name="photoId">The photo id of the photo.</param>
         /// <param name="tags">An array of strings containing the tags.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosAddTagsAsync(string photoId, string[] tags, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosAddTagsAsync(string photoId, string[] tags, Action<FlickrResult<NoResponse>> callback)
         {
             string s = string.Join(",", tags);
             PhotosAddTagsAsync(photoId, s, callback);
@@ -34,7 +35,7 @@ namespace FlickrNet
         /// <param name="photoId">The photo id of the photo.</param>
         /// <param name="tags">An string of comma delimited tags.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosAddTagsAsync(string photoId, string tags, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosAddTagsAsync(string photoId, string tags, Action<FlickrResult<NoResponse>> callback)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -53,7 +54,7 @@ namespace FlickrNet
         /// Requires Delete permissions. Also note, photos cannot be recovered once deleted.</remarks>
         /// <param name="photoId">The ID of the photo to delete.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosDeleteAsync(string photoId, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosDeleteAsync(string photoId, Action<FlickrResult<NoResponse>> callback)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -70,7 +71,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="photoId">The photo id of the photo to get the contexts for.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetAllContextsAsync(string photoId, Action<FlickrResult<AllContexts>> callback)
+        public async Task<AllContexts> PhotosGetAllContextsAsync(string photoId, Action<FlickrResult<AllContexts>> callback)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -85,7 +86,7 @@ namespace FlickrNet
         /// Gets the most recent 10 photos from your contacts.
         /// </summary>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetContactsPhotosAsync(Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosGetContactsPhotosAsync(Action<FlickrResult<PhotoCollection>> callback)
         {
             PhotosGetContactsPhotosAsync(0, false, false, false, PhotoSearchExtras.None, callback);
         }
@@ -99,7 +100,7 @@ namespace FlickrNet
         /// <exception cref="ArgumentOutOfRangeException">
         /// Throws a <see cref="ArgumentOutOfRangeException"/> exception if the cound
         /// is not between 10 and 50, or 0.</exception>
-        public void PhotosGetContactsPhotosAsync(int count, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosGetContactsPhotosAsync(int count, Action<FlickrResult<PhotoCollection>> callback)
         {
             PhotosGetContactsPhotosAsync(count, false, false, false, PhotoSearchExtras.None, callback);
         }
@@ -119,7 +120,7 @@ namespace FlickrNet
         /// <exception cref="ArgumentOutOfRangeException">
         /// Throws a <see cref="ArgumentOutOfRangeException"/> exception if the cound
         /// is not between 10 and 50, or 0.</exception>
-        public void PhotosGetContactsPhotosAsync(int count, bool justFriends, bool singlePhoto, bool includeSelf, PhotoSearchExtras extras, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosGetContactsPhotosAsync(int count, bool justFriends, bool singlePhoto, bool includeSelf, PhotoSearchExtras extras, Action<FlickrResult<PhotoCollection>> callback)
         {
             CheckRequiresAuthentication();
 
@@ -164,7 +165,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="userId">The user ID whose contacts you wish to get photos for.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetContactsPublicPhotosAsync(string userId, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosGetContactsPublicPhotosAsync(string userId, Action<FlickrResult<PhotoCollection>> callback)
         {
             PhotosGetContactsPublicPhotosAsync(userId, 0, false, false, false, PhotoSearchExtras.None, callback);
         }
@@ -175,7 +176,7 @@ namespace FlickrNet
         /// <param name="userId">The user ID whose contacts you wish to get photos for.</param>
         /// <param name="extras">A list of extra details to return for each photo.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetContactsPublicPhotosAsync(string userId, PhotoSearchExtras extras, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosGetContactsPublicPhotosAsync(string userId, PhotoSearchExtras extras, Action<FlickrResult<PhotoCollection>> callback)
         {
             PhotosGetContactsPublicPhotosAsync(userId, 0, false, false, false, extras, callback);
         }
@@ -186,7 +187,7 @@ namespace FlickrNet
         /// <param name="userId">The user ID whose contacts you wish to get photos for.</param>
         /// <param name="count">The number of photos to return. Defaults to 10, maximum is 50.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetContactsPublicPhotosAsync(string userId, int count, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosGetContactsPublicPhotosAsync(string userId, int count, Action<FlickrResult<PhotoCollection>> callback)
         {
             PhotosGetContactsPublicPhotosAsync(userId, count, false, false, false, PhotoSearchExtras.None, callback);
         }
@@ -198,7 +199,7 @@ namespace FlickrNet
         /// <param name="count">The number of photos to return. Defaults to 10, maximum is 50.</param>
         /// <param name="extras">A list of extra details to return for each photo.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetContactsPublicPhotosAsync(string userId, int count, PhotoSearchExtras extras, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosGetContactsPublicPhotosAsync(string userId, int count, PhotoSearchExtras extras, Action<FlickrResult<PhotoCollection>> callback)
         {
             PhotosGetContactsPublicPhotosAsync(userId, count, false, false, false, extras, callback);
         }
@@ -212,7 +213,7 @@ namespace FlickrNet
         /// <param name="singlePhoto">True to return just a single photo for each contact.</param>
         /// <param name="includeSelf">True to include photos from the user ID specified as well.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetContactsPublicPhotosAsync(string userId, int count, bool justFriends, bool singlePhoto, bool includeSelf, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosGetContactsPublicPhotosAsync(string userId, int count, bool justFriends, bool singlePhoto, bool includeSelf, Action<FlickrResult<PhotoCollection>> callback)
         {
             PhotosGetContactsPublicPhotosAsync(userId, count, justFriends, singlePhoto, includeSelf, PhotoSearchExtras.None, callback);
         }
@@ -227,7 +228,7 @@ namespace FlickrNet
         /// <param name="includeSelf">True to include photos from the user ID specified as well.</param>
         /// <param name="extras">A list of extra details to return for each photo.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetContactsPublicPhotosAsync(string userId, int count, bool justFriends, bool singlePhoto,
+        public async Task<PhotoCollection> PhotosGetContactsPublicPhotosAsync(string userId, int count, bool justFriends, bool singlePhoto,
                                                        bool includeSelf, PhotoSearchExtras extras,
                                                        Action<FlickrResult<PhotoCollection>> callback)
         {
@@ -270,7 +271,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="photoId">The ID of the photo to return the context for.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetContextAsync(string photoId, Action<FlickrResult<Context>> callback)
+        public async Task<Context> PhotosGetContextAsync(string photoId, Action<FlickrResult<Context>> callback)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -290,7 +291,7 @@ namespace FlickrNet
         /// More parameters means more sets.</remarks>
         /// <param name="dates">Array of <see cref="DateTime"/> objects representing upload dates.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetCountsAsync(DateTime[] dates, Action<FlickrResult<PhotoCountCollection>> callback)
+        public async Task<PhotoCountCollection> PhotosGetCountsAsync(DateTime[] dates, Action<FlickrResult<PhotoCountCollection>> callback)
         {
             PhotosGetCountsAsync(dates, false, callback);
         }
@@ -305,7 +306,7 @@ namespace FlickrNet
         /// <param name="dates">Array of <see cref="DateTime"/> objects.</param>
         /// <param name="taken">Boolean parameter to specify if the dates are the taken date, or uploaded date.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetCountsAsync(DateTime[] dates, bool taken, Action<FlickrResult<PhotoCountCollection>> callback)
+        public async Task<PhotoCountCollection> PhotosGetCountsAsync(DateTime[] dates, bool taken, Action<FlickrResult<PhotoCountCollection>> callback)
         {
             if (taken)
             {
@@ -327,7 +328,7 @@ namespace FlickrNet
         /// <param name="dates">Comma-delimited list of dates in unix timestamp format. Optional.</param>
         /// <param name="takenDates">Comma-delimited list of dates in unix timestamp format. Optional.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetCountsAsync(DateTime[] dates, DateTime[] takenDates, Action<FlickrResult<PhotoCountCollection>> callback)
+        public async Task<PhotoCountCollection> PhotosGetCountsAsync(DateTime[] dates, DateTime[] takenDates, Action<FlickrResult<PhotoCountCollection>> callback)
         {
             CheckRequiresAuthentication();
 
@@ -337,27 +338,20 @@ namespace FlickrNet
             if (dates != null && dates.Length > 0)
             {
                 Array.Sort<DateTime>(dates);
-#if !SILVERLIGHT
+
                 dateString = string.Join(",", new List<DateTime>(dates).ConvertAll<string>(new Converter<DateTime, string>(delegate (DateTime d)
                 {
                     return UtilityMethods.DateToUnixTimestamp(d).ToString();
                 })).ToArray());
-#else
-                dateString = string.Join(",", (from d in dates select UtilityMethods.DateToUnixTimestamp(d)).ToArray<string>());
-#endif
             }
 
             if (takenDates != null && takenDates.Length > 0)
             {
                 Array.Sort<DateTime>(takenDates);
-#if !SILVERLIGHT
                 takenDateString = string.Join(",", new List<DateTime>(takenDates).ConvertAll<string>(new Converter<DateTime, string>(delegate (DateTime d)
                     {
                         return UtilityMethods.DateToUnixTimestamp(d).ToString();
                     })).ToArray());
-#else
-                takenDateString = string.Join(",", (from d in takenDates select UtilityMethods.DateToUnixTimestamp(d)).ToArray<string>());
-#endif
             }
 
             Dictionary<string, string> parameters = new()
@@ -382,7 +376,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="photoId">The Photo ID of the photo to return the EXIF data for.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetExifAsync(string photoId, Action<FlickrResult<ExifTagCollection>> callback)
+        public async Task<ExifTagCollection> PhotosGetExifAsync(string photoId, Action<FlickrResult<ExifTagCollection>> callback)
         {
             PhotosGetExifAsync(photoId, null, callback);
         }
@@ -394,7 +388,7 @@ namespace FlickrNet
         /// <param name="secret">The secret of the photo. If the secret is specified then
         /// authentication checks are bypassed.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetExifAsync(string photoId, string secret, Action<FlickrResult<ExifTagCollection>> callback)
+        public async Task<ExifTagCollection> PhotosGetExifAsync(string photoId, string secret, Action<FlickrResult<ExifTagCollection>> callback)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -414,7 +408,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="photoId">The id of the photo to fetch information for.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetInfoAsync(string photoId, Action<FlickrResult<PhotoInfo>> callback)
+        public async Task<PhotoInfo> PhotosGetInfoAsync(string photoId, Action<FlickrResult<PhotoInfo>> callback)
         {
             PhotosGetInfoAsync(photoId, null, callback);
         }
@@ -426,7 +420,7 @@ namespace FlickrNet
         /// <param name="secret">The secret for the photo. If the correct secret is passed then permissions checking is skipped.
         /// This enables the 'sharing' of individual photos by passing around the id and secret.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetInfoAsync(string photoId, string secret, Action<FlickrResult<PhotoInfo>> callback)
+        public async Task<PhotoInfo> PhotosGetInfoAsync(string photoId, string secret, Action<FlickrResult<PhotoInfo>> callback)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -446,7 +440,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="photoId">The id of the photo to get permissions for.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetPermsAsync(string photoId, Action<FlickrResult<PhotoPermissions>> callback)
+        public async Task<PhotoPermissions> PhotosGetPermsAsync(string photoId, Action<FlickrResult<PhotoPermissions>> callback)
         {
             CheckRequiresAuthentication();
 
@@ -463,7 +457,7 @@ namespace FlickrNet
         /// Returns a list of the latest public photos uploaded to flickr.
         /// </summary>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetRecentAsync(Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosGetRecentAsync(Action<FlickrResult<PhotoCollection>> callback)
         {
             PhotosGetRecentAsync(0, 0, PhotoSearchExtras.None, callback);
         }
@@ -473,7 +467,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="extras">A comma-delimited list of extra information to fetch for each returned record.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetRecentAsync(PhotoSearchExtras extras, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosGetRecentAsync(PhotoSearchExtras extras, Action<FlickrResult<PhotoCollection>> callback)
         {
             PhotosGetRecentAsync(0, 0, extras, callback);
         }
@@ -484,7 +478,7 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of photos to return per page. If this argument is omitted, it defaults to 100. The maximum allowed value is 500.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetRecentAsync(int page, int perPage, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosGetRecentAsync(int page, int perPage, Action<FlickrResult<PhotoCollection>> callback)
         {
             PhotosGetRecentAsync(page, perPage, PhotoSearchExtras.None, callback);
         }
@@ -496,7 +490,7 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of photos to return per page. If this argument is omitted, it defaults to 100. The maximum allowed value is 500.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetRecentAsync(int page, int perPage, PhotoSearchExtras extras, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosGetRecentAsync(int page, int perPage, PhotoSearchExtras extras, Action<FlickrResult<PhotoCollection>> callback)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -526,7 +520,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="photoId">The id of the photo to fetch size information for.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetSizesAsync(string photoId, Action<FlickrResult<SizeCollection>> callback)
+        public async Task<SizeCollection> PhotosGetSizesAsync(string photoId, Action<FlickrResult<SizeCollection>> callback)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -541,7 +535,7 @@ namespace FlickrNet
         /// Returns a list of your photos with no tags.
         /// </summary>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetUntaggedAsync(Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosGetUntaggedAsync(Action<FlickrResult<PhotoCollection>> callback)
         {
             PhotosGetUntaggedAsync(0, 0, PhotoSearchExtras.None, callback);
         }
@@ -551,7 +545,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="extras">A comma-delimited list of extra information to fetch for each returned record.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetUntaggedAsync(PhotoSearchExtras extras, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosGetUntaggedAsync(PhotoSearchExtras extras, Action<FlickrResult<PhotoCollection>> callback)
         {
             PhotosGetUntaggedAsync(0, 0, extras, callback);
         }
@@ -562,7 +556,7 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of photos to return per page. If this argument is omitted, it defaults to 100. The maximum allowed value is 500.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetUntaggedAsync(int page, int perPage, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosGetUntaggedAsync(int page, int perPage, Action<FlickrResult<PhotoCollection>> callback)
         {
             PhotosGetUntaggedAsync(page, perPage, PhotoSearchExtras.None, callback);
         }
@@ -574,7 +568,7 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of photos to return per page. If this argument is omitted, it defaults to 100. The maximum allowed value is 500.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetUntaggedAsync(int page, int perPage, PhotoSearchExtras extras, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosGetUntaggedAsync(int page, int perPage, PhotoSearchExtras extras, Action<FlickrResult<PhotoCollection>> callback)
         {
             PartialSearchOptions o = new();
             o.Page = page;
@@ -589,7 +583,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="options">The <see cref="PartialSearchOptions"/> containing the list of options supported by this method.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetUntaggedAsync(PartialSearchOptions options, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosGetUntaggedAsync(PartialSearchOptions options, Action<FlickrResult<PhotoCollection>> callback)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -605,7 +599,7 @@ namespace FlickrNet
         /// Gets a list of photos not in sets. Defaults to include all extra fields.
         /// </summary>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetNotInSetAsync(Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosGetNotInSetAsync(Action<FlickrResult<PhotoCollection>> callback)
         {
             PhotosGetNotInSetAsync(new PartialSearchOptions(), callback);
         }
@@ -616,7 +610,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="page">The page number to return.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetNotInSetAsync(int page, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosGetNotInSetAsync(int page, Action<FlickrResult<PhotoCollection>> callback)
         {
             PhotosGetNotInSetAsync(page, 0, PhotoSearchExtras.None, callback);
         }
@@ -628,7 +622,7 @@ namespace FlickrNet
         /// <param name="perPage">Number of photos per page.</param>
         /// <param name="page">The page number to return.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetNotInSetAsync(int page, int perPage, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosGetNotInSetAsync(int page, int perPage, Action<FlickrResult<PhotoCollection>> callback)
         {
             PhotosGetNotInSetAsync(page, perPage, PhotoSearchExtras.None, callback);
         }
@@ -640,7 +634,7 @@ namespace FlickrNet
         /// <param name="page">The page number to return.</param>
         /// <param name="extras"><see cref="PhotoSearchExtras"/> enumeration.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetNotInSetAsync(int page, int perPage, PhotoSearchExtras extras, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosGetNotInSetAsync(int page, int perPage, PhotoSearchExtras extras, Action<FlickrResult<PhotoCollection>> callback)
         {
             PartialSearchOptions options = new();
             options.PerPage = perPage;
@@ -655,7 +649,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="options">A selection of options to filter/sort by.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetNotInSetAsync(PartialSearchOptions options, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosGetNotInSetAsync(PartialSearchOptions options, Action<FlickrResult<PhotoCollection>> callback)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -670,7 +664,7 @@ namespace FlickrNet
         /// Gets a list of all current licenses.
         /// </summary>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosLicensesGetInfoAsync(Action<FlickrResult<LicenseCollection>> callback)
+        public async Task<LicenseCollection> PhotosLicensesGetInfoAsync(Action<FlickrResult<LicenseCollection>> callback)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -688,7 +682,7 @@ namespace FlickrNet
         /// <param name="license">The license to apply, or <see cref="LicenseType.AllRightsReserved"/> (0) to remove the current license.
         /// Note : as of this writing the <see cref="LicenseType.NoKnownCopyrightRestrictions"/> license (7) is not a valid argument.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosLicensesSetLicenseAsync(string photoId, LicenseType license, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosLicensesSetLicenseAsync(string photoId, LicenseType license, Action<FlickrResult<NoResponse>> callback)
         {
             CheckRequiresAuthentication();
 
@@ -707,7 +701,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="tagId">The id of the tag, as returned by <see cref="Flickr.PhotosGetInfo(string)"/> or similar method.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosRemoveTagAsync(string tagId, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosRemoveTagAsync(string tagId, Action<FlickrResult<NoResponse>> callback)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -726,7 +720,7 @@ namespace FlickrNet
         /// <param name="minDate">The date from which modifications should be compared.</param>
         /// <param name="extras">A list of extra information to fetch for each returned record.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosRecentlyUpdatedAsync(DateTime minDate, PhotoSearchExtras extras, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosRecentlyUpdatedAsync(DateTime minDate, PhotoSearchExtras extras, Action<FlickrResult<PhotoCollection>> callback)
         {
             PhotosRecentlyUpdatedAsync(minDate, extras, 0, 0, callback);
         }
@@ -740,7 +734,7 @@ namespace FlickrNet
         /// <param name="perPage">Number of photos to return per page. If this argument is omitted, it defaults to 100. The maximum allowed value is 500.</param>
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosRecentlyUpdatedAsync(DateTime minDate, int page, int perPage, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosRecentlyUpdatedAsync(DateTime minDate, int page, int perPage, Action<FlickrResult<PhotoCollection>> callback)
         {
             PhotosRecentlyUpdatedAsync(minDate, PhotoSearchExtras.None, page, perPage, callback);
         }
@@ -752,7 +746,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="minDate">The date from which modifications should be compared.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosRecentlyUpdatedAsync(DateTime minDate, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosRecentlyUpdatedAsync(DateTime minDate, Action<FlickrResult<PhotoCollection>> callback)
         {
             PhotosRecentlyUpdatedAsync(minDate, PhotoSearchExtras.None, 0, 0, callback);
         }
@@ -767,7 +761,7 @@ namespace FlickrNet
         /// <param name="perPage">Number of photos to return per page. If this argument is omitted, it defaults to 100. The maximum allowed value is 500.</param>
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosRecentlyUpdatedAsync(DateTime minDate, PhotoSearchExtras extras, int page, int perPage, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosRecentlyUpdatedAsync(DateTime minDate, PhotoSearchExtras extras, int page, int perPage, Action<FlickrResult<PhotoCollection>> callback)
         {
             CheckRequiresAuthentication();
 
@@ -799,7 +793,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="options">The parameters to search for.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosSearchAsync(PhotoSearchOptions options, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PhotosSearchAsync(PhotoSearchOptions options, Action<FlickrResult<PhotoCollection>> callback)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -822,7 +816,7 @@ namespace FlickrNet
         /// <param name="dateTaken">The date taken.</param>
         /// <param name="granularity">The granularity of the date taken.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosSetDatesAsync(string photoId, DateTime dateTaken, DateGranularity granularity, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosSetDatesAsync(string photoId, DateTime dateTaken, DateGranularity granularity, Action<FlickrResult<NoResponse>> callback)
         {
             PhotosSetDatesAsync(photoId, DateTime.MinValue, dateTaken, granularity, callback);
         }
@@ -838,7 +832,7 @@ namespace FlickrNet
         /// <param name="photoId">The id of the photo to set the date posted.</param>
         /// <param name="datePosted">The new date to set the date posted too.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosSetDatesAsync(string photoId, DateTime datePosted, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosSetDatesAsync(string photoId, DateTime datePosted, Action<FlickrResult<NoResponse>> callback)
         {
             PhotosSetDatesAsync(photoId, datePosted, DateTime.MinValue, DateGranularity.FullDate, callback);
         }
@@ -856,7 +850,7 @@ namespace FlickrNet
         /// <param name="dateTaken">The new date to set the date taken too.</param>
         /// <param name="granularity">The granularity of the date taken.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosSetDatesAsync(string photoId, DateTime datePosted, DateTime dateTaken, DateGranularity granularity, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosSetDatesAsync(string photoId, DateTime datePosted, DateTime dateTaken, DateGranularity granularity, Action<FlickrResult<NoResponse>> callback)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -885,7 +879,7 @@ namespace FlickrNet
         /// <param name="description">The new description of the photograph.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         /// <exception cref="FlickrApiException">Thrown when the photo id cannot be found.</exception>
-        public void PhotosSetMetaAsync(string photoId, string title, string description, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosSetMetaAsync(string photoId, string title, string description, Action<FlickrResult<NoResponse>> callback)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -908,7 +902,7 @@ namespace FlickrNet
         /// <param name="permComment">Who can add comments. See <see cref="PermissionComment"/> for more details.</param>
         /// <param name="permAddMeta">Who can add metadata (notes and tags). See <see cref="PermissionAddMeta"/> for more details.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosSetPermsAsync(string photoId, int isPublic, int isFriend, int isFamily,
+        public async Task PhotosSetPermsAsync(string photoId, int isPublic, int isFriend, int isFamily,
                                         PermissionComment permComment, PermissionAddMeta permAddMeta,
                                         Action<FlickrResult<NoResponse>> callback)
         {
@@ -926,7 +920,7 @@ namespace FlickrNet
         /// <param name="permComment">Who can add comments. See <see cref="PermissionComment"/> for more details.</param>
         /// <param name="permAddMeta">Who can add metadata (notes and tags). See <see cref="PermissionAddMeta"/> for more details.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosSetPermsAsync(string photoId, bool isPublic, bool isFriend, bool isFamily,
+        public async Task PhotosSetPermsAsync(string photoId, bool isPublic, bool isFriend, bool isFamily,
                                         PermissionComment permComment, PermissionAddMeta permAddMeta,
                                         Action<FlickrResult<NoResponse>> callback)
         {
@@ -954,7 +948,7 @@ namespace FlickrNet
         /// <param name="photoId">The id of the photo to update.</param>
         /// <param name="tags">An array of tags.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosSetTagsAsync(string photoId, string[] tags, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosSetTagsAsync(string photoId, string[] tags, Action<FlickrResult<NoResponse>> callback)
         {
             string s = string.Join(",", tags);
             PhotosSetTagsAsync(photoId, s, callback);
@@ -970,7 +964,7 @@ namespace FlickrNet
         /// <param name="photoId">The id of the photo to update.</param>
         /// <param name="tags">An comma-seperated list of tags.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosSetTagsAsync(string photoId, string tags, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosSetTagsAsync(string photoId, string tags, Action<FlickrResult<NoResponse>> callback)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -988,7 +982,7 @@ namespace FlickrNet
         /// <param name="photoId">The ID of the photos to set.</param>
         /// <param name="contentType">The new content type.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosSetContentTypeAsync(string photoId, ContentType contentType, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosSetContentTypeAsync(string photoId, ContentType contentType, Action<FlickrResult<NoResponse>> callback)
         {
             CheckRequiresAuthentication();
 
@@ -1008,7 +1002,7 @@ namespace FlickrNet
         /// <param name="photoId">The ID of the photo to set the hidden property for.</param>
         /// <param name="hidden">The new value of the hidden value.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosSetSafetyLevelAsync(string photoId, HiddenFromSearch hidden, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosSetSafetyLevelAsync(string photoId, HiddenFromSearch hidden, Action<FlickrResult<NoResponse>> callback)
         {
             PhotosSetSafetyLevelAsync(photoId, SafetyLevel.None, hidden, callback);
         }
@@ -1019,7 +1013,7 @@ namespace FlickrNet
         /// <param name="photoId">The ID of the photo to set the safety level property for.</param>
         /// <param name="safetyLevel">The new value of the safety level value.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosSetSafetyLevelAsync(string photoId, SafetyLevel safetyLevel, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosSetSafetyLevelAsync(string photoId, SafetyLevel safetyLevel, Action<FlickrResult<NoResponse>> callback)
         {
             PhotosSetSafetyLevelAsync(photoId, safetyLevel, HiddenFromSearch.None, callback);
         }
@@ -1031,7 +1025,7 @@ namespace FlickrNet
         /// <param name="safetyLevel">The new content type.</param>
         /// <param name="hidden">The new hidden value.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosSetSafetyLevelAsync(string photoId, SafetyLevel safetyLevel, HiddenFromSearch hidden, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosSetSafetyLevelAsync(string photoId, SafetyLevel safetyLevel, HiddenFromSearch hidden, Action<FlickrResult<NoResponse>> callback)
         {
             CheckRequiresAuthentication();
 
@@ -1064,7 +1058,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="photoId">The ID of the photo to return the favourites for.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetFavoritesAsync(string photoId, Action<FlickrResult<PhotoFavoriteCollection>> callback)
+        public async Task<PhotoFavoriteCollection> PhotosGetFavoritesAsync(string photoId, Action<FlickrResult<PhotoFavoriteCollection>> callback)
         {
             PhotosGetFavoritesAsync(photoId, 0, 0, callback);
         }
@@ -1076,7 +1070,7 @@ namespace FlickrNet
         /// <param name="perPage">How many favourites to return per page. Default is 10.</param>
         /// <param name="page">The page to return. Default is 1.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosGetFavoritesAsync(string photoId, int perPage, int page, Action<FlickrResult<PhotoFavoriteCollection>> callback)
+        public async Task<PhotoFavoriteCollection> PhotosGetFavoritesAsync(string photoId, int perPage, int page, Action<FlickrResult<PhotoFavoriteCollection>> callback)
         {
             Dictionary<string, string> parameters = new()
             {

@@ -23,13 +23,7 @@ namespace FlickrNet
                 { "method", "flickr.blogs.getList" }
             };
 
-            var t = await GetResponseAsync<BlogCollection>(parameters, cancellationToken);
-            if (t.HasError)
-            {
-                throw t.Error;
-            }
-
-            return t.Result;
+            return await GetResponseAsync<BlogCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -43,14 +37,7 @@ namespace FlickrNet
                 { "method", "flickr.blogs.getServices" }
             };
 
-            var t = await GetResponseAsync<BlogServiceCollection>(parameters, cancellationToken);
-
-            if (t.HasError)
-            {
-                throw t.Error;
-            }
-
-            return t.Result;
+            return await GetResponseAsync<BlogServiceCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -92,14 +79,7 @@ namespace FlickrNet
                 parameters.Add("blog_password", blogPassword);
             }
 
-            var t = await GetResponseAsync<NoResponse>(parameters, cancellationToken);
-
-            if (t.HasError)
-            {
-                throw t.Error;
-            }
-
-            return t.Result;
+            return await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
     }
 }

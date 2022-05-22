@@ -4,6 +4,8 @@ using FlickrNet.Flickrs.Results;
 using FlickrNet.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNet
 {
@@ -17,9 +19,9 @@ namespace FlickrNet
         /// and <see cref="Flickr.GalleriesGetListForPhoto(string, int, int)"/>.</param>
         /// <param name="photoId">The photo ID to add to the gallery</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GalleriesAddPhotoAsync(string galleryId, string photoId, Action<FlickrResult<NoResponse>> callback)
+        public async Task GalleriesAddPhotoAsync(string galleryId, string photoId, CancellationToken cancellationToken = default)
         {
-            GalleriesAddPhotoAsync(galleryId, photoId, null, callback);
+            await GalleriesAddPhotoAsync(galleryId, photoId, null, cancellationToken);
         }
 
         /// <summary>
@@ -31,7 +33,7 @@ namespace FlickrNet
         /// <param name="photoId">The photo ID to add to the gallery</param>
         /// <param name="comment">A short comment or story to accompany the photo.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GalleriesAddPhotoAsync(string galleryId, string photoId, string comment, Action<FlickrResult<NoResponse>> callback)
+        public async Task GalleriesAddPhotoAsync(string galleryId, string photoId, string comment, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -44,7 +46,7 @@ namespace FlickrNet
                 parameters.Add("comment", comment);
             }
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -53,9 +55,9 @@ namespace FlickrNet
         /// <param name="title">The name of the gallery.</param>
         /// <param name="description">A short description for the gallery.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GalleriesCreateAsync(string title, string description, Action<FlickrResult<NoResponse>> callback)
+        public async Task GalleriesCreateAsync(string title, string description, CancellationToken cancellationToken = default)
         {
-            GalleriesCreateAsync(title, description, null, callback);
+            await GalleriesCreateAsync(title, description, null, cancellationToken);
         }
 
         /// <summary>
@@ -65,7 +67,7 @@ namespace FlickrNet
         /// <param name="description">A short description for the gallery.</param>
         /// <param name="primaryPhotoId">The first photo to add to your gallery.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GalleriesCreateAsync(string title, string description, string primaryPhotoId, Action<FlickrResult<NoResponse>> callback)
+        public async Task GalleriesCreateAsync(string title, string description, string primaryPhotoId, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -80,7 +82,7 @@ namespace FlickrNet
                 parameters.Add("primary_photo_id", primaryPhotoId);
             }
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -89,9 +91,9 @@ namespace FlickrNet
         /// <param name="galleryId">The gallery ID to update.</param>
         /// <param name="title">The new title for the gallery.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GalleriesEditMetaAsync(string galleryId, string title, Action<FlickrResult<NoResponse>> callback)
+        public async Task GalleriesEditMetaAsync(string galleryId, string title, CancellationToken cancellationToken = default)
         {
-            GalleriesEditMetaAsync(galleryId, title, null, callback);
+            await GalleriesEditMetaAsync(galleryId, title, null, cancellationToken);
         }
 
         /// <summary>
@@ -101,7 +103,7 @@ namespace FlickrNet
         /// <param name="title">The new title for the gallery.</param>
         /// <param name="description">The new description for the gallery.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GalleriesEditMetaAsync(string galleryId, string title, string description, Action<FlickrResult<NoResponse>> callback)
+        public async Task GalleriesEditMetaAsync(string galleryId, string title, string description, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -116,7 +118,7 @@ namespace FlickrNet
                 parameters.Add("description", description);
             }
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -128,7 +130,7 @@ namespace FlickrNet
         /// <param name="photoId">The photo ID to add to the gallery.</param>
         /// <param name="comment">The updated comment the photo.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GalleriesEditPhotoAsync(string galleryId, string photoId, string comment, Action<FlickrResult<NoResponse>> callback)
+        public async Task GalleriesEditPhotoAsync(string galleryId, string photoId, string comment, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -140,7 +142,7 @@ namespace FlickrNet
                 { "comment", comment }
             };
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -152,7 +154,7 @@ namespace FlickrNet
         /// They will appear in the set in the order sent. This list must contain the primary photo id.
         /// This list of photos replaces the existing list.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GalleriesEditPhotosAsync(string galleryId, string primaryPhotoId, IEnumerable<string> photoIds, Action<FlickrResult<NoResponse>> callback)
+        public async Task GalleriesEditPhotosAsync(string galleryId, string primaryPhotoId, IEnumerable<string> photoIds, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -165,7 +167,7 @@ namespace FlickrNet
             List<string> ids = new(photoIds);
             parameters.Add("photo_ids", string.Join(",", ids.ToArray()));
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -173,7 +175,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="galleryId">The gallery ID you are requesting information for.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GalleriesGetInfoAsync(string galleryId, Action<FlickrResult<Gallery>> callback)
+        public async Task<Gallery> GalleriesGetInfoAsync(string galleryId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -181,18 +183,18 @@ namespace FlickrNet
                 { "gallery_id", galleryId }
             };
 
-            GetResponseAsync<Gallery>(parameters, callback);
+            return await GetResponseAsync<Gallery>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Gets a list of galleries for the calling user. Must be authenticated.
         /// </summary>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GalleriesGetListAsync(Action<FlickrResult<GalleryCollection>> callback)
+        public async Task<GalleryCollection> GalleriesGetListAsync(CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
-            GalleriesGetListAsync(null, 0, 0, callback);
+            return await GalleriesGetListAsync(null, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -201,11 +203,11 @@ namespace FlickrNet
         /// <param name="page"></param>
         /// <param name="perPage"></param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GalleriesGetListAsync(int page, int perPage, Action<FlickrResult<GalleryCollection>> callback)
+        public async Task<GalleryCollection> GalleriesGetListAsync(int page, int perPage, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
-            GalleriesGetListAsync(null, page, perPage, callback);
+            return await GalleriesGetListAsync(null, page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -213,9 +215,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="userId">The user to return the galleries for.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GalleriesGetListAsync(string userId, Action<FlickrResult<GalleryCollection>> callback)
+        public async Task<GalleryCollection> GalleriesGetListAsync(string userId, CancellationToken cancellationToken = default)
         {
-            GalleriesGetListAsync(userId, 0, 0, callback);
+            return await GalleriesGetListAsync(userId, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -225,7 +227,7 @@ namespace FlickrNet
         /// <param name="page"></param>
         /// <param name="perPage"></param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GalleriesGetListAsync(string userId, int page, int perPage, Action<FlickrResult<GalleryCollection>> callback)
+        public async Task<GalleryCollection> GalleriesGetListAsync(string userId, int page, int perPage, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -246,7 +248,7 @@ namespace FlickrNet
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<GalleryCollection>(parameters, callback);
+            return await GetResponseAsync<GalleryCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -254,9 +256,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="photoId">The ID of the photo to fetch a list of galleries for.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GalleriesGetListForPhotoAsync(string photoId, Action<FlickrResult<GalleryCollection>> callback)
+        public async Task<GalleryCollection> GalleriesGetListForPhotoAsync(string photoId, CancellationToken cancellationToken = default)
         {
-            GalleriesGetListForPhotoAsync(photoId, 0, 0, callback);
+            return await GalleriesGetListForPhotoAsync(photoId, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -266,7 +268,7 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of galleries to return per page. If this argument is omitted, it defaults to 100. The maximum allowed value is 500.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GalleriesGetListForPhotoAsync(string photoId, int page, int perPage, Action<FlickrResult<GalleryCollection>> callback)
+        public async Task<GalleryCollection> GalleriesGetListForPhotoAsync(string photoId, int page, int perPage, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -283,7 +285,7 @@ namespace FlickrNet
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<GalleryCollection>(parameters, callback);
+            return await GetResponseAsync<GalleryCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -291,9 +293,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="galleryId">The ID of the gallery of photos to return.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GalleriesGetPhotosAsync(string galleryId, Action<FlickrResult<GalleryPhotoCollection>> callback)
+        public async Task<GalleryPhotoCollection> GalleriesGetPhotosAsync(string galleryId, CancellationToken cancellationToken = default)
         {
-            GalleriesGetPhotosAsync(galleryId, PhotoSearchExtras.None, callback);
+            return await GalleriesGetPhotosAsync(galleryId, PhotoSearchExtras.None, cancellationToken);
         }
 
         /// <summary>
@@ -302,7 +304,7 @@ namespace FlickrNet
         /// <param name="galleryId">The ID of the gallery of photos to return.</param>
         /// <param name="extras">A list of extra information to fetch for each returned record.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GalleriesGetPhotosAsync(string galleryId, PhotoSearchExtras extras, Action<FlickrResult<GalleryPhotoCollection>> callback)
+        public async Task<GalleryPhotoCollection> GalleriesGetPhotosAsync(string galleryId, PhotoSearchExtras extras, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -314,7 +316,7 @@ namespace FlickrNet
                 parameters.Add("extras", UtilityMethods.ExtrasToString(extras));
             }
 
-            GetResponseAsync<GalleryPhotoCollection>(parameters, callback);
+            return await GetResponseAsync<GalleryPhotoCollection>(parameters, cancellationToken);
         }
     }
 }

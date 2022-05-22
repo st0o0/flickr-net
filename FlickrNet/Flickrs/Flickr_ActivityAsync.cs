@@ -102,14 +102,7 @@ namespace FlickrNet
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            var t = await GetResponseAsync<ActivityItemCollection>(parameters, cancellationToken);
-
-            if (t.HasError)
-            {
-                throw t.Error;
-            }
-
-            return t.Result;
+            return await GetResponseAsync<ActivityItemCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -139,14 +132,7 @@ namespace FlickrNet
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            var t = await GetResponseAsync<ActivityItemCollection>(parameters, cancellationToken);
-
-            if (t.HasError)
-            {
-                throw t.Error;
-            }
-
-            return t.Result;
+            return await GetResponseAsync<ActivityItemCollection>(parameters, cancellationToken);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using FlickrNet.Models.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace FlickrNet
 {
@@ -40,9 +41,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="response">A URL parameter encoded string, e.g. "oauth_token=ABC&amp;oauth_token_secret=DEF&amp;user_id=1234567@N00".</param>
         /// <returns></returns>
-        internal static OAuthAccessToken ParseResponse(string response)
+        internal static OAuthAccessToken ParseResponse(byte[] response)
         {
-            Dictionary<string, string> parts = UtilityMethods.byteArrayToDictionary(response);
+            Dictionary<string, string> parts = UtilityMethods.StringToDictionary(Encoding.UTF8.GetString(response));
 
             OAuthAccessToken token = new();
             if (parts.ContainsKey("oauth_token"))

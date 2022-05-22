@@ -1,9 +1,9 @@
 ﻿using FlickrNet.CollectionModels;
 using FlickrNet.Enums;
-using FlickrNet.Flickrs.Results;
 using FlickrNet.Models;
-using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNet
 {
@@ -13,29 +13,15 @@ namespace FlickrNet
         /// Get a list of current 'Pandas' supported by Flickr.
         /// </summary>
         /// <returns>An array of panda names.</returns>
-        public void PandaGetListAsync(Action<FlickrResult<string[]>> callback)
+        public async Task<string[]> PandaGetListAsync(CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.panda.getList" }
             };
 
-            GetResponseAsync<UnknownResponse>(
-                parameters,
-                r =>
-                {
-                    FlickrResult<string[]> result = new FlickrResult<string[]>();
-                    result.HasError = r.HasError;
-                    if (r.HasError)
-                    {
-                        result.Error = r.Error;
-                    }
-                    else
-                    {
-                        result.Result = r.Result.GetElementArray("panda");
-                    }
-                    callback(result);
-                });
+            UnknownResponse result = await GetResponseAsync<UnknownResponse>(parameters, cancellationToken);
+            return result.GetElementArray("panda");
         }
 
         /// <summary>
@@ -43,9 +29,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="pandaName">The name of the panda to return photos for.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PandaGetPhotosAsync(string pandaName, Action<FlickrResult<PandaPhotoCollection>> callback)
+        public async Task<PandaPhotoCollection> PandaGetPhotosAsync(string pandaName, CancellationToken cancellationToken = default)
         {
-            PandaGetPhotosAsync(pandaName, PhotoSearchExtras.None, 0, 0, callback);
+            return await PandaGetPhotosAsync(pandaName, PhotoSearchExtras.None, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -54,9 +40,9 @@ namespace FlickrNet
         /// <param name="pandaName">The name of the panda to return photos for.</param>
         /// <param name="extras">The extras to return with the photos.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PandaGetPhotosAsync(string pandaName, PhotoSearchExtras extras, Action<FlickrResult<PandaPhotoCollection>> callback)
+        public async Task<PandaPhotoCollection> PandaGetPhotosAsync(string pandaName, PhotoSearchExtras extras, CancellationToken cancellationToken = default)
         {
-            PandaGetPhotosAsync(pandaName, extras, 0, 0, callback);
+            return await PandaGetPhotosAsync(pandaName, extras, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -66,9 +52,9 @@ namespace FlickrNet
         /// <param name="perPage">The number of photos to return per page.</param>
         /// <param name="page">The age to return.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PandaGetPhotosAsync(string pandaName, int page, int perPage, Action<FlickrResult<PandaPhotoCollection>> callback)
+        public async Task<PandaPhotoCollection> PandaGetPhotosAsync(string pandaName, int page, int perPage, CancellationToken cancellationToken = default)
         {
-            PandaGetPhotosAsync(pandaName, PhotoSearchExtras.None, page, perPage, callback);
+            return await PandaGetPhotosAsync(pandaName, PhotoSearchExtras.None, page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -79,7 +65,7 @@ namespace FlickrNet
         /// <param name="perPage">The number of photos to return per page.</param>
         /// <param name="page">The age to return.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PandaGetPhotosAsync(string pandaName, PhotoSearchExtras extras, int page, int perPage, Action<FlickrResult<PandaPhotoCollection>> callback)
+        public async Task<PandaPhotoCollection> PandaGetPhotosAsync(string pandaName, PhotoSearchExtras extras, int page, int perPage, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -101,7 +87,7 @@ namespace FlickrNet
                 parameters.Add("page", page.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<PandaPhotoCollection>(parameters, callback);
+            return await GetResponseAsync<PandaPhotoCollection>(parameters, cancellationToken);
         }
     }
 }

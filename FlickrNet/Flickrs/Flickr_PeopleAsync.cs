@@ -1,10 +1,11 @@
 ﻿using FlickrNet.CollectionModels;
 using FlickrNet.Enums;
 using FlickrNet.Exceptions;
-using FlickrNet.Flickrs.Results;
 using FlickrNet.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNet
 {
@@ -16,7 +17,7 @@ namespace FlickrNet
         /// <param name="emailAddress">The email address to search on.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         /// <exception cref="FlickrApiException">A FlickrApiException is raised if the email address is not found.</exception>
-        public void PeopleFindByEmailAsync(string emailAddress, Action<FlickrResult<FoundUser>> callback)
+        public async Task<FoundUser> PeopleFindByEmailAsync(string emailAddress, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -25,7 +26,7 @@ namespace FlickrNet
                 { "find_email", emailAddress }
             };
 
-            GetResponseAsync<FoundUser>(parameters, callback);
+            return await GetResponseAsync<FoundUser>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -34,7 +35,7 @@ namespace FlickrNet
         /// <param name="userName">The screen name or username of the user.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         /// <exception cref="FlickrApiException">A FlickrApiException is raised if the email address is not found.</exception>
-        public void PeopleFindByUserNameAsync(string userName, Action<FlickrResult<FoundUser>> callback)
+        public async Task<FoundUser> PeopleFindByUserNameAsync(string userName, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -43,7 +44,7 @@ namespace FlickrNet
                 { "username", userName }
             };
 
-            GetResponseAsync<FoundUser>(parameters, callback);
+            return await GetResponseAsync<FoundUser>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -51,7 +52,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="userId">The user whose groups you wish to return.</param>
         /// <param name="callback"></param>
-        public void PeopleGetGroupsAsync(string userId, Action<FlickrResult<GroupInfoCollection>> callback)
+        public async Task<GroupInfoCollection> PeopleGetGroupsAsync(string userId, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -61,7 +62,7 @@ namespace FlickrNet
                 { "user_id", userId }
             };
 
-            GetResponseAsync<GroupInfoCollection>(parameters, callback);
+            return await GetResponseAsync<GroupInfoCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -69,7 +70,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="userId">The user id to find.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PeopleGetInfoAsync(string userId, Action<FlickrResult<Person>> callback)
+        public async Task<Person> PeopleGetInfoAsync(string userId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -78,14 +79,14 @@ namespace FlickrNet
                 { "user_id", userId }
             };
 
-            GetResponseAsync<Person>(parameters, callback);
+            return await GetResponseAsync<Person>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Returns the limits for a person. See <see cref="PersonLimits"/> for more details.
         /// </summary>
         /// <returns></returns>
-        public void PeopleGetLimitsAsync(Action<FlickrResult<PersonLimits>> callback)
+        public async Task<PersonLimits> PeopleGetLimitsAsync(CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -94,21 +95,21 @@ namespace FlickrNet
                 { "method", "flickr.people.getLimits" }
             };
 
-            GetResponseAsync<PersonLimits>(parameters, callback);
+            return await GetResponseAsync<PersonLimits>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Gets the upload status of the authenticated user.
         /// </summary>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PeopleGetUploadStatusAsync(Action<FlickrResult<UserStatus>> callback)
+        public async Task<UserStatus> PeopleGetUploadStatusAsync(CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.people.getUploadStatus" }
             };
 
-            GetResponseAsync<UserStatus>(parameters, callback);
+            return await GetResponseAsync<UserStatus>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -116,7 +117,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="userId">The user id to get groups for.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PeopleGetPublicGroupsAsync(string userId, Action<FlickrResult<GroupInfoCollection>> callback)
+        public async Task<GroupInfoCollection> PeopleGetPublicGroupsAsync(string userId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -125,7 +126,7 @@ namespace FlickrNet
                 { "user_id", userId }
             };
 
-            GetResponseAsync<GroupInfoCollection>(parameters, callback);
+            return await GetResponseAsync<GroupInfoCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -133,9 +134,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="userId">The user id of the user.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PeopleGetPublicPhotosAsync(string userId, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PeopleGetPublicPhotosAsync(string userId, CancellationToken cancellationToken = default)
         {
-            PeopleGetPublicPhotosAsync(userId, 0, 0, SafetyLevel.None, PhotoSearchExtras.None, callback);
+            return await PeopleGetPublicPhotosAsync(userId, 0, 0, SafetyLevel.None, PhotoSearchExtras.None, cancellationToken);
         }
 
         /// <summary>
@@ -145,9 +146,9 @@ namespace FlickrNet
         /// <param name="page">The page to return. Defaults to page 1.</param>
         /// <param name="perPage">The number of photos to return per page. Default is 100.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PeopleGetPublicPhotosAsync(string userId, int page, int perPage, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PeopleGetPublicPhotosAsync(string userId, int page, int perPage, CancellationToken cancellationToken = default)
         {
-            PeopleGetPublicPhotosAsync(userId, page, perPage, SafetyLevel.None, PhotoSearchExtras.None, callback);
+            return await PeopleGetPublicPhotosAsync(userId, page, perPage, SafetyLevel.None, PhotoSearchExtras.None, cancellationToken);
         }
 
         /// <summary>
@@ -160,7 +161,7 @@ namespace FlickrNet
         /// <param name="safetyLevel">The safety level of the returned photos.
         /// Unauthenticated calls can only return Safe photos.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PeopleGetPublicPhotosAsync(string userId, int page, int perPage, SafetyLevel safetyLevel, PhotoSearchExtras extras, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PeopleGetPublicPhotosAsync(string userId, int page, int perPage, SafetyLevel safetyLevel, PhotoSearchExtras extras, CancellationToken cancellationToken = default)
         {
             if (!IsAuthenticated && safetyLevel > SafetyLevel.Safe)
             {
@@ -193,18 +194,18 @@ namespace FlickrNet
                 parameters.Add("extras", UtilityMethods.ExtrasToString(extras));
             }
 
-            GetResponseAsync<PhotoCollection>(parameters, callback);
+            return await GetResponseAsync<PhotoCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Return photos from the calling user's photostream. This method must be authenticated;
         /// </summary>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PeopleGetPhotosAsync(Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PeopleGetPhotosAsync(CancellationToken cancellationToken = default)
         {
-            PeopleGetPhotosAsync(null, SafetyLevel.None, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
+            return await PeopleGetPhotosAsync(null, SafetyLevel.None, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
                                  DateTime.MinValue, ContentTypeSearch.None, PrivacyFilter.None, PhotoSearchExtras.None,
-                                 0, 0, callback);
+                                 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -213,11 +214,11 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of photos to return per page. If this argument is omitted, it defaults to 100. The maximum allowed value is 500.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PeopleGetPhotosAsync(int page, int perPage, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PeopleGetPhotosAsync(int page, int perPage, CancellationToken cancellationToken = default)
         {
-            PeopleGetPhotosAsync(null, SafetyLevel.None, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
+            return await PeopleGetPhotosAsync(null, SafetyLevel.None, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
                                  DateTime.MinValue, ContentTypeSearch.None, PrivacyFilter.None, PhotoSearchExtras.None,
-                                 page, perPage, callback);
+                                 page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -225,10 +226,10 @@ namespace FlickrNet
         /// </summary>
         /// <param name="extras">A list of extra information to fetch for each returned record.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PeopleGetPhotosAsync(PhotoSearchExtras extras, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PeopleGetPhotosAsync(PhotoSearchExtras extras, CancellationToken cancellationToken = default)
         {
-            PeopleGetPhotosAsync(null, SafetyLevel.None, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
-                                 DateTime.MinValue, ContentTypeSearch.None, PrivacyFilter.None, extras, 0, 0, callback);
+            return await PeopleGetPhotosAsync(null, SafetyLevel.None, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
+                                 DateTime.MinValue, ContentTypeSearch.None, PrivacyFilter.None, extras, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -238,12 +239,12 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of photos to return per page. If this argument is omitted, it defaults to 100. The maximum allowed value is 500.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PeopleGetPhotosAsync(PhotoSearchExtras extras, int page, int perPage,
-                                         Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PeopleGetPhotosAsync(PhotoSearchExtras extras, int page, int perPage,
+                                         CancellationToken cancellationToken = default)
         {
-            PeopleGetPhotosAsync(null, SafetyLevel.None, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
+            return await PeopleGetPhotosAsync(null, SafetyLevel.None, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
                                  DateTime.MinValue, ContentTypeSearch.None, PrivacyFilter.None, extras, page, perPage,
-                                 callback);
+                                 cancellationToken);
         }
 
         /// <summary>
@@ -251,11 +252,11 @@ namespace FlickrNet
         /// </summary>
         /// <param name="userId">The NSID of the user who's photos to return. A value of "me" will return the calling user's photos.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PeopleGetPhotosAsync(string userId, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PeopleGetPhotosAsync(string userId, CancellationToken cancellationToken = default)
         {
-            PeopleGetPhotosAsync(userId, SafetyLevel.None, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
+            return await PeopleGetPhotosAsync(userId, SafetyLevel.None, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
                                  DateTime.MinValue, ContentTypeSearch.None, PrivacyFilter.None, PhotoSearchExtras.None,
-                                 0, 0, callback);
+                                 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -265,12 +266,12 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of photos to return per page. If this argument is omitted, it defaults to 100. The maximum allowed value is 500.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PeopleGetPhotosAsync(string userId, int page, int perPage,
-                                         Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PeopleGetPhotosAsync(string userId, int page, int perPage,
+                                         CancellationToken cancellationToken = default)
         {
-            PeopleGetPhotosAsync(userId, SafetyLevel.None, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
+            return await PeopleGetPhotosAsync(userId, SafetyLevel.None, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
                                  DateTime.MinValue, ContentTypeSearch.None, PrivacyFilter.None, PhotoSearchExtras.None,
-                                 page, perPage, callback);
+                                 page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -279,11 +280,11 @@ namespace FlickrNet
         /// <param name="userId">The NSID of the user who's photos to return. A value of "me" will return the calling user's photos.</param>
         /// <param name="extras">A list of extra information to fetch for each returned record.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PeopleGetPhotosAsync(string userId, PhotoSearchExtras extras,
-                                         Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PeopleGetPhotosAsync(string userId, PhotoSearchExtras extras,
+                                         CancellationToken cancellationToken = default)
         {
-            PeopleGetPhotosAsync(userId, SafetyLevel.None, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
-                                 DateTime.MinValue, ContentTypeSearch.None, PrivacyFilter.None, extras, 0, 0, callback);
+            return await PeopleGetPhotosAsync(userId, SafetyLevel.None, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
+                                 DateTime.MinValue, ContentTypeSearch.None, PrivacyFilter.None, extras, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -294,12 +295,12 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of photos to return per page. If this argument is omitted, it defaults to 100. The maximum allowed value is 500.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PeopleGetPhotosAsync(string userId, PhotoSearchExtras extras, int page, int perPage,
-                                         Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> PeopleGetPhotosAsync(string userId, PhotoSearchExtras extras, int page, int perPage,
+                                         CancellationToken cancellationToken = default)
         {
-            PeopleGetPhotosAsync(userId, SafetyLevel.None, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
+            return await PeopleGetPhotosAsync(userId, SafetyLevel.None, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue,
                                  DateTime.MinValue, ContentTypeSearch.None, PrivacyFilter.None, extras, page, perPage,
-                                 callback);
+                                 cancellationToken);
         }
 
         /// <summary>
@@ -317,11 +318,11 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of photos to return per page. If this argument is omitted, it defaults to 100. The maximum allowed value is 500.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PeopleGetPhotosAsync(string userId, SafetyLevel safeSearch, DateTime minUploadDate,
+        public async Task<PhotoCollection> PeopleGetPhotosAsync(string userId, SafetyLevel safeSearch, DateTime minUploadDate,
                                          DateTime maxUploadDate, DateTime minTakenDate, DateTime maxTakenDate,
                                          ContentTypeSearch contentType, PrivacyFilter privacyFilter,
                                          PhotoSearchExtras extras, int page, int perPage,
-                                         Action<FlickrResult<PhotoCollection>> callback)
+                                         CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -380,18 +381,18 @@ namespace FlickrNet
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<PhotoCollection>(parameters, callback);
+            return await GetResponseAsync<PhotoCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Gets the photos containing the authenticated user. Requires that the AuthToken has been set.
         /// </summary>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PeopleGetPhotosOfAsync(Action<FlickrResult<PeoplePhotoCollection>> callback)
+        public async Task<PeoplePhotoCollection> PeopleGetPhotosOfAsync(CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
-            PeopleGetPhotosOfAsync("me", PhotoSearchExtras.None, 0, 0, callback);
+            return await PeopleGetPhotosOfAsync("me", PhotoSearchExtras.None, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -399,9 +400,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="userId">The user ID to get photos of.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PeopleGetPhotosOfAsync(string userId, Action<FlickrResult<PeoplePhotoCollection>> callback)
+        public async Task<PeoplePhotoCollection> PeopleGetPhotosOfAsync(string userId, CancellationToken cancellationToken = default)
         {
-            PeopleGetPhotosOfAsync(userId, PhotoSearchExtras.None, 0, 0, callback);
+            return await PeopleGetPhotosOfAsync(userId, PhotoSearchExtras.None, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -410,9 +411,9 @@ namespace FlickrNet
         /// <param name="userId">The user ID to get photos of.</param>
         /// <param name="extras">A list of extras to return for each photo.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PeopleGetPhotosOfAsync(string userId, PhotoSearchExtras extras, Action<FlickrResult<PeoplePhotoCollection>> callback)
+        public async Task<PeoplePhotoCollection> PeopleGetPhotosOfAsync(string userId, PhotoSearchExtras extras, CancellationToken cancellationToken = default)
         {
-            PeopleGetPhotosOfAsync(userId, extras, 0, 0, callback);
+            return await PeopleGetPhotosOfAsync(userId, extras, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -422,9 +423,9 @@ namespace FlickrNet
         /// <param name="perPage">The number of photos to return per page.</param>
         /// <param name="page">The page of photos to return. Default is 1.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PeopleGetPhotosOfAsync(string userId, int page, int perPage, Action<FlickrResult<PeoplePhotoCollection>> callback)
+        public async Task<PeoplePhotoCollection> PeopleGetPhotosOfAsync(string userId, int page, int perPage, CancellationToken cancellationToken = default)
         {
-            PeopleGetPhotosOfAsync(userId, PhotoSearchExtras.None, page, perPage, callback);
+            return await PeopleGetPhotosOfAsync(userId, PhotoSearchExtras.None, page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -435,7 +436,7 @@ namespace FlickrNet
         /// <param name="perPage">The number of photos to return per page.</param>
         /// <param name="page">The page of photos to return. Default is 1.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PeopleGetPhotosOfAsync(string userId, PhotoSearchExtras extras, int page, int perPage, Action<FlickrResult<PeoplePhotoCollection>> callback)
+        public async Task<PeoplePhotoCollection> PeopleGetPhotosOfAsync(string userId, PhotoSearchExtras extras, int page, int perPage, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -457,7 +458,7 @@ namespace FlickrNet
                 parameters.Add("page", page.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<PeoplePhotoCollection>(parameters, callback);
+            return await GetResponseAsync<PeoplePhotoCollection>(parameters, cancellationToken);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace FlickrNet
 {
     public partial class Flickr
     {
-        private async Task<FlickrResult<T>> GetResponseAsync<T>(Dictionary<string, string> parameters, CancellationToken cancellationToken = default) where T : IFlickrParsable, new()
+        private async Task<T> GetResponseAsync<T>(Dictionary<string, string> parameters, CancellationToken cancellationToken = default) where T : IFlickrParsable, new()
         {
             CheckApiKey();
 
@@ -38,34 +38,19 @@ namespace FlickrNet
 
             lastRequest = url;
 
-            FlickrResult<T> result = new();
+            T result = new();
+            byte[] response = await FlickrResponder.GetDataResponseAsync(this, BaseUri.AbsoluteUri, parameters, cancellationToken);
+
             try
             {
-                FlickrResult<byte[]> r = await FlickrResponder.GetDataResponseAsync(this, BaseUri.AbsoluteUri, parameters, cancellationToken);
-                if (r.HasError)
-                {
-                    result.Error = r.Error;
-                }
-                else
-                {
-                    try
-                    {
-                        lastResponse = r.Result;
+                lastResponse = response;
 
-                        T t = new();
-                        ((IFlickrParsable)t).Load(r.Result);
-                        result.Result = t;
-                        result.HasError = false;
-                    }
-                    catch (Exception ex)
-                    {
-                        result.Error = ex;
-                    }
-                }
+                T t = new();
+                ((IFlickrParsable)t).Load(response);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                result.Error = ex;
+                throw;
             }
             return result;
         }

@@ -1,7 +1,8 @@
 ﻿using FlickrNet.CollectionModels;
 using FlickrNet.Flickrs.Results;
-using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNet
 {
@@ -11,14 +12,14 @@ namespace FlickrNet
         /// Gets a collection of Flickr Commons institutions.
         /// </summary>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void CommonsGetInstitutionsAsync(Action<FlickrResult<InstitutionCollection>> callback)
+        public async Task<InstitutionCollection> CommonsGetInstitutionsAsync(CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.commons.getInstitutions" }
             };
 
-            GetResponseAsync<InstitutionCollection>(parameters, callback);
+            return await GetResponseAsync<InstitutionCollection>(parameters, cancellationToken);
         }
     }
 }

@@ -1,10 +1,10 @@
 ﻿using FlickrNet.CollectionModels;
 using FlickrNet.Contexts.Bases;
 using FlickrNet.Enums;
-using FlickrNet.Flickrs.Results;
 using FlickrNet.Models;
-using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNet
 {
@@ -17,9 +17,9 @@ namespace FlickrNet
         /// Flickr no longer supports this method and it returns no useful information.
         /// </remarks>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GroupsBrowseAsync(Action<FlickrResult<GroupCategory>> callback)
+        public async Task<GroupCategory> GroupsBrowseAsync(CancellationToken cancellationToken = default)
         {
-            GroupsBrowseAsync(null, callback);
+            return await GroupsBrowseAsync(null, cancellationToken);
         }
 
         /// <summary>
@@ -27,7 +27,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="catId">The category id to fetch a list of groups and sub-categories for. If not specified, it defaults to zero, the root of the category tree.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GroupsBrowseAsync(string catId, Action<FlickrResult<GroupCategory>> callback)
+        public async Task<GroupCategory> GroupsBrowseAsync(string catId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -38,7 +38,7 @@ namespace FlickrNet
                 parameters.Add("cat_id", catId);
             }
 
-            GetResponseAsync<GroupCategory>(parameters, callback);
+            return await GetResponseAsync<GroupCategory>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -46,9 +46,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="text">The text to search for.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GroupsSearchAsync(string text, Action<FlickrResult<GroupSearchResultCollection>> callback)
+        public async Task<GroupSearchResultCollection> GroupsSearchAsync(string text, CancellationToken cancellationToken = default)
         {
-            GroupsSearchAsync(text, 0, 0, callback);
+            return await GroupsSearchAsync(text, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -57,9 +57,9 @@ namespace FlickrNet
         /// <param name="text">The text to search for.</param>
         /// <param name="page">The page of the results to return.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GroupsSearchAsync(string text, int page, Action<FlickrResult<GroupSearchResultCollection>> callback)
+        public async Task<GroupSearchResultCollection> GroupsSearchAsync(string text, int page, CancellationToken cancellationToken = default)
         {
-            GroupsSearchAsync(text, page, 0, callback);
+            return await GroupsSearchAsync(text, page, 0, cancellationToken);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace FlickrNet
         /// <param name="page">The page of the results to return.</param>
         /// <param name="perPage">The number of groups to list per page.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GroupsSearchAsync(string text, int page, int perPage, Action<FlickrResult<GroupSearchResultCollection>> callback)
+        public async Task<GroupSearchResultCollection> GroupsSearchAsync(string text, int page, int perPage, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -87,7 +87,7 @@ namespace FlickrNet
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<GroupSearchResultCollection>(parameters, callback);
+            return await GetResponseAsync<GroupSearchResultCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="groupId">The id of the group to return.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GroupsGetInfoAsync(string groupId, Action<FlickrResult<GroupFullInfo>> callback)
+        public async Task<GroupFullInfo> GroupsGetInfoAsync(string groupId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -103,7 +103,7 @@ namespace FlickrNet
                 { "api_key", apiKey },
                 { "group_id", groupId }
             };
-            GetResponseAsync<GroupFullInfo>(parameters, callback);
+            return await GetResponseAsync<GroupFullInfo>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -111,9 +111,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="groupId">The group id to get the list of members for.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GroupsMembersGetListAsync(string groupId, Action<FlickrResult<MemberCollection>> callback)
+        public async Task<MemberCollection> GroupsMembersGetListAsync(string groupId, CancellationToken cancellationToken = default)
         {
-            GroupsMembersGetListAsync(groupId, 0, 0, MemberTypes.None, callback);
+            return await GroupsMembersGetListAsync(groupId, 0, 0, MemberTypes.None, cancellationToken);
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace FlickrNet
         /// <param name="perPage">The number of members to return per page (default is 100, max is 500).</param>
         /// <param name="memberTypes">The types of members to be returned. Can be more than one.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GroupsMembersGetListAsync(string groupId, int page, int perPage, MemberTypes memberTypes, Action<FlickrResult<MemberCollection>> callback)
+        public async Task<MemberCollection> GroupsMembersGetListAsync(string groupId, int page, int perPage, MemberTypes memberTypes, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -153,7 +153,7 @@ namespace FlickrNet
 
             parameters.Add("group_id", groupId);
 
-            GetResponseAsync<MemberCollection>(parameters, callback);
+            return await GetResponseAsync<MemberCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace FlickrNet
         /// <param name="photoId">The id of one of your photos to be added.</param>
         /// <param name="groupId">The id of a group you are a member of.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GroupsPoolsAddAsync(string photoId, string groupId, Action<FlickrResult<NoResponse>> callback)
+        public async Task GroupsPoolsAddAsync(string photoId, string groupId, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -172,7 +172,7 @@ namespace FlickrNet
                 { "photo_id", photoId },
                 { "group_id", groupId }
             };
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace FlickrNet
         /// <param name="photoId">The Photo ID for the photo you want the context for.</param>
         /// <param name="groupId">The group ID for the group you want the context to be relevant to.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GroupsPoolsGetContextAsync(string photoId, string groupId, Action<FlickrResult<Context>> callback)
+        public async Task<Context> GroupsPoolsGetContextAsync(string photoId, string groupId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -190,7 +190,7 @@ namespace FlickrNet
                 { "photo_id", photoId },
                 { "group_id", groupId }
             };
-            GetResponseAsync<Context>(parameters, callback);
+            return await GetResponseAsync<Context>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace FlickrNet
         /// <param name="photoId">The id of one of your pictures you wish to remove.</param>
         /// <param name="groupId">The id of the group to remove the picture from.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GroupsPoolsRemoveAsync(string photoId, string groupId, Action<FlickrResult<NoResponse>> callback)
+        public async Task GroupsPoolsRemoveAsync(string photoId, string groupId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -207,21 +207,21 @@ namespace FlickrNet
                 { "photo_id", photoId },
                 { "group_id", groupId }
             };
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Returns a list of groups to which you can add photos.
         /// </summary>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GroupsPoolsGetGroupsAsync(Action<FlickrResult<MemberGroupInfoCollection>> callback)
+        public async Task<MemberGroupInfoCollection> GroupsPoolsGetGroupsAsync(CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.groups.pools.getGroups" }
             };
 
-            GetResponseAsync<MemberGroupInfoCollection>(parameters, callback);
+            return await GetResponseAsync<MemberGroupInfoCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -229,9 +229,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="groupId">The group ID for the group.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GroupsPoolsGetPhotosAsync(string groupId, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> GroupsPoolsGetPhotosAsync(string groupId, CancellationToken cancellationToken = default)
         {
-            GroupsPoolsGetPhotosAsync(groupId, null, null, PhotoSearchExtras.None, 0, 0, callback);
+            return await GroupsPoolsGetPhotosAsync(groupId, null, null, PhotoSearchExtras.None, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -240,9 +240,9 @@ namespace FlickrNet
         /// <param name="groupId">The group ID for the group.</param>
         /// <param name="tags">Space seperated list of tags that photos returned must have.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GroupsPoolsGetPhotosAsync(string groupId, string tags, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> GroupsPoolsGetPhotosAsync(string groupId, string tags, CancellationToken cancellationToken = default)
         {
-            GroupsPoolsGetPhotosAsync(groupId, tags, null, PhotoSearchExtras.None, 0, 0, callback);
+            return await GroupsPoolsGetPhotosAsync(groupId, tags, null, PhotoSearchExtras.None, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -252,9 +252,9 @@ namespace FlickrNet
         /// <param name="perPage">The number of photos per page.</param>
         /// <param name="page">The page to return.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GroupsPoolsGetPhotosAsync(string groupId, int page, int perPage, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> GroupsPoolsGetPhotosAsync(string groupId, int page, int perPage, CancellationToken cancellationToken = default)
         {
-            GroupsPoolsGetPhotosAsync(groupId, null, null, PhotoSearchExtras.None, page, perPage, callback);
+            return await GroupsPoolsGetPhotosAsync(groupId, null, null, PhotoSearchExtras.None, page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -265,9 +265,9 @@ namespace FlickrNet
         /// <param name="perPage">The number of photos per page.</param>
         /// <param name="page">The page to return.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GroupsPoolsGetPhotosAsync(string groupId, string tags, int page, int perPage, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> GroupsPoolsGetPhotosAsync(string groupId, string tags, int page, int perPage, CancellationToken cancellationToken = default)
         {
-            GroupsPoolsGetPhotosAsync(groupId, tags, null, PhotoSearchExtras.None, page, perPage, callback);
+            return await GroupsPoolsGetPhotosAsync(groupId, tags, null, PhotoSearchExtras.None, page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -281,7 +281,7 @@ namespace FlickrNet
         /// <param name="perPage">The number of photos per page.</param>
         /// <param name="page">The page to return.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void GroupsPoolsGetPhotosAsync(string groupId, string tags, string userId, PhotoSearchExtras extras, int page, int perPage, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> GroupsPoolsGetPhotosAsync(string groupId, string tags, string userId, PhotoSearchExtras extras, int page, int perPage, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -313,7 +313,7 @@ namespace FlickrNet
                 parameters.Add("extras", UtilityMethods.ExtrasToString(extras));
             }
 
-            GetResponseAsync<PhotoCollection>(parameters, callback);
+            return await GetResponseAsync<PhotoCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -321,9 +321,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="groupId">The group id of the group to join.</param>
         /// <param name="callback">The callback method to signify that this call has completed.</param>
-        public void GroupsJoinAsync(string groupId, Action<FlickrResult<NoResponse>> callback)
+        public async Task GroupsJoinAsync(string groupId, CancellationToken cancellationToken = default)
         {
-            GroupsJoinAsync(groupId, false, callback);
+            await GroupsJoinAsync(groupId, false, cancellationToken);
         }
 
         /// <summary>
@@ -332,7 +332,7 @@ namespace FlickrNet
         /// <param name="groupId">The group id of the group to join.</param>
         /// <param name="acceptsRules">Specify true to signify that the user accepts the groups rules.</param>
         /// <param name="callback">The callback method to signify that this call has completed.</param>
-        public void GroupsJoinAsync(string groupId, bool acceptsRules, Action<FlickrResult<NoResponse>> callback)
+        public async Task GroupsJoinAsync(string groupId, bool acceptsRules, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -346,7 +346,7 @@ namespace FlickrNet
                 parameters.Add("accepts_rules", "1");
             }
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -356,7 +356,7 @@ namespace FlickrNet
         /// <param name="message">The message to send to the administrator.</param>
         /// <param name="acceptRules">A boolean confirming the user has accepted the rules of the group.</param>
         /// <param name="callback"></param>
-        public void GroupsJoinRequestAsync(string groupId, string message, bool acceptRules, Action<FlickrResult<NoResponse>> callback)
+        public async Task GroupsJoinRequestAsync(string groupId, string message, bool acceptRules, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -371,7 +371,7 @@ namespace FlickrNet
                 parameters.Add("accept_rules", "1");
             }
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -379,9 +379,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="groupId">The group id of the group to leave.</param>
         /// <param name="callback">The callback method to signify that this call has completed.</param>
-        public void GroupsLeaveAsync(string groupId, Action<FlickrResult<NoResponse>> callback)
+        public async Task GroupsLeaveAsync(string groupId, CancellationToken cancellationToken = default)
         {
-            GroupsLeaveAsync(groupId, false, callback);
+            await GroupsLeaveAsync(groupId, false, cancellationToken);
         }
 
         /// <summary>
@@ -390,7 +390,7 @@ namespace FlickrNet
         /// <param name="groupId">The group id of the group to leave.</param>
         /// <param name="deletePhotos">Specify true to delete all of the users photos when they leave the group.</param>
         /// <param name="callback">The callback method to signify that this call has completed.</param>
-        public void GroupsLeaveAsync(string groupId, bool deletePhotos, Action<FlickrResult<NoResponse>> callback)
+        public async Task GroupsLeaveAsync(string groupId, bool deletePhotos, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -404,7 +404,7 @@ namespace FlickrNet
                 parameters.Add("delete_photos", "1");
             }
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
     }
 }

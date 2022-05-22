@@ -2,6 +2,8 @@
 using FlickrNet.Flickrs.Results;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNet
 {
@@ -11,9 +13,9 @@ namespace FlickrNet
         /// Return a list of unique namespaces, in alphabetical order.
         /// </summary>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void MachineTagsGetNamespacesAsync(Action<FlickrResult<NamespaceCollection>> callback)
+        public async Task<NamespaceCollection> MachineTagsGetNamespacesAsync(CancellationToken cancellationToken = default)
         {
-            MachineTagsGetNamespacesAsync(null, 0, 0, callback);
+            return await MachineTagsGetNamespacesAsync(null, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -22,9 +24,9 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of photos to return per page. If this argument is omitted, it defaults to 100. The maximum allowed value is 500.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void MachineTagsGetNamespacesAsync(int page, int perPage, Action<FlickrResult<NamespaceCollection>> callback)
+        public async Task<NamespaceCollection> MachineTagsGetNamespacesAsync(int page, int perPage, CancellationToken cancellationToken = default)
         {
-            MachineTagsGetNamespacesAsync(null, page, perPage, callback);
+            return await MachineTagsGetNamespacesAsync(null, page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -32,9 +34,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="predicate">Limit the list of namespaces returned to those that have the following predicate.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void MachineTagsGetNamespacesAsync(string predicate, Action<FlickrResult<NamespaceCollection>> callback)
+        public async Task<NamespaceCollection> MachineTagsGetNamespacesAsync(string predicate, CancellationToken cancellationToken = default)
         {
-            MachineTagsGetNamespacesAsync(predicate, 0, 0, callback);
+            return await MachineTagsGetNamespacesAsync(predicate, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -44,7 +46,7 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of photos to return per page. If this argument is omitted, it defaults to 100. The maximum allowed value is 500.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void MachineTagsGetNamespacesAsync(string predicate, int page, int perPage, Action<FlickrResult<NamespaceCollection>> callback)
+        public async Task<NamespaceCollection> MachineTagsGetNamespacesAsync(string predicate, int page, int perPage, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -65,16 +67,16 @@ namespace FlickrNet
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<NamespaceCollection>(parameters, callback);
+            return await GetResponseAsync<NamespaceCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Return a list of unique predicates, in alphabetical order.
         /// </summary>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void MachineTagsGetPredicatesAsync(Action<FlickrResult<PredicateCollection>> callback)
+        public async Task<PredicateCollection> MachineTagsGetPredicatesAsync(CancellationToken cancellationToken = default)
         {
-            MachineTagsGetPredicatesAsync(null, 0, 0, callback);
+            return await MachineTagsGetPredicatesAsync(null, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -83,9 +85,9 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of namespaces to return per page. If this argument is omitted, it defaults to 100. The maximum allowed value is 500.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void MachineTagsGetPredicatesAsync(int page, int perPage, Action<FlickrResult<PredicateCollection>> callback)
+        public async Task<PredicateCollection> MachineTagsGetPredicatesAsync(int page, int perPage, CancellationToken cancellationToken = default)
         {
-            MachineTagsGetPredicatesAsync(null, page, perPage, callback);
+            return await MachineTagsGetPredicatesAsync(null, page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -93,9 +95,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="namespaceName">Limit the list of predicates returned to those that have the following namespace.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void MachineTagsGetPredicatesAsync(string namespaceName, Action<FlickrResult<PredicateCollection>> callback)
+        public async Task<PredicateCollection> MachineTagsGetPredicatesAsync(string namespaceName, CancellationToken cancellationToken = default)
         {
-            MachineTagsGetPredicatesAsync(namespaceName, 0, 0, callback);
+            return await MachineTagsGetPredicatesAsync(namespaceName, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -105,7 +107,7 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of namespaces to return per page. If this argument is omitted, it defaults to 100. The maximum allowed value is 500.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void MachineTagsGetPredicatesAsync(string namespaceName, int page, int perPage, Action<FlickrResult<PredicateCollection>> callback)
+        public async Task<PredicateCollection> MachineTagsGetPredicatesAsync(string namespaceName, int page, int perPage, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -126,16 +128,16 @@ namespace FlickrNet
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<PredicateCollection>(parameters, callback);
+            return await GetResponseAsync<PredicateCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Return a list of unique namespace and predicate pairs, in alphabetical order.
         /// </summary>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void MachineTagsGetPairsAsync(Action<FlickrResult<PairCollection>> callback)
+        public async Task<PairCollection> MachineTagsGetPairsAsync(CancellationToken cancellationToken = default)
         {
-            MachineTagsGetPairsAsync(null, null, 0, 0, callback);
+            return await MachineTagsGetPairsAsync(null, null, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -144,9 +146,9 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of pairs to return per page. If this argument is omitted, it defaults to 100. The maximum allowed value is 500.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void MachineTagsGetPairsAsync(int page, int perPage, Action<FlickrResult<PairCollection>> callback)
+        public async Task<PairCollection> MachineTagsGetPairsAsync(int page, int perPage, CancellationToken cancellationToken = default)
         {
-            MachineTagsGetPairsAsync(null, null, page, perPage, callback);
+            return await MachineTagsGetPairsAsync(null, null, page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -155,9 +157,9 @@ namespace FlickrNet
         /// <param name="namespaceName">Limit the list of pairs returned to those that have the following namespace.</param>
         /// <param name="predicate">Limit the list of pairs returned to those that have the following predicate.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void MachineTagsGetPairsAsync(string namespaceName, string predicate, Action<FlickrResult<PairCollection>> callback)
+        public async Task<PairCollection> MachineTagsGetPairsAsync(string namespaceName, string predicate, CancellationToken cancellationToken = default)
         {
-            MachineTagsGetPairsAsync(namespaceName, predicate, 0, 0, callback);
+            return await MachineTagsGetPairsAsync(namespaceName, predicate, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -168,7 +170,7 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of pairs to return per page. If this argument is omitted, it defaults to 100. The maximum allowed value is 500.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void MachineTagsGetPairsAsync(string namespaceName, string predicate, int page, int perPage, Action<FlickrResult<PairCollection>> callback)
+        public async Task<PairCollection> MachineTagsGetPairsAsync(string namespaceName, string predicate, int page, int perPage, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -194,7 +196,7 @@ namespace FlickrNet
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<PairCollection>(parameters, callback);
+            return await GetResponseAsync<PairCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -203,9 +205,9 @@ namespace FlickrNet
         /// <param name="namespaceName">The namespace that all values should be restricted to.</param>
         /// <param name="predicate">The predicate that all values should be restricted to.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void MachineTagsGetValuesAsync(string namespaceName, string predicate, Action<FlickrResult<ValueCollection>> callback)
+        public async Task<ValueCollection> MachineTagsGetValuesAsync(string namespaceName, string predicate, CancellationToken cancellationToken = default)
         {
-            MachineTagsGetValuesAsync(namespaceName, predicate, 0, 0, callback);
+            return await MachineTagsGetValuesAsync(namespaceName, predicate, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -216,7 +218,7 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of values to return per page. If this argument is omitted, it defaults to 100. The maximum allowed value is 500.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void MachineTagsGetValuesAsync(string namespaceName, string predicate, int page, int perPage, Action<FlickrResult<ValueCollection>> callback)
+        public async Task<ValueCollection> MachineTagsGetValuesAsync(string namespaceName, string predicate, int page, int perPage, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -234,7 +236,7 @@ namespace FlickrNet
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<ValueCollection>(parameters, callback);
+            return await GetResponseAsync<ValueCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -242,9 +244,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="addedSince">Only return machine tags values that have been added since this timestamp.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void MachineTagsGetRecentValuesAsync(DateTime addedSince, Action<FlickrResult<ValueCollection>> callback)
+        public async Task<ValueCollection> MachineTagsGetRecentValuesAsync(DateTime addedSince, CancellationToken cancellationToken = default)
         {
-            MachineTagsGetRecentValuesAsync(null, null, addedSince, 0, 0, callback);
+            return await MachineTagsGetRecentValuesAsync(null, null, addedSince, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -254,9 +256,9 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of values to return per page. If this argument is omitted, it defaults to 100. The maximum allowed value is 500.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void MachineTagsGetRecentValuesAsync(DateTime addedSince, int page, int perPage, Action<FlickrResult<ValueCollection>> callback)
+        public async Task<ValueCollection> MachineTagsGetRecentValuesAsync(DateTime addedSince, int page, int perPage, CancellationToken cancellationToken = default)
         {
-            MachineTagsGetRecentValuesAsync(null, null, addedSince, page, perPage, callback);
+            return await MachineTagsGetRecentValuesAsync(null, null, addedSince, page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -265,9 +267,9 @@ namespace FlickrNet
         /// <param name="namespaceName">The namespace that all values should be restricted to.</param>
         /// <param name="predicate">The predicate that all values should be restricted to.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void MachineTagsGetRecentValuesAsync(string namespaceName, string predicate, Action<FlickrResult<ValueCollection>> callback)
+        public async Task<ValueCollection> MachineTagsGetRecentValuesAsync(string namespaceName, string predicate, CancellationToken cancellationToken = default)
         {
-            MachineTagsGetRecentValuesAsync(namespaceName, predicate, DateTime.MinValue, 0, 0, callback);
+            return await MachineTagsGetRecentValuesAsync(namespaceName, predicate, DateTime.MinValue, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -278,9 +280,9 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of values to return per page. If this argument is omitted, it defaults to 100. The maximum allowed value is 500.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void MachineTagsGetRecentValuesAsync(string namespaceName, string predicate, int page, int perPage, Action<FlickrResult<ValueCollection>> callback)
+        public async Task<ValueCollection> MachineTagsGetRecentValuesAsync(string namespaceName, string predicate, int page, int perPage, CancellationToken cancellationToken = default)
         {
-            MachineTagsGetRecentValuesAsync(namespaceName, predicate, DateTime.MinValue, page, perPage, callback);
+            return await MachineTagsGetRecentValuesAsync(namespaceName, predicate, DateTime.MinValue, page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -292,7 +294,7 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of values to return per page. If this argument is omitted, it defaults to 100. The maximum allowed value is 500.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void MachineTagsGetRecentValuesAsync(string namespaceName, string predicate, DateTime addedSince, int page, int perPage, Action<FlickrResult<ValueCollection>> callback)
+        public async Task<ValueCollection> MachineTagsGetRecentValuesAsync(string namespaceName, string predicate, DateTime addedSince, int page, int perPage, CancellationToken cancellationToken = default)
         {
             if (string.IsNullOrEmpty(namespaceName) && string.IsNullOrEmpty(predicate) && addedSince == DateTime.MinValue)
             {
@@ -328,7 +330,7 @@ namespace FlickrNet
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<ValueCollection>(parameters, callback);
+            return await GetResponseAsync<ValueCollection>(parameters, cancellationToken);
         }
     }
 }

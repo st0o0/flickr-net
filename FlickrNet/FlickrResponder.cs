@@ -43,8 +43,6 @@ namespace FlickrNet
             string data = string.Empty;
             foreach (KeyValuePair<string, string> pair in parameters)
             {
-                // Silverlight < 5 doesn't support modification of the Authorization header, so all data must be sent in post body.
-
                 if (!pair.Key.StartsWith("oauth", StringComparison.Ordinal))
                 {
                     data += pair.Key + "=" + UtilityMethods.EscapeDataString(pair.Value) + "&";

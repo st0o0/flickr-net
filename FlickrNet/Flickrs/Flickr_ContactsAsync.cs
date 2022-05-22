@@ -2,6 +2,8 @@
 using FlickrNet.Flickrs.Results;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNet
 {
@@ -12,9 +14,9 @@ namespace FlickrNet
         /// Requires authentication.
         /// </summary>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void ContactsGetListAsync(Action<FlickrResult<ContactCollection>> callback)
+        public async Task<ContactCollection> ContactsGetListAsync(CancellationToken cancellationToken = default)
         {
-            ContactsGetListAsync(null, 0, 0, callback);
+            return await ContactsGetListAsync(null, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -24,9 +26,9 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of contacts to return per page. If this argument is omitted, it defaults to 1000. The maximum allowed value is 1000.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void ContactsGetListAsync(int page, int perPage, Action<FlickrResult<ContactCollection>> callback)
+        public async Task<ContactCollection> ContactsGetListAsync(int page, int perPage, CancellationToken cancellationToken = default)
         {
-            ContactsGetListAsync(null, page, perPage, callback);
+            return await ContactsGetListAsync(null, page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -35,9 +37,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="filter">An optional filter of the results. The following values are valid: "friends", "family", "both", "neither".</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void ContactsGetListAsync(string filter, Action<FlickrResult<ContactCollection>> callback)
+        public async Task<ContactCollection> ContactsGetListAsync(string filter, CancellationToken cancellationToken = default)
         {
-            ContactsGetListAsync(filter, 0, 0, callback);
+            return await ContactsGetListAsync(filter, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -48,7 +50,7 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of contacts to return per page. If this argument is omitted, it defaults to 1000. The maximum allowed value is 1000.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void ContactsGetListAsync(string filter, int page, int perPage, Action<FlickrResult<ContactCollection>> callback)
+        public async Task<ContactCollection> ContactsGetListAsync(string filter, int page, int perPage, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -70,8 +72,7 @@ namespace FlickrNet
             {
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
-
-            GetResponseAsync<ContactCollection>(parameters, callback);
+            return await GetResponseAsync<ContactCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -81,9 +82,9 @@ namespace FlickrNet
         /// This method is still considered experimental. We don't plan for it to change or to go away but so long as this notice is present you should write your code accordingly.
         /// </remarks>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void ContactsGetListRecentlyUploadedAsync(Action<FlickrResult<ContactCollection>> callback)
+        public async Task<ContactCollection> ContactsGetListRecentlyUploadedAsync(CancellationToken cancellationToken = default)
         {
-            ContactsGetListRecentlyUploadedAsync(DateTime.MinValue, null, callback);
+            return await ContactsGetListRecentlyUploadedAsync(DateTime.MinValue, null, cancellationToken);
         }
 
         /// <summary>
@@ -96,9 +97,9 @@ namespace FlickrNet
         /// "ff" friends and family, and "all" all your contacts.
         /// Default value is "all".</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void ContactsGetListRecentlyUploadedAsync(string filter, Action<FlickrResult<ContactCollection>> callback)
+        public async Task<ContactCollection> ContactsGetListRecentlyUploadedAsync(string filter, CancellationToken cancellationToken = default)
         {
-            ContactsGetListRecentlyUploadedAsync(DateTime.MinValue, filter, callback);
+            return await ContactsGetListRecentlyUploadedAsync(DateTime.MinValue, filter, cancellationToken);
         }
 
         /// <summary>
@@ -109,9 +110,9 @@ namespace FlickrNet
         /// </remarks>
         /// <param name="dateLastUpdated">Limits the resultset to contacts that have uploaded photos since this date. The default offset is (1) hour and the maximum (24) hours.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void ContactsGetListRecentlyUploadedAsync(DateTime dateLastUpdated, Action<FlickrResult<ContactCollection>> callback)
+        public async Task<ContactCollection> ContactsGetListRecentlyUploadedAsync(DateTime dateLastUpdated, CancellationToken cancellationToken = default)
         {
-            ContactsGetListRecentlyUploadedAsync(dateLastUpdated, null, callback);
+            return await ContactsGetListRecentlyUploadedAsync(dateLastUpdated, null, cancellationToken);
         }
 
         /// <summary>
@@ -125,7 +126,7 @@ namespace FlickrNet
         /// "ff" friends and family, and "all" all your contacts.
         /// Default value is "all".</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void ContactsGetListRecentlyUploadedAsync(DateTime dateLastUpdated, string filter, Action<FlickrResult<ContactCollection>> callback)
+        public async Task<ContactCollection> ContactsGetListRecentlyUploadedAsync(DateTime dateLastUpdated, string filter, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -142,8 +143,7 @@ namespace FlickrNet
             {
                 parameters.Add("filter", filter);
             }
-
-            GetResponseAsync<ContactCollection>(parameters, callback);
+            return await GetResponseAsync<ContactCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -151,9 +151,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="userId">The Id of the user who's contacts you want to return.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void ContactsGetPublicListAsync(string userId, Action<FlickrResult<ContactCollection>> callback)
+        public void ContactsGetPublicListAsync(string userId, CancellationToken cancellationToken = default)
         {
-            ContactsGetPublicListAsync(userId, 0, 0, callback);
+            ContactsGetPublicListAsync(userId, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of contacts to return per page. If this argument is omitted, it defaults to 1000. The maximum allowed value is 1000.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void ContactsGetPublicListAsync(string userId, int page, int perPage, Action<FlickrResult<ContactCollection>> callback)
+        public async Task<ContactCollection> ContactsGetPublicListAsync(string userId, int page, int perPage, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -180,7 +180,7 @@ namespace FlickrNet
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<ContactCollection>(parameters, callback);
+            return await GetResponseAsync<ContactCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -191,9 +191,9 @@ namespace FlickrNet
         /// </remarks>
         /// <param name="callback">Callback action to return result (or error) to.</param>
         /// <returns></returns>
-        public void ContactsGetTaggingSuggestionsAsync(Action<FlickrResult<ContactCollection>> callback)
+        public async Task<ContactCollection> ContactsGetTaggingSuggestionsAsync(CancellationToken cancellationToken = default)
         {
-            ContactsGetTaggingSuggestionsAsync(0, 0, callback);
+            return await ContactsGetTaggingSuggestionsAsync(0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -206,7 +206,7 @@ namespace FlickrNet
         /// <param name="perPage">The number of contacts to return per page.</param>
         /// <param name="callback">Callback action to return result (or error) to.</param>
         /// <returns></returns>
-        public void ContactsGetTaggingSuggestionsAsync(int page, int perPage, Action<FlickrResult<ContactCollection>> callback)
+        public async Task<ContactCollection> ContactsGetTaggingSuggestionsAsync(int page, int perPage, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -223,8 +223,7 @@ namespace FlickrNet
             {
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
-
-            GetResponseAsync<ContactCollection>(parameters, callback);
+            return await GetResponseAsync<ContactCollection>(parameters, cancellationToken);
         }
     }
 }

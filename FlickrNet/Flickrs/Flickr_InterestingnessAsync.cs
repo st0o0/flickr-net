@@ -1,9 +1,10 @@
 ﻿using FlickrNet.CollectionModels;
 using FlickrNet.Enums;
-using FlickrNet.Flickrs.Results;
 using FlickrNet.SearchOptions;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNet
 {
@@ -17,9 +18,9 @@ namespace FlickrNet
         /// <param name="extras"><see cref="PhotoSearchExtras"/> enumeration.</param>
         /// <returns><see cref="PhotoCollection"/> instance containing list of photos.</returns>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void InterestingnessGetListAsync(PhotoSearchExtras extras, int page, int perPage, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> InterestingnessGetListAsync(PhotoSearchExtras extras, int page, int perPage, CancellationToken cancellationToken = default)
         {
-            InterestingnessGetListAsync(DateTime.MinValue, extras, page, perPage, callback);
+            return await InterestingnessGetListAsync(DateTime.MinValue, extras, page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -27,18 +28,18 @@ namespace FlickrNet
         /// </summary>
         /// <param name="date">The date to return the interestingness list for.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void InterestingnessGetListAsync(DateTime date, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> InterestingnessGetListAsync(DateTime date, CancellationToken cancellationToken = default)
         {
-            InterestingnessGetListAsync(date, PhotoSearchExtras.None, 0, 0, callback);
+            return await InterestingnessGetListAsync(date, PhotoSearchExtras.None, 0, 0, cancellationToken);
         }
 
         /// <summary>
         /// Gets a list of photos from the most recent interstingness list.
         /// </summary>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void InterestingnessGetListAsync(Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> InterestingnessGetListAsync(CancellationToken cancellationToken = default)
         {
-            InterestingnessGetListAsync(DateTime.MinValue, PhotoSearchExtras.None, 0, 0, callback);
+            return await InterestingnessGetListAsync(DateTime.MinValue, PhotoSearchExtras.None, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -50,7 +51,7 @@ namespace FlickrNet
         /// <param name="perPage">The number of results to return per page.</param>
         /// <param name="page">The page of the results to return.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void InterestingnessGetListAsync(DateTime date, PhotoSearchExtras extras, int page, int perPage, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> InterestingnessGetListAsync(DateTime date, PhotoSearchExtras extras, int page, int perPage, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -77,7 +78,7 @@ namespace FlickrNet
                 parameters.Add("extras", UtilityMethods.ExtrasToString(extras));
             }
 
-            GetResponseAsync<PhotoCollection>(parameters, callback);
+            return await GetResponseAsync<PhotoCollection>(parameters, cancellationToken);
         }
     }
 }

@@ -2,6 +2,8 @@
 using FlickrNet.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNet
 {
@@ -17,7 +19,7 @@ namespace FlickrNet
         /// <param name="noteHeight">The height of the note.</param>
         /// <param name="noteText">The text in the note.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosNotesAddAsync(string photoId, int noteX, int noteY, int noteWidth, int noteHeight, string noteText, Action<FlickrResult<string>> callback)
+        public async Task<string> PhotosNotesAddAsync(string photoId, int noteX, int noteY, int noteWidth, int noteHeight, string noteText, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -30,24 +32,9 @@ namespace FlickrNet
                 { "note_text", noteText }
             };
 
-            GetResponseAsync<UnknownResponse>(
-                parameters,
-                r =>
-                {
-                    FlickrResult<string> result = new FlickrResult<string>
-                    {
-                        HasError = r.HasError
-                    };
-                    if (r.HasError)
-                    {
-                        result.Error = r.Error;
-                    }
-                    else
-                    {
-                        result.Result = r.Result.GetAttributeValue("*", "id");
-                    }
-                    callback(result);
-                });
+            var result = await GetResponseAsync<UnknownResponse>(parameters, cancellationToken);
+
+            return result.GetAttributeValue("*", "id");
         }
 
         /// <summary>
@@ -60,7 +47,7 @@ namespace FlickrNet
         /// <param name="noteHeight">The height of the note.</param>
         /// <param name="noteText">The new text in the note.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosNotesEditAsync(string noteId, int noteX, int noteY, int noteWidth, int noteHeight, string noteText, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosNotesEditAsync(string noteId, int noteX, int noteY, int noteWidth, int noteHeight, string noteText, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -73,7 +60,7 @@ namespace FlickrNet
                 { "note_text", noteText }
             };
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -81,7 +68,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="noteId">The ID of the note.</param>
         /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosNotesDeleteAsync(string noteId, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosNotesDeleteAsync(string noteId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -89,7 +76,7 @@ namespace FlickrNet
                 { "note_id", noteId }
             };
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
     }
 }

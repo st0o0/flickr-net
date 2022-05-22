@@ -17,13 +17,7 @@ namespace FlickrNet
         public async Task<CameraCollection> CamerasGetBrandsAsync(CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new() { { "method", "flickr.cameras.getBrands" } };
-            var t = await GetResponseAsync<CameraCollection>(parameters, cancellationToken);
-            if (t.HasError)
-            {
-                throw t.Error;
-            }
-
-            return t.Result;
+            return await GetResponseAsync<CameraCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -40,13 +34,7 @@ namespace FlickrNet
                 { "brand", brandId}
         };
 
-            var t = await GetResponseAsync<CameraCollection>(parameters, cancellationToken);
-            if (t.HasError)
-            {
-                throw t.Error;
-            }
-
-            return t.Result;
+            return await GetResponseAsync<CameraCollection>(parameters, cancellationToken);
         }
     }
 }

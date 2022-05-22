@@ -7,5 +7,7 @@ using System.Threading.Tasks;
 
 namespace FlickrNet.Settings
 {
-    public class FlickrSettings: IFlickrSettings
+    public class FlickrSettings : IFlickrSettings
+    {
+    }
 }

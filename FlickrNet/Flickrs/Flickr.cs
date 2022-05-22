@@ -1,12 +1,15 @@
 using FlickrNet.Common;
 using FlickrNet.Enums;
 using FlickrNet.Exceptions;
+using FlickrNet.HttpContents;
 using FlickrNet.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Xml;
 
 namespace FlickrNet
@@ -433,124 +436,74 @@ namespace FlickrNet
             return nonSeekableStream;
         }
 
-        private StreamCollection CreateUploadData(Stream imageStream, string fileName, Dictionary<string, string> parameters, string boundary)
+        private MultipartFormDataContent CreateUploadData(Stream imageStream, string fileName, IProgress<double> progress, Dictionary<string, string> parameters, string boundary, CancellationToken cancellationToken = default)
         {
             bool oAuth = parameters.ContainsKey("oauth_consumer_key");
 
-            string[] keys = new string[parameters.Keys.Count];
-            parameters.Keys.CopyTo(keys, 0);
-            Array.Sort(keys);
-
-            StringBuilder hashStringBuilder = new(sharedSecret, 2 * 1024);
-            MemoryStream ms1 = new();
-            StreamWriter contentStringBuilder = new(ms1, new UTF8Encoding(false));
-
-            foreach (string key in keys)
+            MultipartFormDataContent content = new(boundary)
             {
-                // Silverlight < 5 doesn't support modification of the Authorization header, so all data must be sent in post body.
-                if (key.StartsWith("oauth", StringComparison.Ordinal))
+                { new StreamedContent(imageStream, progress, cancellationToken), "photo", Path.GetFileName(fileName) }
+            };
+
+            foreach (KeyValuePair<string, string> i in parameters)
+            {
+                if (i.Key.StartsWith("oauth", StringComparison.Ordinal))
                 {
                     continue;
                 }
-                hashStringBuilder.Append(key);
-                hashStringBuilder.Append(parameters[key]);
-                contentStringBuilder.Write("--" + boundary + "\r\n");
-                contentStringBuilder.Write("Content-Disposition: form-data; name=\"" + key + "\"\r\n");
-                contentStringBuilder.Write("\r\n");
-                contentStringBuilder.Write(parameters[key] + "\r\n");
+                content.Add(new StringContent(i.Value), i.Key);
             }
 
-            if (!oAuth)
-            {
-                contentStringBuilder.Write("--" + boundary + "\r\n");
-                contentStringBuilder.Write("Content-Disposition: form-data; name=\"api_sig\"\r\n");
-                contentStringBuilder.Write("\r\n");
-                contentStringBuilder.Write(UtilityMethods.MD5Hash(hashStringBuilder.ToString()) + "\r\n");
-            }
+            return content;
 
-            // Photo
-            contentStringBuilder.Write("--" + boundary + "\r\n");
-            contentStringBuilder.Write("Content-Disposition: form-data; name=\"photo\"; filename=\"" + Path.GetFileName(fileName) + "\"\r\n");
-            contentStringBuilder.Write("Content-Type: image/jpeg\r\n");
-            contentStringBuilder.Write("\r\n");
+            // OLD:
+            //string[] keys = new string[parameters.Keys.Count];
+            //parameters.Keys.CopyTo(keys, 0);
+            //Array.Sort(keys);
 
-            contentStringBuilder.Flush();
+            //StringBuilder hashStringBuilder = new(sharedSecret, 2 * 1024);
+            //MemoryStream ms1 = new();
+            //StreamWriter contentStringBuilder = new(ms1, new UTF8Encoding(false));
 
-            Stream photoContents = ConvertNonSeekableStreamToByteArray(imageStream);
+            //foreach (string key in keys)
+            //{
+            //    // Silverlight < 5 doesn't support modification of the Authorization header, so all data must be sent in post body.
+            //    if (key.StartsWith("oauth", StringComparison.Ordinal))
+            //    {
+            //        continue;
+            //    }
+            //    hashStringBuilder.Append(key);
+            //    hashStringBuilder.Append(parameters[key]);
+            //    contentStringBuilder.Write("--" + boundary + "\r\n");
+            //    contentStringBuilder.Write("Content-Disposition: form-data; name=\"" + key + "\"\r\n");
+            //    contentStringBuilder.Write("\r\n");
+            //    contentStringBuilder.Write(parameters[key] + "\r\n");
+            //}
 
-            MemoryStream ms2 = new();
-            StreamWriter postFooterWriter = new(ms2, new UTF8Encoding(false));
-            postFooterWriter.Write("\r\n--" + boundary + "--\r\n");
-            postFooterWriter.Flush();
+            //if (!oAuth)
+            //{
+            //    contentStringBuilder.Write("--" + boundary + "\r\n");
+            //    contentStringBuilder.Write("Content-Disposition: form-data; name=\"api_sig\"\r\n");
+            //    contentStringBuilder.Write("\r\n");
+            //    contentStringBuilder.Write(UtilityMethods.MD5Hash(hashStringBuilder.ToString()) + "\r\n");
+            //}
 
-            StreamCollection collection = new(new[] { ms1, photoContents, ms2 });
+            //// Photo
+            //contentStringBuilder.Write("--" + boundary + "\r\n");
+            //contentStringBuilder.Write("Content-Disposition: form-data; name=\"photo\"; filename=\"" + Path.GetFileName(fileName) + "\"\r\n");
+            //contentStringBuilder.Write("Content-Type: image/jpeg\r\n");
+            //contentStringBuilder.Write("\r\n");
 
-            return collection;
-        }
+            //contentStringBuilder.Flush();
 
-        internal class StreamCollection : IDisposable
-        {
-            public List<Stream> Streams { get; private set; }
+            //Stream photoContents = ConvertNonSeekableStreamToByteArray(imageStream);
 
-            public StreamCollection(IEnumerable<Stream> streams)
-            {
-                Streams = new List<Stream>(streams);
-            }
+            //MemoryStream ms2 = new();
+            //StreamWriter postFooterWriter = new(ms2, new UTF8Encoding(false));
+            //postFooterWriter.Write("\r\n--" + boundary + "--\r\n");
+            //postFooterWriter.Flush();
 
-            public void ResetPosition()
-            {
-                Streams.ForEach(s => { if (s.CanSeek) { s.Position = 0; } });
-            }
-
-            public long? Length
-            {
-                get
-                {
-                    long l = 0;
-                    foreach (Stream s in Streams)
-                    {
-                        if (!s.CanSeek)
-                        {
-                            return null;
-                        }
-
-                        l += s.Length;
-                    }
-                    return l;
-                }
-            }
-
-            public EventHandler<UploadProgressEventArgs> UploadProgress;
-
-            public void CopyTo(Stream stream, int bufferSize = 1024 * 16)
-            {
-                ResetPosition();
-
-                byte[] buffer = new byte[bufferSize];
-                long? l = Length;
-                int soFar = 0;
-
-                foreach (Stream s in Streams)
-                {
-                    int read;
-                    while (0 < (read = s.Read(buffer, 0, buffer.Length)))
-                    {
-                        soFar += read;
-                        stream.Write(buffer, 0, read);
-                        if (UploadProgress != null)
-                        {
-                            UploadProgress(this, new UploadProgressEventArgs { BytesSent = soFar, TotalBytesToSend = l.GetValueOrDefault(-1) });
-                        }
-                    }
-                    stream.Flush();
-                }
-                stream.Flush();
-            }
-
-            public void Dispose()
-            {
-                Streams.ForEach(s => s?.Dispose());
-            }
+            //StreamCollection collection = new(new[] { ms1, photoContents, ms2 });
         }
     }
 
@@ -582,7 +535,7 @@ namespace FlickrNet
 
                 item.Load(reader);
             }
-            catch (XmlException e)
+            catch (XmlException)
             {
                 throw;
             }
