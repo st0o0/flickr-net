@@ -14,7 +14,6 @@ namespace FlickrNet
         /// <remarks>
         /// <b>Do not poll this method more than once an hour.</b>
         /// </remarks>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         public async Task<ActivityItemCollection> ActivityUserPhotosAsync(CancellationToken cancellationToken = default)
         {
             return await ActivityUserPhotosAsync(null, 0, 0, cancellationToken);
@@ -28,7 +27,6 @@ namespace FlickrNet
         /// </remarks>
         /// <param name="page">The page numver of the activity to return.</param>
         /// <param name="perPage">The number of activities to return per page.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         public async Task<ActivityItemCollection> ActivityUserPhotosAsync(int page, int perPage, CancellationToken cancellationToken = default)
         {
             return await ActivityUserPhotosAsync(null, page, perPage, cancellationToken);
@@ -42,7 +40,6 @@ namespace FlickrNet
         /// </remarks>
         /// <param name="timePeriod">The number of days or hours you want to get activity for.</param>
         /// <param name="timeType">'d' for days, 'h' for hours.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         public async Task<ActivityItemCollection> ActivityUserPhotosAsync(int timePeriod, string timeType, CancellationToken cancellationToken = default)
         {
             return await ActivityUserPhotosAsync(timePeriod, timeType, 0, 0, cancellationToken);
@@ -58,7 +55,6 @@ namespace FlickrNet
         /// <param name="timeType">'d' for days, 'h' for hours.</param>
         /// <param name="page">The page numver of the activity to return.</param>
         /// <param name="perPage">The number of activities to return per page.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         public async Task<ActivityItemCollection> ActivityUserPhotosAsync(int timePeriod, string timeType, int page, int perPage, CancellationToken cancellationToken = default)
         {
             if (timePeriod == 0)
@@ -113,7 +109,6 @@ namespace FlickrNet
         /// </remarks>
         /// <param name="page">The page of the activity to return.</param>
         /// <param name="perPage">The number of activities to return per page.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         public async Task<ActivityItemCollection> ActivityUserCommentsAsync(int page, int perPage, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();

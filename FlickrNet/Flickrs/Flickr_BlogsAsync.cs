@@ -12,7 +12,6 @@ namespace FlickrNet
         /// Gets a list of blogs that have been set up by the user.
         /// Requires authentication.
         /// </summary>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         /// <remarks></remarks>
         public async Task<BlogCollection> BlogsGetListAsync(CancellationToken cancellationToken = default)
         {
@@ -29,7 +28,6 @@ namespace FlickrNet
         /// <summary>
         /// Return a list of Flickr supported blogging services.
         /// </summary>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         public async Task<BlogServiceCollection> BlogsGetServicesAsync(CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
@@ -48,7 +46,6 @@ namespace FlickrNet
         /// <param name="photoId">The Id of the photograph to post.</param>
         /// <param name="title">The title of the blog post.</param>
         /// <param name="description">The body of the blog post.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         public async Task<NoResponse> BlogsPostPhotoAsync(string blogId, string photoId, string title, string description, CancellationToken cancellationToken = default)
         {
             return await BlogsPostPhotoAsync(blogId, photoId, title, description, null, cancellationToken);
@@ -63,7 +60,6 @@ namespace FlickrNet
         /// <param name="title">The title of the blog post.</param>
         /// <param name="description">The body of the blog post.</param>
         /// <param name="blogPassword">The password of the blog if it is not already stored in flickr.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         public async Task<NoResponse> BlogsPostPhotoAsync(string blogId, string photoId, string title, string description, string blogPassword, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()

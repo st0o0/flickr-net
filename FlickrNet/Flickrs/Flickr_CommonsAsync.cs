@@ -11,7 +11,6 @@ namespace FlickrNet
         /// <summary>
         /// Gets a collection of Flickr Commons institutions.
         /// </summary>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         public async Task<InstitutionCollection> CommonsGetInstitutionsAsync(CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()

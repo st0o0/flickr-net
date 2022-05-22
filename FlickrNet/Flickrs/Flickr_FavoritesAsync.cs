@@ -17,7 +17,6 @@ namespace FlickrNet
         /// Requires authentication.
         /// </summary>
         /// <param name="photoId">The id of the photograph to add.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         public async Task FavoritesAddAsync(string photoId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
@@ -33,7 +32,6 @@ namespace FlickrNet
         /// Requires authentication.
         /// </summary>
         /// <param name="photoId">The id of the photograph to remove.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         public async Task FavoritesRemoveAsync(string photoId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
@@ -49,7 +47,6 @@ namespace FlickrNet
         /// Get a list of the currently logger in users favourites.
         /// Requires authentication.
         /// </summary>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         public async Task<PhotoCollection> FavoritesGetListAsync(CancellationToken cancellationToken = default)
         {
             return await FavoritesGetListAsync(null, DateTime.MinValue, DateTime.MinValue, PhotoSearchExtras.None, 0, 0, cancellationToken);
@@ -60,7 +57,6 @@ namespace FlickrNet
         /// Requires authentication.
         /// </summary>
         /// <param name="extras">The extras to return for each photo.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         public async Task<PhotoCollection> FavoritesGetListAsync(PhotoSearchExtras extras, CancellationToken cancellationToken = default)
         {
             return await FavoritesGetListAsync(null, DateTime.MinValue, DateTime.MinValue, extras, 0, 0, cancellationToken);
@@ -72,7 +68,6 @@ namespace FlickrNet
         /// </summary>
         /// <param name="perPage">Number of photos to include per page.</param>
         /// <param name="page">The page to download this time.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         public async Task<PhotoCollection> FavoritesGetListAsync(int page, int perPage, CancellationToken cancellationToken = default)
         {
             return await FavoritesGetListAsync(null, DateTime.MinValue, DateTime.MinValue, PhotoSearchExtras.None, page, perPage, cancellationToken);
@@ -85,7 +80,6 @@ namespace FlickrNet
         /// <param name="extras">The extras to return for each photo.</param>
         /// <param name="perPage">Number of photos to include per page.</param>
         /// <param name="page">The page to download this time.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         public async Task<PhotoCollection> FavoritesGetListAsync(PhotoSearchExtras extras, int page, int perPage, CancellationToken cancellationToken = default)
         {
             return await FavoritesGetListAsync(null, DateTime.MinValue, DateTime.MinValue, extras, page, perPage, cancellationToken);
@@ -95,7 +89,6 @@ namespace FlickrNet
         /// Get a list of favourites for the specified user.
         /// </summary>
         /// <param name="userId">The user id of the user whose favourites you wish to retrieve.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         public async Task<PhotoCollection> FavoritesGetListAsync(string userId, CancellationToken cancellationToken = default)
         {
             return await FavoritesGetListAsync(userId, DateTime.MinValue, DateTime.MinValue, PhotoSearchExtras.None, 0, 0, cancellationToken);
@@ -106,7 +99,6 @@ namespace FlickrNet
         /// </summary>
         /// <param name="userId">The user id of the user whose favourites you wish to retrieve.</param>
         /// <param name="extras">The extras to return for each photo.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         public async Task<PhotoCollection> FavoritesGetListAsync(string userId, PhotoSearchExtras extras, CancellationToken cancellationToken = default)
         {
             return await FavoritesGetListAsync(userId, DateTime.MinValue, DateTime.MinValue, extras, 0, 0, cancellationToken);
@@ -121,7 +113,6 @@ namespace FlickrNet
         /// <param name="extras">The extras to return for each photo.</param>
         /// <param name="perPage">Number of photos to include per page.</param>
         /// <param name="page">The page to download this time.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         public async Task<PhotoCollection> FavoritesGetListAsync(string userId, DateTime minFavoriteDate, DateTime maxFavoriteDate, PhotoSearchExtras extras, int page, int perPage, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
@@ -169,7 +160,6 @@ namespace FlickrNet
         /// <remarks>This function difers from <see cref="Flickr.FavoritesGetList(string)"/> in that the user id
         /// is not optional.</remarks>
         /// <param name="userId">The is of the user whose favourites you wish to return.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         public async Task<PhotoCollection> FavoritesGetPublicListAsync(string userId, CancellationToken cancellationToken = default)
         {
             return await FavoritesGetPublicListAsync(userId, DateTime.MinValue, DateTime.MinValue, PhotoSearchExtras.None, 0, 0, cancellationToken);
@@ -186,7 +176,6 @@ namespace FlickrNet
         /// <param name="extras">The extras to return for each photo.</param>
         /// <param name="perPage">The number of photos to return per page.</param>
         /// <param name="page">The specific page to return.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         public async Task<PhotoCollection> FavoritesGetPublicListAsync(string userId, DateTime minFavoriteDate, DateTime maxFavoriteDate, PhotoSearchExtras extras, int page, int perPage, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
@@ -227,7 +216,6 @@ namespace FlickrNet
         /// </summary>
         /// <param name="photoId">The photo id of the photo for which to find the next and previous favorites.</param>
         /// <param name="userId">The user id of the users whose favorites you wish to search.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         /// <returns></returns>
         public async Task<FavoriteContext> FavoritesGetContextAsync(string photoId, string userId, CancellationToken cancellationToken = default)
         {
@@ -240,7 +228,6 @@ namespace FlickrNet
         /// <param name="photoId">The photo id of the photo for which to find the next and previous favorites.</param>
         /// <param name="userId">The user id of the users whose favorites you wish to search.</param>
         /// <param name="extras">Any extras to return for each photo in the previous and next list.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         /// <returns></returns>
         public async Task<FavoriteContext> FavoritesGetContextAsync(string photoId, string userId, PhotoSearchExtras extras, CancellationToken cancellationToken = default)
         {
@@ -254,7 +241,6 @@ namespace FlickrNet
         /// <param name="userId">The user id of the users whose favorites you wish to search.</param>
         /// <param name="numPrevious">The number of previous favorites to list. Defaults to 1.</param>
         /// <param name="numNext">The number of next favorites to list. Defaults to 1.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         /// <returns></returns>
         public async Task<FavoriteContext> FavoritesGetContextAsync(string photoId, string userId, int numPrevious, int numNext, CancellationToken cancellationToken = default)
         {
@@ -269,7 +255,6 @@ namespace FlickrNet
         /// <param name="numPrevious">The number of previous favorites to list. Defaults to 1.</param>
         /// <param name="numNext">The number of next favorites to list. Defaults to 1.</param>
         /// <param name="extras">Any extras to return for each photo in the previous and next list.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         /// <returns></returns>
         public async Task<FavoriteContext> FavoritesGetContextAsync(string photoId, string userId, int numPrevious, int numNext, PhotoSearchExtras extras, CancellationToken cancellationToken = default)
         {

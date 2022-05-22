@@ -15,7 +15,6 @@ namespace FlickrNet
         /// </summary>
         /// <remarks>Specify 'oob' as the callback url for no callback to be performed.</remarks>
         /// <param name="callbackUrl">The callback Uri, or 'oob' if no callback is to be performed.</param>
-        /// <param name="cancellationToken"></param>
         public async Task<OAuthRequestToken> OAuthGetRequestTokenAsync(string callbackUrl, CancellationToken cancellationToken = default)
         {
             CheckApiKey();
@@ -40,7 +39,6 @@ namespace FlickrNet
         /// </summary>
         /// <param name="requestToken"></param>
         /// <param name="verifier"></param>
-        /// <param name="callback"></param>
         public async Task<OAuthAccessToken> OAuthGetAccessTokenAsync(OAuthRequestToken requestToken, string verifier, CancellationToken cancellationToken = default)
         {
             return await OAuthGetAccessTokenAsync(requestToken.Token, requestToken.TokenSecret, verifier, cancellationToken);
@@ -52,7 +50,6 @@ namespace FlickrNet
         /// <param name="requestToken"></param>
         /// <param name="requestTokenSecret"></param>
         /// <param name="verifier"></param>
-        /// <param name="callback"></param>
         public async Task<OAuthAccessToken> OAuthGetAccessTokenAsync(string requestToken, string requestTokenSecret, string verifier, CancellationToken cancellationToken = default)
         {
             CheckApiKey();
