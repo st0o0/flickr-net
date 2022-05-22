@@ -6,6 +6,8 @@ using FlickrNet.Flickrs.Results;
 using FlickrNet.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNet
 {
@@ -15,8 +17,7 @@ namespace FlickrNet
         /// Returns a list of places which contain the query string.
         /// </summary>
         /// <param name="query">The string to search for. Must not be null.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PlacesFindAsync(string query, Action<FlickrResult<PlaceCollection>> callback)
+        public async Task<PlaceCollection> PlacesFindAsync(string query, CancellationToken cancellationToken = default)
         {
             if (query == null)
             {
@@ -29,7 +30,7 @@ namespace FlickrNet
                 { "query", query }
             };
 
-            GetResponseAsync<PlaceCollection>(parameters, callback);
+            return await GetResponseAsync<PlaceCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -37,10 +38,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="latitude">The latitude, between -180 and 180.</param>
         /// <param name="longitude">The longitude, between -90 and 90.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PlacesFindByLatLonAsync(double latitude, double longitude, Action<FlickrResult<Place>> callback)
+        public async Task<Place> PlacesFindByLatLonAsync(double latitude, double longitude, CancellationToken cancellationToken = default)
         {
-            PlacesFindByLatLonAsync(latitude, longitude, GeoAccuracy.None, callback);
+            return await PlacesFindByLatLonAsync(latitude, longitude, GeoAccuracy.None, cancellationToken);
         }
 
         /// <summary>
@@ -49,9 +49,7 @@ namespace FlickrNet
         /// <param name="latitude">The latitude, between -180 and 180.</param>
         /// <param name="longitude">The longitude, between -90 and 90.</param>
         /// <param name="accuracy">The level the locality will be for.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PlacesFindByLatLonAsync(double latitude, double longitude, GeoAccuracy accuracy,
-                                            Action<FlickrResult<Place>> callback)
+        public async Task<Place> PlacesFindByLatLonAsync(double latitude, double longitude, GeoAccuracy accuracy, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -61,22 +59,11 @@ namespace FlickrNet
             };
             if (accuracy != GeoAccuracy.None)
             {
-                parameters.Add("accuracy",
-                               ((int)accuracy).ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+                parameters.Add("accuracy", ((int)accuracy).ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<PlaceCollection>(
-                parameters,
-                r =>
-                    {
-                        FlickrResult<Place> result = new FlickrResult<Place>();
-                        result.Error = r.Error;
-                        if (!r.HasError)
-                        {
-                            result.Result = r.Result[0];
-                        }
-                        callback(result);
-                    });
+            PlaceCollection result = await GetResponseAsync<PlaceCollection>(parameters, cancellationToken);
+            return result[0];
         }
 
         /// <summary>
@@ -84,8 +71,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="placeId">A Flickr Places ID. (While optional, you must pass either a valid Places ID or a WOE ID.)</param>
         /// <param name="woeId">A Where On Earth (WOE) ID. (While optional, you must pass either a valid Places ID or a WOE ID.)</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PlacesGetChildrenWithPhotosPublicAsync(string placeId, string woeId, Action<FlickrResult<PlaceCollection>> callback)
+        public async Task<PlaceCollection> PlacesGetChildrenWithPhotosPublicAsync(string placeId, string woeId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -107,7 +93,7 @@ namespace FlickrNet
                 parameters.Add("woe_id", woeId);
             }
 
-            GetResponseAsync<PlaceCollection>(parameters, callback);
+            return await GetResponseAsync<PlaceCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -115,8 +101,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="placeId">A Flickr Places ID. (While optional, you must pass either a valid Places ID or a WOE ID.)</param>
         /// <param name="woeId">A Where On Earth (WOE) ID. (While optional, you must pass either a valid Places ID or a WOE ID.)</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PlacesGetInfoAsync(string placeId, string woeId, Action<FlickrResult<PlaceInfo>> callback)
+        public async Task<PlaceInfo> PlacesGetInfoAsync(string placeId, string woeId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -138,15 +123,14 @@ namespace FlickrNet
                 parameters.Add("woe_id", woeId);
             }
 
-            GetResponseAsync<PlaceInfo>(parameters, callback);
+            return await GetResponseAsync<PlaceInfo>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Lookup information about a place, by its flickr.com/places URL.
         /// </summary>
         /// <param name="url">A flickr.com/places URL in the form of /country/region/city. For example: /Canada/Quebec/Montreal</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PlacesGetInfoByUrlAsync(string url, Action<FlickrResult<PlaceInfo>> callback)
+        public async Task<PlaceInfo> PlacesGetInfoByUrlAsync(string url, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -154,7 +138,7 @@ namespace FlickrNet
                 { "url", url }
             };
 
-            GetResponseAsync<PlaceInfo>(parameters, callback);
+            return await GetResponseAsync<PlaceInfo>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -163,15 +147,14 @@ namespace FlickrNet
         /// <remarks>
         /// All Flickr.Net methods use the <see cref="PlaceType"/> enumeration so this method doesn't serve much purpose.
         /// </remarks>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PlacesGetPlaceTypesAsync(Action<FlickrResult<PlaceTypeInfoCollection>> callback)
+        public async Task<PlaceTypeInfoCollection> PlacesGetPlaceTypesAsync(CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.places.getPlaceTypes" }
             };
 
-            GetResponseAsync<PlaceTypeInfoCollection>(parameters, callback);
+            return await GetResponseAsync<PlaceTypeInfoCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -179,8 +162,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="placeId">A Flickr Places ID. (While optional, you must pass either a valid Places ID or a WOE ID.)</param>
         /// <param name="woeId">A Where On Earth (WOE) ID. (While optional, you must pass either a valid Places ID or a WOE ID.)</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PlacesGetShapeHistoryAsync(string placeId, string woeId, Action<FlickrResult<ShapeDataCollection>> callback)
+        public async Task<ShapeDataCollection> PlacesGetShapeHistoryAsync(string placeId, string woeId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -202,17 +184,16 @@ namespace FlickrNet
                 parameters.Add("woe_id", woeId);
             }
 
-            GetResponseAsync<ShapeDataCollection>(parameters, callback);
+            return await GetResponseAsync<ShapeDataCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Return the top 100 most geotagged places for a day.
         /// </summary>
         /// <param name="placeType">The type for a specific place type to cluster photos by. </param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PlacesGetTopPlacesListAsync(PlaceType placeType, Action<FlickrResult<PlaceCollection>> callback)
+        public async Task<PlaceCollection> PlacesGetTopPlacesListAsync(PlaceType placeType, CancellationToken cancellationToken = default)
         {
-            PlacesGetTopPlacesListAsync(placeType, DateTime.MinValue, null, null, callback);
+            return await PlacesGetTopPlacesListAsync(placeType, DateTime.MinValue, null, null, cancellationToken);
         }
 
         /// <summary>
@@ -221,10 +202,9 @@ namespace FlickrNet
         /// <param name="placeType">The type for a specific place type to cluster photos by. </param>
         /// <param name="placeId">Limit your query to only those top places belonging to a specific Flickr Places identifier.</param>
         /// <param name="woeId">Limit your query to only those top places belonging to a specific Where on Earth (WOE) identifier.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PlacesGetTopPlacesListAsync(PlaceType placeType, string placeId, string woeId, Action<FlickrResult<PlaceCollection>> callback)
+        public async Task<PlaceCollection> PlacesGetTopPlacesListAsync(PlaceType placeType, string placeId, string woeId, CancellationToken cancellationToken = default)
         {
-            PlacesGetTopPlacesListAsync(placeType, DateTime.MinValue, placeId, woeId, callback);
+            return await PlacesGetTopPlacesListAsync(placeType, DateTime.MinValue, placeId, woeId, cancellationToken);
         }
 
         /// <summary>
@@ -232,10 +212,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="placeType">The type for a specific place type to cluster photos by. </param>
         /// <param name="date">A valid date. The default is yesterday.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PlacesGetTopPlacesListAsync(PlaceType placeType, DateTime date, Action<FlickrResult<PlaceCollection>> callback)
+        public async Task<PlaceCollection> PlacesGetTopPlacesListAsync(PlaceType placeType, DateTime date, CancellationToken cancellationToken = default)
         {
-            PlacesGetTopPlacesListAsync(placeType, date, null, null, callback);
+            return await PlacesGetTopPlacesListAsync(placeType, date, null, null, cancellationToken);
         }
 
         /// <summary>
@@ -245,9 +224,7 @@ namespace FlickrNet
         /// <param name="date">A valid date. The default is yesterday.</param>
         /// <param name="placeId">Limit your query to only those top places belonging to a specific Flickr Places identifier.</param>
         /// <param name="woeId">Limit your query to only those top places belonging to a specific Where on Earth (WOE) identifier.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PlacesGetTopPlacesListAsync(PlaceType placeType, DateTime date, string placeId, string woeId,
-                                                Action<FlickrResult<PlaceCollection>> callback)
+        public async Task<PlaceCollection> PlacesGetTopPlacesListAsync(PlaceType placeType, DateTime date, string placeId, string woeId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -271,17 +248,15 @@ namespace FlickrNet
                 parameters.Add("woe_id", woeId);
             }
 
-            GetResponseAsync<PlaceCollection>(parameters, callback);
+            return await GetResponseAsync<PlaceCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Gets the places of a particular type that the authenticated user has geotagged photos.
         /// </summary>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PlacesPlacesForUserAsync(Action<FlickrResult<PlaceCollection>> callback)
+        public async Task<PlaceCollection> PlacesPlacesForUserAsync(CancellationToken cancellationToken = default)
         {
-            PlacesPlacesForUserAsync(PlaceType.Continent, null, null, 0, DateTime.MinValue, DateTime.MinValue,
-                                     DateTime.MinValue, DateTime.MinValue, callback);
+            return await PlacesPlacesForUserAsync(PlaceType.Continent, null, null, 0, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, cancellationToken);
         }
 
         /// <summary>
@@ -290,12 +265,9 @@ namespace FlickrNet
         /// <param name="placeType">The type of places to return.</param>
         /// <param name="woeId">A Where on Earth identifier to use to filter photo clusters.</param>
         /// <param name="placeId">A Flickr Places identifier to use to filter photo clusters. </param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PlacesPlacesForUserAsync(PlaceType placeType, string woeId, string placeId,
-                                             Action<FlickrResult<PlaceCollection>> callback)
+        public async Task<PlaceCollection> PlacesPlacesForUserAsync(PlaceType placeType, string woeId, string placeId, CancellationToken cancellationToken = default)
         {
-            PlacesPlacesForUserAsync(placeType, woeId, placeId, 0, DateTime.MinValue, DateTime.MinValue,
-                                     DateTime.MinValue, DateTime.MinValue, callback);
+            return await PlacesPlacesForUserAsync(placeType, woeId, placeId, 0, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, cancellationToken);
         }
 
         /// <summary>
@@ -313,10 +285,9 @@ namespace FlickrNet
         /// <param name="maxUploadDate">Maximum upload date. Photos with an upload date less than or equal to this value will be returned. </param>
         /// <param name="minTakenDate">Minimum taken date. Photos with an taken date greater than or equal to this value will be returned. </param>
         /// <param name="maxTakenDate">Maximum taken date. Photos with an taken date less than or equal to this value will be returned. </param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PlacesPlacesForUserAsync(PlaceType placeType, string woeId, string placeId, int threshold,
+        public async Task<PlaceCollection> PlacesPlacesForUserAsync(PlaceType placeType, string woeId, string placeId, int threshold,
                                              DateTime minUploadDate, DateTime maxUploadDate, DateTime minTakenDate,
-                                             DateTime maxTakenDate, Action<FlickrResult<PlaceCollection>> callback)
+                                             DateTime maxTakenDate, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -361,7 +332,7 @@ namespace FlickrNet
                 parameters.Add("max_upload_date", UtilityMethods.DateToUnixTimestamp(maxUploadDate));
             }
 
-            GetResponseAsync<PlaceCollection>(parameters, callback);
+            return await GetResponseAsync<PlaceCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -381,12 +352,11 @@ namespace FlickrNet
         /// <param name="maxUploadDate">Maximum upload date.</param>
         /// <param name="minTakenDate">Minimum taken date.</param>
         /// <param name="maxTakenDate">Maximum taken date.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PlacesPlacesForTagsAsync(PlaceType placeType, string woeId, string placeId, int threshold,
+        public async Task<PlaceCollection> PlacesPlacesForTagsAsync(PlaceType placeType, string woeId, string placeId, int threshold,
                                              string[] tags, TagMode tagMode, string[] machineTags,
                                              MachineTagMode machineTagMode, DateTime minUploadDate,
                                              DateTime maxUploadDate, DateTime minTakenDate, DateTime maxTakenDate,
-                                             Action<FlickrResult<PlaceCollection>> callback)
+                                             CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -449,7 +419,7 @@ namespace FlickrNet
                 parameters.Add("max_upload_date", UtilityMethods.DateToUnixTimestamp(maxUploadDate));
             }
 
-            GetResponseAsync<PlaceCollection>(parameters, callback);
+            return await GetResponseAsync<PlaceCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -465,11 +435,10 @@ namespace FlickrNet
         /// <param name="maxUploadDate">Maximum upload date.</param>
         /// <param name="minTakenDate">Minimum taken date.</param>
         /// <param name="maxTakenDate">Maximum taken date.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PlacesPlacesForContactsAsync(PlaceType placeType, string woeId, string placeId, int threshold,
+        public async Task<PlaceCollection> PlacesPlacesForContactsAsync(PlaceType placeType, string woeId, string placeId, int threshold,
                                                  ContactSearch contactType, DateTime minUploadDate,
                                                  DateTime maxUploadDate, DateTime minTakenDate, DateTime maxTakenDate,
-                                                 Action<FlickrResult<PlaceCollection>> callback)
+                                                 CancellationToken cancellationToken = default +)
         {
             CheckRequiresAuthentication();
 
@@ -519,7 +488,7 @@ namespace FlickrNet
                 parameters.Add("max_taken_date", UtilityMethods.DateToMySql(maxTakenDate));
             }
 
-            GetResponseAsync<PlaceCollection>(parameters, callback);
+            return await GetResponseAsync<PlaceCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -529,10 +498,9 @@ namespace FlickrNet
         /// <param name="woeId">A Where on Earth identifier to use to filter photo clusters. </param>
         /// <param name="placeId">A Flickr Places identifier to use to filter photo clusters. </param>
         /// <param name="boundaryBox">The boundary box to search for places in.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PlacesPlacesForBoundingBoxAsync(PlaceType placeType, string woeId, string placeId,
+        public async Task<PlaceCollection> PlacesPlacesForBoundingBoxAsync(PlaceType placeType, string woeId, string placeId,
                                                     BoundaryBox boundaryBox,
-                                                    Action<FlickrResult<PlaceCollection>> callback)
+                                                    CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -552,33 +520,7 @@ namespace FlickrNet
 
             parameters.Add("bbox", boundaryBox.ToString());
 
-            GetResponseAsync<PlaceCollection>(parameters, callback);
-        }
-
-        /// <summary>
-        /// Find Flickr Places information by Place ID.
-        ///
-        /// This method has been deprecated. It won't be removed but you should use <see cref="Flickr.PlacesGetInfo(string, string)"/> instead.
-        /// </summary>
-        /// <param name="placeId">A Flickr Places ID.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        [Obsolete("This method is deprecated. Please use Flickr.PlacesGetInfoAsync instead.")]
-        public void PlacesResolvePlaceIdAsync(string placeId, Action<FlickrResult<PlaceInfo>> callback)
-        {
-            PlacesGetInfoAsync(placeId, null, callback);
-        }
-
-        /// <summary>
-        /// Find Flickr Places information by Place URL.
-        ///
-        /// This method has been deprecated. It won't be removed but you should use <see cref="Flickr.PlacesGetInfoByUrl(string)"/> instead.
-        /// </summary>
-        /// <param name="url">A Flickr Places URL.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        [Obsolete("This method is deprecated. Please use Flickr.PlacesGetInfoByUrlAsync instead.")]
-        public void PlacesResolvePlaceUrlAsync(string url, Action<FlickrResult<PlaceInfo>> callback)
-        {
-            PlacesGetInfoByUrlAsync(url, callback);
+            return await GetResponseAsync<PlaceCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -588,10 +530,9 @@ namespace FlickrNet
         /// (While optional, you must pass either a valid Places ID or a WOE ID.)</param>
         /// <param name="woeId">A Where on Earth identifier to use to filter photo clusters.
         /// (While optional, you must pass either a valid Places ID or a WOE ID.)</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PlacesTagsForPlaceAsync(string placeId, string woeId, Action<FlickrResult<TagCollection>> callback)
+        public async Task<TagCollection> PlacesTagsForPlaceAsync(string placeId, string woeId, CancellationToken cancellationToken = default)
         {
-            PlacesTagsForPlaceAsync(placeId, woeId, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, callback);
+            return await PlacesTagsForPlaceAsync(placeId, woeId, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, cancellationToken);
         }
 
         /// <summary>
@@ -605,10 +546,9 @@ namespace FlickrNet
         /// <param name="maxUploadDate">Maximum upload date. Photos with an upload date less than or equal to this value will be returned.</param>
         /// <param name="minTakenDate">Minimum taken date. Photos with an taken date greater than or equal to this value will be returned.</param>
         /// <param name="maxTakenDate">Maximum taken date. Photos with an taken date less than or equal to this value will be returned.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PlacesTagsForPlaceAsync(string placeId, string woeId, DateTime minUploadDate, DateTime maxUploadDate,
+        public async Task<TagCollection> PlacesTagsForPlaceAsync(string placeId, string woeId, DateTime minUploadDate, DateTime maxUploadDate,
                                             DateTime minTakenDate, DateTime maxTakenDate,
-                                            Action<FlickrResult<TagCollection>> callback)
+                                            CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -650,7 +590,7 @@ namespace FlickrNet
                 parameters.Add("max_upload_date", UtilityMethods.DateToUnixTimestamp(maxUploadDate));
             }
 
-            GetResponseAsync<TagCollection>(parameters, callback);
+            return await GetResponseAsync<TagCollection>(parameters, cancellationToken);
         }
     }
 }
