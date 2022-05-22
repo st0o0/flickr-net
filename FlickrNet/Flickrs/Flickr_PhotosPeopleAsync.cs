@@ -3,6 +3,8 @@ using FlickrNet.Flickrs.Results;
 using FlickrNet.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNet
 {
@@ -13,10 +15,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="photoId">The id of the photo to add a person to.</param>
         /// <param name="userId">The NSID of the user to add to the photo.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosPeopleAddAsync(string photoId, string userId, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosPeopleAddAsync(string photoId, string userId, CancellationToken cancellationToken = default)
         {
-            PhotosPeopleAddAsync(photoId, userId, null, null, null, null, callback);
+            await PhotosPeopleAddAsync(photoId, userId, null, null, null, null, cancellationToken);
         }
 
         /// <summary>
@@ -28,8 +29,7 @@ namespace FlickrNet
         /// <param name="personY">The top-most pixel co-ordinate of the box around the person.</param>
         /// <param name="personWidth">The width (in pixels) of the box around the person.</param>
         /// <param name="personHeight">The height (in pixels) of the box around the person.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosPeopleAddAsync(string photoId, string userId, int? personX, int? personY, int? personWidth, int? personHeight, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosPeopleAddAsync(string photoId, string userId, int? personX, int? personY, int? personWidth, int? personHeight, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -59,7 +59,7 @@ namespace FlickrNet
                 parameters.Add("person_h", personHeight.Value.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -67,8 +67,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="photoId">The id of the photo to remove a person from.</param>
         /// <param name="userId">The NSID of the person to remove from the photo.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosPeopleDeleteAsync(string photoId, string userId, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosPeopleDeleteAsync(string photoId, string userId, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -79,7 +78,7 @@ namespace FlickrNet
                 { "user_id", userId }
             };
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -87,8 +86,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="photoId">The id of the photo to edit a person in.</param>
         /// <param name="userId">The NSID of the person whose bounding box you want to remove.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosPeopleDeleteCoordsAsync(string photoId, string userId, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosPeopleDeleteCoordsAsync(string photoId, string userId, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -99,7 +97,7 @@ namespace FlickrNet
                 { "user_id", userId }
             };
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -111,8 +109,7 @@ namespace FlickrNet
         /// <param name="personY">The top-most pixel co-ordinate of the box around the person.</param>
         /// <param name="personWidth">The width (in pixels) of the box around the person.</param>
         /// <param name="personHeight">The height (in pixels) of the box around the person.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosPeopleEditCoordsAsync(string photoId, string userId, int personX, int personY, int personWidth, int personHeight, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosPeopleEditCoordsAsync(string photoId, string userId, int personX, int personY, int personWidth, int personHeight, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -127,15 +124,14 @@ namespace FlickrNet
                 { "person_h", personHeight.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) }
             };
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Get a list of people in a given photo.
         /// </summary>
         /// <param name="photoId">The id of the photo to get a list of people for.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosPeopleGetListAsync(string photoId, Action<FlickrResult<PhotoPersonCollection>> callback)
+        public async Task<PhotoPersonCollection> PhotosPeopleGetListAsync(string photoId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -143,7 +139,7 @@ namespace FlickrNet
                 { "photo_id", photoId }
             };
 
-            GetResponseAsync<PhotoPersonCollection>(parameters, callback);
+            return await GetResponseAsync<PhotoPersonCollection>(parameters, cancellationToken);
         }
     }
 }

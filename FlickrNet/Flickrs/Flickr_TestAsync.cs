@@ -3,6 +3,8 @@ using FlickrNet.Flickrs.Results;
 using FlickrNet.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNet
 {
@@ -18,8 +20,7 @@ namespace FlickrNet
         /// </remarks>
         /// <param name="method">The method name, e.g. "flickr.test.null".</param>
         /// <param name="parameters">A list of parameters. Note, api_key is added by default and is not included. Can be null.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void TestGenericAsync(string method, Dictionary<string, string> parameters, Action<FlickrResult<UnknownResponse>> callback)
+        public async Task<UnknownResponse> TestGenericAsync(string method, Dictionary<string, string> parameters, CancellationToken cancellationToken = default)
         {
             if (parameters == null)
             {
@@ -27,46 +28,43 @@ namespace FlickrNet
             }
 
             parameters.Add("method", method);
-            GetResponseAsync<UnknownResponse>(parameters, callback);
+            return await GetResponseAsync<UnknownResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Test the logged in state of the current Filckr object.
         /// </summary>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void TestLoginAsync(Action<FlickrResult<FoundUser>> callback)
+        public async Task<FoundUser> TestLoginAsync(CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.test.login" }
             };
 
-            GetResponseAsync<FoundUser>(parameters, callback);
+            return await GetResponseAsync<FoundUser>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Null test.
         /// </summary>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void TestNullAsync(Action<FlickrResult<NoResponse>> callback)
+        public async Task TestNullAsync(CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.test.null" }
             };
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Echos back all parameters passed in.
         /// </summary>
         /// <param name="parameters">A dictionary of extra parameters to pass in. Note, the "method" and "api_key" parameters will always be passed in.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void TestEchoAsync(Dictionary<string, string> parameters, Action<FlickrResult<EchoResponseDictionary>> callback)
+        public async Task<EchoResponseDictionary> TestEchoAsync(Dictionary<string, string> parameters, CancellationToken cancellationToken = default)
         {
             parameters.Add("method", "flickr.test.echo");
-            GetResponseAsync<EchoResponseDictionary>(parameters, callback);
+            return await GetResponseAsync<EchoResponseDictionary>(parameters, cancellationToken);
         }
     }
 }

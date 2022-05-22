@@ -3,6 +3,8 @@ using FlickrNet.Flickrs.Results;
 using FlickrNet.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNet
 {
@@ -16,8 +18,7 @@ namespace FlickrNet
         /// </remarks>
         /// <param name="photoId">The ID of the photo.</param>
         /// <param name="degrees">The number of degrees to rotate by. Valid values are 90, 180 and 270.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosTransformRotateAsync(string photoId, int degrees, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosTransformRotateAsync(string photoId, int degrees, CancellationToken cancellationToken = default)
         {
             if (photoId == null)
             {
@@ -36,15 +37,14 @@ namespace FlickrNet
                 { "degrees", degrees.ToString(System.Globalization.NumberFormatInfo.InvariantInfo) }
             };
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Checks the status of one or more asynchronous photo upload tickets.
         /// </summary>
         /// <param name="tickets">A list of ticket ids</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosUploadCheckTicketsAsync(string[] tickets, Action<FlickrResult<TicketCollection>> callback)
+        public async Task<TicketCollection> PhotosUploadCheckTicketsAsync(string[] tickets, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -52,7 +52,7 @@ namespace FlickrNet
                 { "tickets", string.Join(",", tickets) }
             };
 
-            GetResponseAsync<TicketCollection>(parameters, callback);
+            return await GetResponseAsync<TicketCollection>(parameters, cancellationToken);
         }
     }
 }

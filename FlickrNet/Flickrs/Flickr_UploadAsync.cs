@@ -26,7 +26,6 @@ namespace FlickrNet
         /// <param name="contentType">The content type of the photo, i.e. Photo, Screenshot or Other.</param>
         /// <param name="safetyLevel">The safety level of the photo, i.e. Safe, Moderate or Restricted.</param>
         /// <param name="hiddenFromSearch">Is the photo hidden from public searches.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         public async Task<string> UploadPictureAsync(Stream stream, string fileName, string title, string description, string tags, bool isPublic, bool isFamily, bool isFriend, ContentType contentType, SafetyLevel safetyLevel, HiddenFromSearch hiddenFromSearch, IProgress<double> progress = default, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
@@ -89,7 +88,6 @@ namespace FlickrNet
         /// <param name="stream">The <see cref="Stream"/> object containing the photo to be uploaded.</param>
         /// <param name="fileName">The filename of the file to replace the existing item with.</param>
         /// <param name="photoId">The ID of the photo to replace.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         public async Task<string> ReplacePictureAsync(Stream stream, string fileName, string photoId, IProgress<double> progress = default, CancellationToken cancellationToken = default)
         {
             Uri replaceUri = new(ReplaceUrl);

@@ -1,10 +1,11 @@
 ﻿using FlickrNet.CollectionModels;
 using FlickrNet.Contexts.Bases;
 using FlickrNet.Enums;
-using FlickrNet.Flickrs.Results;
 using FlickrNet.Models;
-using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNet
 {
@@ -15,8 +16,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="photosetId">The ID of the photoset to add the photo to.</param>
         /// <param name="photoId">The ID of the photo to add.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsAddPhotoAsync(string photosetId, string photoId, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosetsAddPhotoAsync(string photosetId, string photoId, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -27,7 +27,7 @@ namespace FlickrNet
                 { "photo_id", photoId }
             };
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -35,10 +35,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="title">The title of the photoset.</param>
         /// <param name="primaryPhotoId">The ID of the photo which will be the primary photo for the photoset. This photo will also be added to the set.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsCreateAsync(string title, string primaryPhotoId, Action<FlickrResult<Photoset>> callback)
+        public async Task<Photoset> PhotosetsCreateAsync(string title, string primaryPhotoId, CancellationToken cancellationToken = default)
         {
-            PhotosetsCreateAsync(title, null, primaryPhotoId, callback);
+            return await PhotosetsCreateAsync(title, null, primaryPhotoId, cancellationToken);
         }
 
         /// <summary>
@@ -47,8 +46,7 @@ namespace FlickrNet
         /// <param name="title">The title of the photoset.</param>
         /// <param name="description">THe description of the photoset.</param>
         /// <param name="primaryPhotoId">The ID of the photo which will be the primary photo for the photoset. This photo will also be added to the set.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsCreateAsync(string title, string description, string primaryPhotoId, Action<FlickrResult<Photoset>> callback)
+        public async Task<Photoset> PhotosetsCreateAsync(string title, string description, string primaryPhotoId, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -67,15 +65,14 @@ namespace FlickrNet
                 parameters.Add("description", description);
             }
 
-            GetResponseAsync<Photoset>(parameters, callback);
+            return await GetResponseAsync<Photoset>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Deletes the specified photoset.
         /// </summary>
         /// <param name="photosetId">The ID of the photoset to delete.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsDeleteAsync(string photosetId, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosetsDeleteAsync(string photosetId, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -85,7 +82,7 @@ namespace FlickrNet
                 { "photoset_id", photosetId }
             };
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -94,8 +91,7 @@ namespace FlickrNet
         /// <param name="photosetId">The ID of the photoset to update.</param>
         /// <param name="title">The new title for the photoset.</param>
         /// <param name="description">The new description for the photoset.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsEditMetaAsync(string photosetId, string title, string description, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosetsEditMetaAsync(string photosetId, string title, string description, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -107,7 +103,7 @@ namespace FlickrNet
                 { "description", description }
             };
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -121,10 +117,9 @@ namespace FlickrNet
         /// <param name="photosetId">The ID of the photoset to update.</param>
         /// <param name="primaryPhotoId">The ID of the new primary photo for the photoset.</param>
         /// <param name="photoIds">An array of photo IDs.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsEditPhotosAsync(string photosetId, string primaryPhotoId, string[] photoIds, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosetsEditPhotosAsync(string photosetId, string primaryPhotoId, string[] photoIds, CancellationToken cancellationToken = default)
         {
-            PhotosetsEditPhotosAsync(photosetId, primaryPhotoId, string.Join(",", photoIds), callback);
+            await PhotosetsEditPhotosAsync(photosetId, primaryPhotoId, string.Join(",", photoIds), cancellationToken);
         }
 
         /// <summary>
@@ -138,8 +133,7 @@ namespace FlickrNet
         /// <param name="photosetId">The ID of the photoset to update.</param>
         /// <param name="primaryPhotoId">The ID of the new primary photo for the photoset.</param>
         /// <param name="photoIds">An comma seperated list of photo IDs.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsEditPhotosAsync(string photosetId, string primaryPhotoId, string photoIds, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosetsEditPhotosAsync(string photosetId, string primaryPhotoId, string photoIds, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -151,7 +145,7 @@ namespace FlickrNet
                 { "photo_ids", photoIds }
             };
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -159,8 +153,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="photoId">The photo id of the photo in the set.</param>
         /// <param name="photosetId">The id of the set.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsGetContextAsync(string photoId, string photosetId, Action<FlickrResult<Context>> callback)
+        public async Task<Context> PhotosetsGetContextAsync(string photoId, string photosetId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -169,15 +162,14 @@ namespace FlickrNet
                 { "photoset_id", photosetId }
             };
 
-            GetResponseAsync<Context>(parameters, callback);
+            return await GetResponseAsync<Context>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Gets the information about a photoset.
         /// </summary>
         /// <param name="photosetId">The ID of the photoset to return information for.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsGetInfoAsync(string photosetId, Action<FlickrResult<Photoset>> callback)
+        public async Task<Photoset> PhotosetsGetInfoAsync(string photosetId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -185,19 +177,18 @@ namespace FlickrNet
                 { "photoset_id", photosetId }
             };
 
-            GetResponseAsync<Photoset>(parameters, callback);
+            return await GetResponseAsync<Photoset>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Gets a list of the currently authenticated users photosets.
         /// </summary>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         /// <returns>A <see cref="PhotosetCollection"/> instance containing a collection of photosets.</returns>
-        public void PhotosetsGetListAsync(Action<FlickrResult<PhotosetCollection>> callback)
+        public async Task<PhotosetCollection> PhotosetsGetListAsync(CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
-            PhotosetsGetListAsync(null, 0, 0, callback);
+            return await PhotosetsGetListAsync(null, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -205,23 +196,21 @@ namespace FlickrNet
         /// </summary>
         /// <param name="page">The page of the results to return. Defaults to page 1.</param>
         /// <param name="perPage">The number of photosets to return per page. Defaults to 500.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
         /// <returns>A <see cref="PhotosetCollection"/> instance containing a collection of photosets.</returns>
-        public void PhotosetsGetListAsync(int page, int perPage, Action<FlickrResult<PhotosetCollection>> callback)
+        public async Task<PhotosetCollection> PhotosetsGetListAsync(int page, int perPage, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
-            PhotosetsGetListAsync(null, page, perPage, callback);
+            return await PhotosetsGetListAsync(null, page, perPage, cancellationToken);
         }
 
         /// <summary>
         /// Gets a list of the specified users photosets.
         /// </summary>
         /// <param name="userId">The ID of the user to return the photosets of.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsGetListAsync(string userId, Action<FlickrResult<PhotosetCollection>> callback)
+        public async Task<PhotosetCollection> PhotosetsGetListAsync(string userId, CancellationToken cancellationToken = default)
         {
-            PhotosetsGetListAsync(userId, 0, 0, callback);
+            return await PhotosetsGetListAsync(userId, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -230,8 +219,7 @@ namespace FlickrNet
         /// <param name="userId">The ID of the user to return the photosets of.</param>
         /// <param name="page">The page of the results to return. Defaults to page 1.</param>
         /// <param name="perPage">The number of photosets to return per page. Defaults to 500.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsGetListAsync(string userId, int page, int perPage, Action<FlickrResult<PhotosetCollection>> callback)
+        public async Task<PhotosetCollection> PhotosetsGetListAsync(string userId, int page, int perPage, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -252,29 +240,21 @@ namespace FlickrNet
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<PhotosetCollection>(
-                parameters,
-                r =>
-                {
-                    if (!r.HasError)
-                    {
-                        foreach (Photoset photoset in r.Result)
-                        {
-                            photoset.OwnerId = userId;
-                        }
-                    }
-                    callback(r);
-                });
+            PhotosetCollection result = await GetResponseAsync<PhotosetCollection>(parameters, cancellationToken);
+            foreach (Photoset photoset in result)
+            {
+                photoset.OwnerId = userId;
+            }
+            return result;
         }
 
         /// <summary>
         /// Gets a collection of photos for a photoset.
         /// </summary>
         /// <param name="photosetId">The ID of the photoset to return photos for.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsGetPhotosAsync(string photosetId, Action<FlickrResult<PhotosetPhotoCollection>> callback)
+        public async Task<PhotosetPhotoCollection> PhotosetsGetPhotosAsync(string photosetId, CancellationToken cancellationToken = default)
         {
-            PhotosetsGetPhotosAsync(photosetId, PhotoSearchExtras.None, PrivacyFilter.None, 0, 0, callback);
+            return await PhotosetsGetPhotosAsync(photosetId, PhotoSearchExtras.None, PrivacyFilter.None, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -283,10 +263,9 @@ namespace FlickrNet
         /// <param name="photosetId">The ID of the photoset to return photos for.</param>
         /// <param name="page">The page to return, defaults to 1.</param>
         /// <param name="perPage">The number of photos to return per page.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsGetPhotosAsync(string photosetId, int page, int perPage, Action<FlickrResult<PhotosetPhotoCollection>> callback)
+        public async Task<PhotosetPhotoCollection> PhotosetsGetPhotosAsync(string photosetId, int page, int perPage, CancellationToken cancellationToken = default)
         {
-            PhotosetsGetPhotosAsync(photosetId, PhotoSearchExtras.None, PrivacyFilter.None, page, perPage, callback);
+            return await PhotosetsGetPhotosAsync(photosetId, PhotoSearchExtras.None, PrivacyFilter.None, page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -294,10 +273,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="photosetId">The ID of the photoset to return photos for.</param>
         /// <param name="privacyFilter">The privacy filter to search on.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsGetPhotosAsync(string photosetId, PrivacyFilter privacyFilter, Action<FlickrResult<PhotosetPhotoCollection>> callback)
+        public async Task<PhotosetPhotoCollection> PhotosetsGetPhotosAsync(string photosetId, PrivacyFilter privacyFilter, CancellationToken cancellationToken = default)
         {
-            PhotosetsGetPhotosAsync(photosetId, PhotoSearchExtras.None, privacyFilter, 0, 0, callback);
+            return await PhotosetsGetPhotosAsync(photosetId, PhotoSearchExtras.None, privacyFilter, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -307,10 +285,9 @@ namespace FlickrNet
         /// <param name="privacyFilter">The privacy filter to search on.</param>
         /// <param name="page">The page to return, defaults to 1.</param>
         /// <param name="perPage">The number of photos to return per page.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsGetPhotosAsync(string photosetId, PrivacyFilter privacyFilter, int page, int perPage, Action<FlickrResult<PhotosetPhotoCollection>> callback)
+        public async Task<PhotosetPhotoCollection> PhotosetsGetPhotosAsync(string photosetId, PrivacyFilter privacyFilter, int page, int perPage, CancellationToken cancellationToken = default)
         {
-            PhotosetsGetPhotosAsync(photosetId, PhotoSearchExtras.None, privacyFilter, page, perPage, callback);
+            return await PhotosetsGetPhotosAsync(photosetId, PhotoSearchExtras.None, privacyFilter, page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -318,10 +295,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="photosetId">The ID of the photoset to return photos for.</param>
         /// <param name="extras">The extras to return for each photo.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsGetPhotosAsync(string photosetId, PhotoSearchExtras extras, Action<FlickrResult<PhotosetPhotoCollection>> callback)
+        public async Task<PhotosetPhotoCollection> PhotosetsGetPhotosAsync(string photosetId, PhotoSearchExtras extras, CancellationToken cancellationToken = default)
         {
-            PhotosetsGetPhotosAsync(photosetId, extras, PrivacyFilter.None, 0, 0, callback);
+            return await PhotosetsGetPhotosAsync(photosetId, extras, PrivacyFilter.None, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -331,10 +307,9 @@ namespace FlickrNet
         /// <param name="extras">The extras to return for each photo.</param>
         /// <param name="page">The page to return, defaults to 1.</param>
         /// <param name="perPage">The number of photos to return per page.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsGetPhotosAsync(string photosetId, PhotoSearchExtras extras, int page, int perPage, Action<FlickrResult<PhotosetPhotoCollection>> callback)
+        public async Task<PhotosetPhotoCollection> PhotosetsGetPhotosAsync(string photosetId, PhotoSearchExtras extras, int page, int perPage, CancellationToken cancellationToken = default)
         {
-            PhotosetsGetPhotosAsync(photosetId, extras, PrivacyFilter.None, page, perPage, callback);
+            return await PhotosetsGetPhotosAsync(photosetId, extras, PrivacyFilter.None, page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -343,10 +318,9 @@ namespace FlickrNet
         /// <param name="photosetId">The ID of the photoset to return photos for.</param>
         /// <param name="extras">The extras to return for each photo.</param>
         /// <param name="privacyFilter">The privacy filter to search on.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsGetPhotosAsync(string photosetId, PhotoSearchExtras extras, PrivacyFilter privacyFilter, Action<FlickrResult<PhotosetPhotoCollection>> callback)
+        public async Task<PhotosetPhotoCollection> PhotosetsGetPhotosAsync(string photosetId, PhotoSearchExtras extras, PrivacyFilter privacyFilter, CancellationToken cancellationToken = default)
         {
-            PhotosetsGetPhotosAsync(photosetId, extras, privacyFilter, 0, 0, callback);
+            return await PhotosetsGetPhotosAsync(photosetId, extras, privacyFilter, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -357,10 +331,9 @@ namespace FlickrNet
         /// <param name="privacyFilter">The privacy filter to search on.</param>
         /// <param name="page">The page to return, defaults to 1.</param>
         /// <param name="perPage">The number of photos to return per page.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsGetPhotosAsync(string photosetId, PhotoSearchExtras extras, PrivacyFilter privacyFilter, int page, int perPage, Action<FlickrResult<PhotosetPhotoCollection>> callback)
+        public async Task<PhotosetPhotoCollection> PhotosetsGetPhotosAsync(string photosetId, PhotoSearchExtras extras, PrivacyFilter privacyFilter, int page, int perPage, CancellationToken cancellationToken = default)
         {
-            PhotosetsGetPhotosAsync(photosetId, extras, privacyFilter, page, perPage, MediaType.None, callback);
+            return await PhotosetsGetPhotosAsync(photosetId, extras, privacyFilter, page, perPage, MediaType.None, cancellationToken);
         }
 
         /// <summary>
@@ -372,10 +345,7 @@ namespace FlickrNet
         /// <param name="page">The page to return, defaults to 1.</param>
         /// <param name="perPage">The number of photos to return per page.</param>
         /// <param name="media">Filter on the type of media.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsGetPhotosAsync(string photosetId, PhotoSearchExtras extras, PrivacyFilter privacyFilter,
-                                            int page, int perPage, MediaType media,
-                                            Action<FlickrResult<PhotosetPhotoCollection>> callback)
+        public async Task<PhotosetPhotoCollection> PhotosetsGetPhotosAsync(string photosetId, PhotoSearchExtras extras, PrivacyFilter privacyFilter, int page, int perPage, MediaType media, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -407,7 +377,7 @@ namespace FlickrNet
                 parameters.Add("media", (media == MediaType.All ? "all" : (media == MediaType.Photos ? "photos" : (media == MediaType.Videos ? "videos" : string.Empty))));
             }
 
-            GetResponseAsync<PhotosetPhotoCollection>(parameters, callback);
+            return await GetResponseAsync<PhotosetPhotoCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -416,11 +386,9 @@ namespace FlickrNet
         /// <param name="photosetIds">An array of photoset IDs,
         /// ordered with the set to show first, first in the list.
         /// Any set IDs not given in the list will be set to appear at the end of the list, ordered by their IDs.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsOrderSetsAsync(IEnumerable<string> photosetIds, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosetsOrderSetsAsync(IEnumerable<string> photosetIds, CancellationToken cancellationToken = default)
         {
-            List<string> list = new(photosetIds);
-            PhotosetsOrderSetsAsync(string.Join(",", list.ToArray()), callback);
+            await PhotosetsOrderSetsAsync(string.Join(",", photosetIds.ToArray()), cancellationToken);
         }
 
         /// <summary>
@@ -429,10 +397,9 @@ namespace FlickrNet
         /// <param name="photosetIds">An array of photoset IDs,
         /// ordered with the set to show first, first in the list.
         /// Any set IDs not given in the list will be set to appear at the end of the list, ordered by their IDs.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsOrderSetsAsync(string[] photosetIds, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosetsOrderSetsAsync(string[] photosetIds, CancellationToken cancellationToken = default)
         {
-            PhotosetsOrderSetsAsync(string.Join(",", photosetIds), callback);
+            await PhotosetsOrderSetsAsync(string.Join(",", photosetIds), cancellationToken);
         }
 
         /// <summary>
@@ -441,8 +408,7 @@ namespace FlickrNet
         /// <param name="photosetIds">A comma delimited list of photoset IDs,
         /// ordered with the set to show first, first in the list.
         /// Any set IDs not given in the list will be set to appear at the end of the list, ordered by their IDs.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsOrderSetsAsync(string photosetIds, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosetsOrderSetsAsync(string photosetIds, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -450,7 +416,7 @@ namespace FlickrNet
                 { "photoset_ids", photosetIds }
             };
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -461,8 +427,7 @@ namespace FlickrNet
         /// </remarks>
         /// <param name="photosetId">The ID of the photoset to remove the photo from.</param>
         /// <param name="photoId">The ID of the photo to remove.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsRemovePhotoAsync(string photosetId, string photoId, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosetsRemovePhotoAsync(string photosetId, string photoId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -471,7 +436,7 @@ namespace FlickrNet
                 { "photo_id", photoId }
             };
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -482,8 +447,7 @@ namespace FlickrNet
         /// </remarks>
         /// <param name="photosetId">The ID of the photoset to remove the photo from.</param>
         /// <param name="photoIds">The IDs of the photo to remove.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsRemovePhotosAsync(string photosetId, string[] photoIds, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosetsRemovePhotosAsync(string photosetId, string[] photoIds, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -492,7 +456,7 @@ namespace FlickrNet
                 { "photo_ids", string.Join(",", photoIds) }
             };
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -503,8 +467,7 @@ namespace FlickrNet
         /// </remarks>
         /// <param name="photosetId">The ID of the photoset to reorder the photo for.</param>
         /// <param name="photoIds">The IDs of the photo to reorder.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsReorderPhotosAsync(string photosetId, string[] photoIds, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosetsReorderPhotosAsync(string photosetId, string[] photoIds, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -513,7 +476,7 @@ namespace FlickrNet
                 { "photo_ids", string.Join(",", photoIds) }
             };
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -524,8 +487,7 @@ namespace FlickrNet
         /// </remarks>
         /// <param name="photosetId">The ID of the photoset to set the primary photo for.</param>
         /// <param name="photoId">The IDs of the photo to become the primary photo.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsSetPrimaryPhotoAsync(string photosetId, string photoId, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosetsSetPrimaryPhotoAsync(string photosetId, string photoId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -534,15 +496,14 @@ namespace FlickrNet
                 { "photo_id", photoId }
             };
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Gets a list of comments for a photoset.
         /// </summary>
         /// <param name="photosetId">The id of the photoset to return the comments for.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsCommentsGetListAsync(string photosetId, Action<FlickrResult<PhotosetCommentCollection>> callback)
+        public async Task<PhotosetCommentCollection> PhotosetsCommentsGetListAsync(string photosetId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -550,7 +511,7 @@ namespace FlickrNet
                 { "photoset_id", photosetId }
             };
 
-            GetResponseAsync<PhotosetCommentCollection>(parameters, callback);
+            return await GetResponseAsync<PhotosetCommentCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -558,8 +519,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="photosetId">The ID of the photoset to add the comment to.</param>
         /// <param name="commentText">The text of the comment. Can contain some HTML.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsCommentsAddCommentAsync(string photosetId, string commentText, Action<FlickrResult<string>> callback)
+        public async Task<string> PhotosetsCommentsAddCommentAsync(string photosetId, string commentText, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -568,30 +528,16 @@ namespace FlickrNet
                 { "comment_text", commentText }
             };
 
-            GetResponseAsync<UnknownResponse>(
-                parameters,
-                r =>
-                {
-                    FlickrResult<string> result = new FlickrResult<string>();
-                    result.HasError = r.HasError;
-                    if (r.HasError)
-                    {
-                        result.Error = r.Error;
-                    }
-                    else
-                    {
-                        result.Result = r.Result.GetAttributeValue("*", "id");
-                    }
-                    callback(result);
-                });
+            UnknownResponse result = await GetResponseAsync<UnknownResponse>(parameters, cancellationToken);
+
+            return result.GetAttributeValue("*", "id");
         }
 
         /// <summary>
         /// Deletes a comment from a photoset.
         /// </summary>
         /// <param name="commentId">The ID of the comment to delete.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsCommentsDeleteCommentAsync(string commentId, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosetsCommentsDeleteCommentAsync(string commentId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -599,7 +545,7 @@ namespace FlickrNet
                 { "comment_id", commentId }
             };
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -607,8 +553,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="commentId">The ID of the comment to edit.</param>
         /// <param name="commentText">The new text for the comment.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void PhotosetsCommentsEditCommentAsync(string commentId, string commentText, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosetsCommentsEditCommentAsync(string commentId, string commentText, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -617,7 +562,7 @@ namespace FlickrNet
                 { "comment_text", commentText }
             };
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
     }
 }

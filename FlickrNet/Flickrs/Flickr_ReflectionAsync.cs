@@ -1,7 +1,7 @@
 ﻿using FlickrNet.CollectionModels;
-using FlickrNet.Flickrs.Results;
-using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNet
 {
@@ -12,23 +12,21 @@ namespace FlickrNet
         /// </summary>
         /// <remarks>
         /// Note: Not all methods might be supported by the FlickrNet Library.</remarks>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void ReflectionGetMethodsAsync(Action<FlickrResult<MethodCollection>> callback)
+        public async Task<MethodCollection> ReflectionGetMethodsAsync(CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.reflection.getMethods" }
             };
 
-            GetResponseAsync<MethodCollection>(parameters, callback);
+            return await GetResponseAsync<MethodCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Gets the method details for a given method.
         /// </summary>
         /// <param name="methodName">The name of the method to retrieve.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void ReflectionGetMethodInfoAsync(string methodName, Action<FlickrResult<Method>> callback)
+        public async Task<Method> ReflectionGetMethodInfoAsync(string methodName, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -37,7 +35,7 @@ namespace FlickrNet
                 { "method_name", methodName }
             };
 
-            GetResponseAsync<Method>(parameters, callback);
+            return await GetResponseAsync<Method>(parameters, cancellationToken);
         }
     }
 }

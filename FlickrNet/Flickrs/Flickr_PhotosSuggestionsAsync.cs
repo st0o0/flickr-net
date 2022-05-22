@@ -1,9 +1,10 @@
 ﻿using FlickrNet.CollectionModels;
 using FlickrNet.Enums;
-using FlickrNet.Flickrs.Results;
 using FlickrNet.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNet
 {
@@ -13,8 +14,7 @@ namespace FlickrNet
         /// Approve a location suggestion for a photo.
         /// </summary>
         /// <param name="suggestionId">The suggestion to approve.</param>
-        /// <param name="callback"></param>
-        public void PhotosSuggestionsApproveSuggestionAsync(string suggestionId, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosSuggestionsApproveSuggestionAsync(string suggestionId, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -29,7 +29,7 @@ namespace FlickrNet
                 { "suggestion_id", suggestionId }
             };
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -37,9 +37,8 @@ namespace FlickrNet
         /// </summary>
         /// <param name="photoId">The photo id of the photo to list the suggestions for.</param>
         /// <param name="status">The type of status to filter by.</param>
-        /// <param name="callback"></param>
         /// <returns></returns>
-        public void PhotosSuggestionsGetListAsync(string photoId, SuggestionStatus status, Action<FlickrResult<SuggestionCollection>> callback)
+        public async Task<SuggestionCollection> PhotosSuggestionsGetListAsync(string photoId, SuggestionStatus status, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -50,15 +49,14 @@ namespace FlickrNet
                 { "status_id", status.ToString("d") }
             };
 
-            GetResponseAsync<SuggestionCollection>(parameters, callback);
+            return await GetResponseAsync<SuggestionCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Rejects a suggestion made for a location on a photo. Currently doesn't appear to actually work. Just use <see cref="Flickr.PhotosSuggestionsRemoveSuggestion"/> instead.
         /// </summary>
         /// <param name="suggestionId">The ID of the suggestion to remove.</param>
-        /// <param name="callback"></param>
-        public void PhotosSuggestionsRejectSuggestionAsync(string suggestionId, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosSuggestionsRejectSuggestionAsync(string suggestionId, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -73,15 +71,14 @@ namespace FlickrNet
                 { "suggestion_id", suggestionId }
             };
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Remove a location suggestion from a photo.
         /// </summary>
         /// <param name="suggestionId">The suggestion to remove.</param>
-        /// <param name="callback"></param>
-        public void PhotosSuggestionsRemoveSuggestionAsync(string suggestionId, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosSuggestionsRemoveSuggestionAsync(string suggestionId, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -96,7 +93,7 @@ namespace FlickrNet
                 { "suggestion_id", suggestionId }
             };
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -109,10 +106,7 @@ namespace FlickrNet
         /// <param name="woeId">The WOE ID of the location to suggest.</param>
         /// <param name="placeId">The Flickr place id of the location to suggest.</param>
         /// <param name="note">A note to add to the suggestion.</param>
-        /// <param name="callback"></param>
-        public void PhotosSuggestionsSuggestLocationAsync(string photoId, double latitude, double longitude,
-                                                          GeoAccuracy accuracy, string woeId, string placeId,
-                                                          string note, Action<FlickrResult<NoResponse>> callback)
+        public async Task PhotosSuggestionsSuggestLocationAsync(string photoId, double latitude, double longitude, GeoAccuracy accuracy, string woeId, string placeId, string note, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -128,7 +122,7 @@ namespace FlickrNet
                 { "note", note }
             };
 
-            GetResponseAsync<NoResponse>(parameters, callback);
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
         }
     }
 }
