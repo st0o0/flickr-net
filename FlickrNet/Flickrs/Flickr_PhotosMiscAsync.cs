@@ -1,5 +1,4 @@
 ﻿using FlickrNet.CollectionModels;
-using FlickrNet.Flickrs.Results;
 using FlickrNet.Models;
 using System;
 using System.Collections.Generic;

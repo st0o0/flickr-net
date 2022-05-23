@@ -1,9 +1,7 @@
 ﻿using FlickrNet.CollectionModels;
 using FlickrNet.Enums;
-using FlickrNet.Flickrs.Results;
 using FlickrNet.Models;
 using FlickrNet.SearchOptions;
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;

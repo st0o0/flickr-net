@@ -721,7 +721,6 @@ namespace FlickrNet
         {
             Dictionary<string, string> dic = new();
 
-
             if (string.IsNullOrEmpty(response))
             {
                 return dic;
@@ -737,7 +736,6 @@ namespace FlickrNet
 
             return dic;
         }
-
 
         /// <summary>
         /// Escapes a string for use with OAuth.

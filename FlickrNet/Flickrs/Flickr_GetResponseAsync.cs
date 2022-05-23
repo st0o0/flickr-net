@@ -1,5 +1,4 @@
-﻿using FlickrNet.Flickrs.Results;
-using FlickrNet.Models.Interfaces;
+﻿using FlickrNet.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading;

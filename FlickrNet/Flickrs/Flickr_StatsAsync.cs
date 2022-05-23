@@ -1,9 +1,10 @@
 ﻿using FlickrNet.CollectionModels;
 using FlickrNet.Enums;
-using FlickrNet.Flickrs.Results;
 using FlickrNet.Models;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNet
 {
@@ -16,10 +17,9 @@ namespace FlickrNet
         /// A day according to Flickr Stats starts at midnight GMT for all users,
         /// and timestamps will automatically be rounded down to the start of the day.</param>
         /// <returns></returns>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetCollectionDomainsAsync(DateTime date, Action<FlickrResult<StatDomainCollection>> callback)
+        public async Task<StatDomainCollection> StatsGetCollectionDomainsAsync(DateTime date, CancellationToken cancellationToken = default)
         {
-            StatsGetCollectionDomainsAsync(date, null, 0, 0, callback);
+            return await StatsGetCollectionDomainsAsync(date, null, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -30,10 +30,9 @@ namespace FlickrNet
         /// and timestamps will automatically be rounded down to the start of the day.</param>
         /// <param name="collectionId">The id of the collection to get stats for.
         /// If not provided, stats for all collections will be returned.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetCollectionDomainsAsync(DateTime date, string collectionId, Action<FlickrResult<StatDomainCollection>> callback)
+        public async Task<StatDomainCollection> StatsGetCollectionDomainsAsync(DateTime date, string collectionId, CancellationToken cancellationToken = default)
         {
-            StatsGetCollectionDomainsAsync(date, collectionId, 0, 0, callback);
+            return await StatsGetCollectionDomainsAsync(date, collectionId, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -46,10 +45,9 @@ namespace FlickrNet
         /// If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of domains to return per page.
         /// If this argument is omitted, it defaults to 25. The maximum allowed value is 100.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetCollectionDomainsAsync(DateTime date, int page, int perPage, Action<FlickrResult<StatDomainCollection>> callback)
+        public async Task<StatDomainCollection> StatsGetCollectionDomainsAsync(DateTime date, int page, int perPage, CancellationToken cancellationToken = default)
         {
-            StatsGetCollectionDomainsAsync(date, null, page, perPage, callback);
+            return await StatsGetCollectionDomainsAsync(date, null, page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -64,9 +62,7 @@ namespace FlickrNet
         /// If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of domains to return per page.
         /// If this argument is omitted, it defaults to 25. The maximum allowed value is 100.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetCollectionDomainsAsync(DateTime date, string collectionId, int page, int perPage,
-                                                   Action<FlickrResult<StatDomainCollection>> callback)
+        public async Task<StatDomainCollection> StatsGetCollectionDomainsAsync(DateTime date, string collectionId, int page, int perPage, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -90,7 +86,7 @@ namespace FlickrNet
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<StatDomainCollection>(parameters, callback);
+            return await GetResponseAsync<StatDomainCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -99,8 +95,7 @@ namespace FlickrNet
         /// <remarks>
         /// Archived files only available till the 1st June 2010.
         /// </remarks>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetCsvFilesAsync(Action<FlickrResult<CsvFileCollection>> callback)
+        public async Task<CsvFileCollection> StatsGetCsvFilesAsync(CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -109,7 +104,7 @@ namespace FlickrNet
                 { "method", "flickr.stats.getCSVFiles" }
             };
 
-            GetResponseAsync<CsvFileCollection>(parameters, callback);
+            return await GetResponseAsync<CsvFileCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -118,10 +113,9 @@ namespace FlickrNet
         /// <param name="date">Stats will be returned for this date.
         /// A day according to Flickr Stats starts at midnight GMT for all users,
         /// and timestamps will automatically be rounded down to the start of the day.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPhotoDomainsAsync(DateTime date, Action<FlickrResult<StatDomainCollection>> callback)
+        public async Task<StatDomainCollection> StatsGetPhotoDomainsAsync(DateTime date, CancellationToken cancellationToken = default)
         {
-            StatsGetPhotoDomainsAsync(date, null, 0, 0, callback);
+            return await StatsGetPhotoDomainsAsync(date, null, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -132,10 +126,9 @@ namespace FlickrNet
         /// and timestamps will automatically be rounded down to the start of the day.</param>
         /// <param name="photoId">The id of the photo to get stats for.
         /// If not provided, stats for all photos will be returned.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPhotoDomainsAsync(DateTime date, string photoId, Action<FlickrResult<StatDomainCollection>> callback)
+        public async Task<StatDomainCollection> StatsGetPhotoDomainsAsync(DateTime date, string photoId, CancellationToken cancellationToken = default)
         {
-            StatsGetPhotoDomainsAsync(date, photoId, 0, 0, callback);
+            return await StatsGetPhotoDomainsAsync(date, photoId, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -148,10 +141,9 @@ namespace FlickrNet
         /// If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of domains to return per page.
         /// If this argument is omitted, it defaults to 25. The maximum allowed value is 100.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPhotoDomainsAsync(DateTime date, int page, int perPage, Action<FlickrResult<StatDomainCollection>> callback)
+        public async Task<StatDomainCollection> StatsGetPhotoDomainsAsync(DateTime date, int page, int perPage, CancellationToken cancellationToken = default)
         {
-            StatsGetPhotoDomainsAsync(date, null, page, perPage, callback);
+            return await StatsGetPhotoDomainsAsync(date, null, page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -165,8 +157,7 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of domains to return per page.
         /// If this argument is omitted, it defaults to 25. The maximum allowed value is 100.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPhotoDomainsAsync(DateTime date, string photoId, int page, int perPage, Action<FlickrResult<StatDomainCollection>> callback)
+        public async Task<StatDomainCollection> StatsGetPhotoDomainsAsync(DateTime date, string photoId, int page, int perPage, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -190,7 +181,7 @@ namespace FlickrNet
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<StatDomainCollection>(parameters, callback);
+            return await GetResponseAsync<StatDomainCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -199,10 +190,9 @@ namespace FlickrNet
         /// <param name="date">Stats will be returned for this date.
         /// A day according to Flickr Stats starts at midnight GMT for all users,
         /// and timestamps will automatically be rounded down to the start of the day.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPhotostreamDomainsAsync(DateTime date, Action<FlickrResult<StatDomainCollection>> callback)
+        public async Task<StatDomainCollection> StatsGetPhotostreamDomainsAsync(DateTime date, CancellationToken cancellationToken = default)
         {
-            StatsGetPhotostreamDomainsAsync(date, 0, 0, callback);
+            return await StatsGetPhotostreamDomainsAsync(date, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -214,8 +204,7 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of domains to return per page.
         /// If this argument is omitted, it defaults to 25. The maximum allowed value is 100.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPhotostreamDomainsAsync(DateTime date, int page, int perPage, Action<FlickrResult<StatDomainCollection>> callback)
+        public async Task<StatDomainCollection> StatsGetPhotostreamDomainsAsync(DateTime date, int page, int perPage, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -234,7 +223,7 @@ namespace FlickrNet
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<StatDomainCollection>(parameters, callback);
+            return await GetResponseAsync<StatDomainCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -243,10 +232,9 @@ namespace FlickrNet
         /// <param name="date">Stats will be returned for this date.
         /// A day according to Flickr Stats starts at midnight GMT for all users,
         /// and timestamps will automatically be rounded down to the start of the day.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPhotosetDomainsAsync(DateTime date, Action<FlickrResult<StatDomainCollection>> callback)
+        public async Task<StatDomainCollection> StatsGetPhotosetDomainsAsync(DateTime date, CancellationToken cancellationToken = default)
         {
-            StatsGetPhotosetDomainsAsync(date, null, 0, 0, callback);
+            return await StatsGetPhotosetDomainsAsync(date, null, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -257,10 +245,9 @@ namespace FlickrNet
         /// and timestamps will automatically be rounded down to the start of the day.</param>
         /// <param name="photosetId">The id of the photoset to get stats for.
         /// If not provided, stats for all sets will be returned.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPhotosetDomainsAsync(DateTime date, string photosetId, Action<FlickrResult<StatDomainCollection>> callback)
+        public async Task<StatDomainCollection> StatsGetPhotosetDomainsAsync(DateTime date, string photosetId, CancellationToken cancellationToken = default)
         {
-            StatsGetPhotosetDomainsAsync(date, photosetId, 0, 0, callback);
+            return await StatsGetPhotosetDomainsAsync(date, photosetId, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -272,10 +259,9 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of domains to return per page.
         /// If this argument is omitted, it defaults to 25. The maximum allowed value is 100.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPhotosetDomainsAsync(DateTime date, int page, int perPage, Action<FlickrResult<StatDomainCollection>> callback)
+        public async Task<StatDomainCollection> StatsGetPhotosetDomainsAsync(DateTime date, int page, int perPage, CancellationToken cancellationToken = default)
         {
-            StatsGetPhotosetDomainsAsync(date, null, page, perPage, callback);
+            return await StatsGetPhotosetDomainsAsync(date, null, page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -289,8 +275,7 @@ namespace FlickrNet
         /// <param name="page">The page of results to return. If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of domains to return per page.
         /// If this argument is omitted, it defaults to 25. The maximum allowed value is 100.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPhotosetDomainsAsync(DateTime date, string photosetId, int page, int perPage, Action<FlickrResult<StatDomainCollection>> callback)
+        public async Task<StatDomainCollection> StatsGetPhotosetDomainsAsync(DateTime date, string photosetId, int page, int perPage, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -314,7 +299,7 @@ namespace FlickrNet
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<StatDomainCollection>(parameters, callback);
+            return await GetResponseAsync<StatDomainCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -322,8 +307,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="date">The date to return stats for.</param>
         /// <param name="collectionId">The collection to return stats for.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetCollectionStatsAsync(DateTime date, string collectionId, Action<FlickrResult<Stats>> callback)
+        public async Task<Stats> StatsGetCollectionStatsAsync(DateTime date, string collectionId, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -334,7 +318,7 @@ namespace FlickrNet
                 { "collection_id", UtilityMethods.CleanCollectionId(collectionId) }
             };
 
-            GetResponseAsync<Stats>(parameters, callback);
+            return await GetResponseAsync<Stats>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -342,8 +326,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="date">The date to return stats for.</param>
         /// <param name="photoId">The photo to return stats for.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPhotoStatsAsync(DateTime date, string photoId, Action<FlickrResult<Stats>> callback)
+        public async Task<Stats> StatsGetPhotoStatsAsync(DateTime date, string photoId, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -354,15 +337,14 @@ namespace FlickrNet
                 { "photo_id", photoId }
             };
 
-            GetResponseAsync<Stats>(parameters, callback);
+            return await GetResponseAsync<Stats>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Returns the number of views on the given date for the users photostream. Only <see cref="Stats.Views"/> will be populated.
         /// </summary>
         /// <param name="date">The date to return stats for.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPhotostreamStatsAsync(DateTime date, Action<FlickrResult<Stats>> callback)
+        public async Task<Stats> StatsGetPhotostreamStatsAsync(DateTime date, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -372,7 +354,7 @@ namespace FlickrNet
                 { "date", UtilityMethods.DateToUnixTimestamp(date) }
             };
 
-            GetResponseAsync<Stats>(parameters, callback);
+            return await GetResponseAsync<Stats>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -381,8 +363,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="date">The date to return stats for.</param>
         /// <param name="photosetId">The photoset to return stats for.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPhotosetStatsAsync(DateTime date, string photosetId, Action<FlickrResult<Stats>> callback)
+        public async Task<Stats> StatsGetPhotosetStatsAsync(DateTime date, string photosetId, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -393,7 +374,7 @@ namespace FlickrNet
                 { "photoset_id", photosetId }
             };
 
-            GetResponseAsync<Stats>(parameters, callback);
+            return await GetResponseAsync<Stats>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -402,10 +383,9 @@ namespace FlickrNet
         /// <param name="date">The date to return stats for.</param>
         /// <param name="domain">The domain to return referrers for.
         /// This should be a hostname (eg: "flickr.com") with no protocol or pathname.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPhotoReferrersAsync(DateTime date, string domain, Action<FlickrResult<StatReferrerCollection>> callback)
+        public async Task<StatReferrerCollection> StatsGetPhotoReferrersAsync(DateTime date, string domain, CancellationToken cancellationToken = default)
         {
-            StatsGetPhotoReferrersAsync(date, domain, null, 0, 0, callback);
+            return await StatsGetPhotoReferrersAsync(date, domain, null, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -416,11 +396,9 @@ namespace FlickrNet
         /// This should be a hostname (eg: "flickr.com") with no protocol or pathname.</param>
         /// <param name="photoId">The photo to return referrers for.
         /// If missing then referrers for all photos will be returned.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPhotoReferrersAsync(DateTime date, string domain, string photoId,
-                                                Action<FlickrResult<StatReferrerCollection>> callback)
+        public async Task<StatReferrerCollection> StatsGetPhotoReferrersAsync(DateTime date, string domain, string photoId, CancellationToken cancellationToken = default)
         {
-            StatsGetPhotoReferrersAsync(date, domain, photoId, 0, 0, callback);
+            return await StatsGetPhotoReferrersAsync(date, domain, photoId, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -431,11 +409,9 @@ namespace FlickrNet
         /// This should be a hostname (eg: "flickr.com") with no protocol or pathname.</param>
         /// <param name="page">The page of the results to return. Default is 1.</param>
         /// <param name="perPage">The number of referrers to return per page. The default is 25 and the maximum is 100.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPhotoReferrersAsync(DateTime date, string domain, int page, int perPage,
-                                                Action<FlickrResult<StatReferrerCollection>> callback)
+        public async Task<StatReferrerCollection> StatsGetPhotoReferrersAsync(DateTime date, string domain, int page, int perPage, CancellationToken cancellationToken = default)
         {
-            StatsGetPhotoReferrersAsync(date, domain, null, page, perPage, callback);
+            return await StatsGetPhotoReferrersAsync(date, domain, null, page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -448,9 +424,7 @@ namespace FlickrNet
         /// <param name="page">The page of the results to return. Default is 1.</param>
         /// <param name="perPage">The number of referrers to return per page.
         /// The default is 25 and the maximum is 100.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPhotoReferrersAsync(DateTime date, string domain, string photoId, int page, int perPage,
-                                                Action<FlickrResult<StatReferrerCollection>> callback)
+        public async Task<StatReferrerCollection> StatsGetPhotoReferrersAsync(DateTime date, string domain, string photoId, int page, int perPage, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -475,7 +449,7 @@ namespace FlickrNet
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<StatReferrerCollection>(parameters, callback);
+            return await GetResponseAsync<StatReferrerCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -484,10 +458,9 @@ namespace FlickrNet
         /// <param name="date">The date to return stats for.</param>
         /// <param name="domain">The domain to return referrers for.
         /// This should be a hostname (eg: "flickr.com") with no protocol or pathname.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPhotosetReferrersAsync(DateTime date, string domain, Action<FlickrResult<StatReferrerCollection>> callback)
+        public async Task<StatReferrerCollection> StatsGetPhotosetReferrersAsync(DateTime date, string domain, CancellationToken cancellationToken = default)
         {
-            StatsGetPhotosetReferrersAsync(date, domain, null, 0, 0, callback);
+            return await StatsGetPhotosetReferrersAsync(date, domain, null, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -498,10 +471,9 @@ namespace FlickrNet
         /// This should be a hostname (eg: "flickr.com") with no protocol or pathname.</param>
         /// <param name="photosetId">The photoset to return referrers for.
         /// If missing then referrers for all photosets will be returned.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPhotosetReferrersAsync(DateTime date, string domain, string photosetId, Action<FlickrResult<StatReferrerCollection>> callback)
+        public async Task<StatReferrerCollection> StatsGetPhotosetReferrersAsync(DateTime date, string domain, string photosetId, CancellationToken cancellationToken = default)
         {
-            StatsGetPhotosetReferrersAsync(date, domain, photosetId, 0, 0, callback);
+            return await StatsGetPhotosetReferrersAsync(date, domain, photosetId, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -512,10 +484,9 @@ namespace FlickrNet
         /// This should be a hostname (eg: "flickr.com") with no protocol or pathname.</param>
         /// <param name="page">The page of the results to return. Default is 1.</param>
         /// <param name="perPage">The number of referrers to return per page. The default is 25 and the maximum is 100.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPhotosetReferrersAsync(DateTime date, string domain, int page, int perPage, Action<FlickrResult<StatReferrerCollection>> callback)
+        public async Task<StatReferrerCollection> StatsGetPhotosetReferrersAsync(DateTime date, string domain, int page, int perPage, CancellationToken cancellationToken = default)
         {
-            StatsGetPhotosetReferrersAsync(date, domain, null, page, perPage, callback);
+            return await StatsGetPhotosetReferrersAsync(date, domain, null, page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -529,9 +500,7 @@ namespace FlickrNet
         /// <param name="page">The page of the results to return. Default is 1.</param>
         /// <param name="perPage">The number of referrers to return per page.
         /// The default is 25 and the maximum is 100.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPhotosetReferrersAsync(DateTime date, string domain, string photosetId, int page,
-                                                   int perPage, Action<FlickrResult<StatReferrerCollection>> callback)
+        public async Task<StatReferrerCollection> StatsGetPhotosetReferrersAsync(DateTime date, string domain, string photosetId, int page, int perPage, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -556,7 +525,7 @@ namespace FlickrNet
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<StatReferrerCollection>(parameters, callback);
+            return await GetResponseAsync<StatReferrerCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -565,10 +534,9 @@ namespace FlickrNet
         /// <param name="date">The date to return stats for.</param>
         /// <param name="domain">The domain to return referrers for.
         /// This should be a hostname (eg: "flickr.com") with no protocol or pathname.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetCollectionReferrersAsync(DateTime date, string domain, Action<FlickrResult<StatReferrerCollection>> callback)
+        public async Task<StatReferrerCollection> StatsGetCollectionReferrersAsync(DateTime date, string domain, CancellationToken cancellationToken = default)
         {
-            StatsGetCollectionReferrersAsync(date, domain, null, 0, 0, callback);
+            return await StatsGetCollectionReferrersAsync(date, domain, null, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -579,11 +547,9 @@ namespace FlickrNet
         /// This should be a hostname (eg: "flickr.com") with no protocol or pathname.</param>
         /// <param name="collectionId">The collection to return referrers for.
         /// If missing then referrers for all photosets will be returned.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetCollectionReferrersAsync(DateTime date, string domain, string collectionId,
-                                                     Action<FlickrResult<StatReferrerCollection>> callback)
+        public async Task<StatReferrerCollection> StatsGetCollectionReferrersAsync(DateTime date, string domain, string collectionId, CancellationToken cancellationToken = default)
         {
-            StatsGetCollectionReferrersAsync(date, domain, collectionId, 0, 0, callback);
+            return await StatsGetCollectionReferrersAsync(date, domain, collectionId, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -595,11 +561,9 @@ namespace FlickrNet
         /// <param name="page">The page of the results to return. Default is 1.</param>
         /// <param name="perPage">The number of referrers to return per page.
         /// The default is 25 and the maximum is 100.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetCollectionReferrersAsync(DateTime date, string domain, int page, int perPage,
-                                                     Action<FlickrResult<StatReferrerCollection>> callback)
+        public async Task<StatReferrerCollection> StatsGetCollectionReferrersAsync(DateTime date, string domain, int page, int perPage, CancellationToken cancellationToken = default)
         {
-            StatsGetCollectionReferrersAsync(date, domain, null, page, perPage, callback);
+            return await StatsGetCollectionReferrersAsync(date, domain, null, page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -613,9 +577,7 @@ namespace FlickrNet
         /// <param name="page">The page of the results to return. Default is 1.</param>
         /// <param name="perPage">The number of referrers to return per page.
         /// The default is 25 and the maximum is 100.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetCollectionReferrersAsync(DateTime date, string domain, string collectionId, int page,
-                                                     int perPage, Action<FlickrResult<StatReferrerCollection>> callback)
+        public async Task<StatReferrerCollection> StatsGetCollectionReferrersAsync(DateTime date, string domain, string collectionId, int page, int perPage, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -640,7 +602,7 @@ namespace FlickrNet
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<StatReferrerCollection>(parameters, callback);
+            return await GetResponseAsync<StatReferrerCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
@@ -649,10 +611,9 @@ namespace FlickrNet
         /// <param name="date">The date to return stats for.</param>
         /// <param name="domain">The domain to return referrers for.
         /// This should be a hostname (eg: "flickr.com") with no protocol or pathname.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPhotostreamReferrersAsync(DateTime date, string domain, Action<FlickrResult<StatReferrerCollection>> callback)
+        public async Task<StatReferrerCollection> StatsGetPhotostreamReferrersAsync(DateTime date, string domain, CancellationToken cancellationToken = default)
         {
-            StatsGetPhotostreamReferrersAsync(date, domain, 0, 0, callback);
+            return await StatsGetPhotostreamReferrersAsync(date, domain, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -663,9 +624,7 @@ namespace FlickrNet
         /// This should be a hostname (eg: "flickr.com") with no protocol or pathname.</param>
         /// <param name="page">The page of the results to return. Default is 1.</param>
         /// <param name="perPage">The number of referrers to return per page. The default is 25 and the maximum is 100.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPhotostreamReferrersAsync(DateTime date, string domain, int page, int perPage,
-                                                      Action<FlickrResult<StatReferrerCollection>> callback)
+        public async Task<StatReferrerCollection> StatsGetPhotostreamReferrersAsync(DateTime date, string domain, int page, int perPage, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -685,24 +644,22 @@ namespace FlickrNet
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<StatReferrerCollection>(parameters, callback);
+            return await GetResponseAsync<StatReferrerCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Get the overall view counts for an account.
         /// </summary>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetTotalViewsAsync(Action<FlickrResult<StatViews>> callback)
+        public async Task<StatViews> StatsGetTotalViewsAsync(CancellationToken cancellationToken = default)
         {
-            StatsGetTotalViewsAsync(DateTime.MinValue, callback);
+            return await StatsGetTotalViewsAsync(DateTime.MinValue, cancellationToken);
         }
 
         /// <summary>
         /// Get the overall view counts for an account on a given date.
         /// </summary>
         /// <param name="date">The date to return the overall view count for.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetTotalViewsAsync(DateTime date, Action<FlickrResult<StatViews>> callback)
+        public async Task<StatViews> StatsGetTotalViewsAsync(DateTime date, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -715,16 +672,15 @@ namespace FlickrNet
                 parameters.Add("date", UtilityMethods.DateToUnixTimestamp(date));
             }
 
-            GetResponseAsync<StatViews>(parameters, callback);
+            return await GetResponseAsync<StatViews>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// List the photos with the most views, comments or favorites.
         /// </summary>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPopularPhotosAsync(Action<FlickrResult<PopularPhotoCollection>> callback)
+        public async Task<PopularPhotoCollection> StatsGetPopularPhotosAsync(CancellationToken cancellationToken = default)
         {
-            StatsGetPopularPhotosAsync(DateTime.MinValue, PopularitySort.None, 0, 0, callback);
+            return await StatsGetPopularPhotosAsync(DateTime.MinValue, PopularitySort.None, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -733,10 +689,9 @@ namespace FlickrNet
         /// <param name="date">Stats will be returned for this date.
         /// A day according to Flickr Stats starts at midnight GMT for all users,
         /// and timestamps will automatically be rounded down to the start of the day. If no date is provided, all time view counts will be returned.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPopularPhotosAsync(DateTime date, Action<FlickrResult<PopularPhotoCollection>> callback)
+        public async Task<PopularPhotoCollection> StatsGetPopularPhotosAsync(DateTime date, CancellationToken cancellationToken = default)
         {
-            StatsGetPopularPhotosAsync(date, PopularitySort.None, 0, 0, callback);
+            return await StatsGetPopularPhotosAsync(date, PopularitySort.None, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -744,10 +699,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="sort">The order in which to sort returned photos.
         /// Defaults to views. The possible values are views, comments and favorites. </param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPopularPhotosAsync(PopularitySort sort, Action<FlickrResult<PopularPhotoCollection>> callback)
+        public async Task<PopularPhotoCollection> StatsGetPopularPhotosAsync(PopularitySort sort, CancellationToken cancellationToken = default)
         {
-            StatsGetPopularPhotosAsync(DateTime.MinValue, sort, 0, 0, callback);
+            return await StatsGetPopularPhotosAsync(DateTime.MinValue, sort, 0, 0, cancellationToken);
         }
 
         /// <summary>
@@ -759,10 +713,9 @@ namespace FlickrNet
         /// If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of photos to return per page.
         /// If this argument is omitted, it defaults to 25. The maximum allowed value is 100.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPopularPhotosAsync(PopularitySort sort, int page, int perPage, Action<FlickrResult<PopularPhotoCollection>> callback)
+        public async Task<PopularPhotoCollection> StatsGetPopularPhotosAsync(PopularitySort sort, int page, int perPage, CancellationToken cancellationToken = default)
         {
-            StatsGetPopularPhotosAsync(DateTime.MinValue, sort, page, perPage, callback);
+            return await StatsGetPopularPhotosAsync(DateTime.MinValue, sort, page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -776,10 +729,9 @@ namespace FlickrNet
         /// If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of photos to return per page.
         /// If this argument is omitted, it defaults to 25. The maximum allowed value is 100.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPopularPhotosAsync(DateTime date, int page, int perPage, Action<FlickrResult<PopularPhotoCollection>> callback)
+        public async Task<PopularPhotoCollection> StatsGetPopularPhotosAsync(DateTime date, int page, int perPage, CancellationToken cancellationToken = default)
         {
-            StatsGetPopularPhotosAsync(date, PopularitySort.None, page, perPage, callback);
+            return await StatsGetPopularPhotosAsync(date, PopularitySort.None, page, perPage, cancellationToken);
         }
 
         /// <summary>
@@ -795,9 +747,7 @@ namespace FlickrNet
         /// If this argument is omitted, it defaults to 1.</param>
         /// <param name="perPage">Number of photos to return per page.
         /// If this argument is omitted, it defaults to 25. The maximum allowed value is 100.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void StatsGetPopularPhotosAsync(DateTime date, PopularitySort sort, int page, int perPage,
-                                               Action<FlickrResult<PopularPhotoCollection>> callback)
+        public async Task<PopularPhotoCollection> StatsGetPopularPhotosAsync(DateTime date, PopularitySort sort, int page, int perPage, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -825,7 +775,7 @@ namespace FlickrNet
                 parameters.Add("per_page", perPage.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<PopularPhotoCollection>(parameters, callback);
+            return await GetResponseAsync<PopularPhotoCollection>(parameters, cancellationToken);
         }
     }
 }

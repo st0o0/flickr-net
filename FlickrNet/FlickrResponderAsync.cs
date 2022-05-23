@@ -1,6 +1,5 @@
 ﻿using FlickrNet.Enums;
 using FlickrNet.Exceptions;
-using FlickrNet.Flickrs.Results;
 using System;
 using System.Collections.Generic;
 using System.Net;

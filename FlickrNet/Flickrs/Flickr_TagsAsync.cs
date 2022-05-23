@@ -1,10 +1,11 @@
 ﻿using FlickrNet.CollectionModels;
 using FlickrNet.Enums;
-using FlickrNet.Flickrs.Results;
 using FlickrNet.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNet
 {
@@ -14,8 +15,7 @@ namespace FlickrNet
         /// Get the tag list for a given photo.
         /// </summary>
         /// <param name="photoId">The id of the photo to return tags for.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void TagsGetListPhotoAsync(string photoId, Action<FlickrResult<Collection<PhotoInfoTag>>> callback)
+        public async Task<Collection<PhotoInfoTag>> TagsGetListPhotoAsync(string photoId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -24,35 +24,23 @@ namespace FlickrNet
                 { "photo_id", photoId }
             };
 
-            GetResponseAsync<PhotoInfo>(
-                parameters,
-                r =>
-                {
-                    FlickrResult<Collection<PhotoInfoTag>> result = new FlickrResult<Collection<PhotoInfoTag>>();
-                    result.Error = r.Error;
-                    if (!r.HasError)
-                    {
-                        result.Result = r.Result.Tags;
-                    }
-                    callback(result);
-                });
+            PhotoInfo result = await GetResponseAsync<PhotoInfo>(parameters, cancellationToken);
+            return result.Tags;
         }
 
         /// <summary>
         /// Get the tag list for a given user (or the currently logged in user).
         /// </summary>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void TagsGetListUserAsync(Action<FlickrResult<TagCollection>> callback)
+        public async Task<TagCollection> TagsGetListUserAsync(CancellationToken cancellationToken = default)
         {
-            TagsGetListUserAsync(null, callback);
+            return await TagsGetListUserAsync(null, cancellationToken);
         }
 
         /// <summary>
         /// Get the tag list for a given user (or the currently logged in user).
         /// </summary>
         /// <param name="userId">The NSID of the user to fetch the tag list for. If this argument is not specified, the currently logged in user (if any) is assumed.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void TagsGetListUserAsync(string userId, Action<FlickrResult<TagCollection>> callback)
+        public async Task<TagCollection> TagsGetListUserAsync(string userId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -63,40 +51,37 @@ namespace FlickrNet
                 parameters.Add("user_id", userId);
             }
 
-            GetResponseAsync<TagCollection>(parameters, callback);
+            return await GetResponseAsync<TagCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Get the popular tags for a given user (or the currently logged in user).
         /// </summary>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void TagsGetListUserPopularAsync(Action<FlickrResult<TagCollection>> callback)
+        public async Task<TagCollection> TagsGetListUserPopularAsync(CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
-            TagsGetListUserPopularAsync(null, 0, callback);
+            return await TagsGetListUserPopularAsync(null, 0, cancellationToken);
         }
 
         /// <summary>
         /// Get the popular tags for a given user (or the currently logged in user).
         /// </summary>
         /// <param name="count">Number of popular tags to return. defaults to 10 when this argument is not present.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void TagsGetListUserPopularAsync(int count, Action<FlickrResult<TagCollection>> callback)
+        public async Task<TagCollection> TagsGetListUserPopularAsync(int count, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
-            TagsGetListUserPopularAsync(null, count, callback);
+            return await TagsGetListUserPopularAsync(null, count, cancellationToken);
         }
 
         /// <summary>
         /// Get the popular tags for a given user (or the currently logged in user).
         /// </summary>
         /// <param name="userId">The NSID of the user to fetch the tag list for. If this argument is not specified, the currently logged in user (if any) is assumed.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void TagsGetListUserPopularAsync(string userId, Action<FlickrResult<TagCollection>> callback)
+        public async Task<TagCollection> TagsGetListUserPopularAsync(string userId, CancellationToken cancellationToken = default)
         {
-            TagsGetListUserPopularAsync(userId, 0, callback);
+            return await TagsGetListUserPopularAsync(userId, 0, cancellationToken);
         }
 
         /// <summary>
@@ -104,8 +89,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="userId">The NSID of the user to fetch the tag list for. If this argument is not specified, the currently logged in user (if any) is assumed.</param>
         /// <param name="count">Number of popular tags to return. defaults to 10 when this argument is not present.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void TagsGetListUserPopularAsync(string userId, int count, Action<FlickrResult<TagCollection>> callback)
+        public async Task<TagCollection> TagsGetListUserPopularAsync(string userId, int count, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -121,24 +105,22 @@ namespace FlickrNet
                 parameters.Add("count", count.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<TagCollection>(parameters, callback);
+            return await GetResponseAsync<TagCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Gets a list of 'cleaned' tags and the raw values for those tags.
         /// </summary>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void TagsGetListUserRawAsync(Action<FlickrResult<RawTagCollection>> callback)
+        public async Task<RawTagCollection> TagsGetListUserRawAsync(CancellationToken cancellationToken = default)
         {
-            TagsGetListUserRawAsync(null, callback);
+            return await TagsGetListUserRawAsync(null, cancellationToken);
         }
 
         /// <summary>
         /// Gets a list of 'cleaned' tags and the raw values for a specific tag.
         /// </summary>
         /// <param name="tag">The tag to return the raw version of.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void TagsGetListUserRawAsync(string tag, Action<FlickrResult<RawTagCollection>> callback)
+        public async Task<RawTagCollection> TagsGetListUserRawAsync(string tag, CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -151,14 +133,14 @@ namespace FlickrNet
                 parameters.Add("tag", tag);
             }
 
-            GetResponseAsync<RawTagCollection>(parameters, callback);
+            return await GetResponseAsync<RawTagCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Returns a collection of the most frequently used tags for the authenticated user.
         /// </summary>
         /// <returns></returns>
-        public void TagsGetMostFrequentlyUsedAsync(Action<FlickrResult<TagCollection>> callback)
+        public async Task<TagCollection> TagsGetMostFrequentlyUsedAsync(CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
@@ -167,15 +149,14 @@ namespace FlickrNet
                 { "method", "flickr.tags.getMostFrequentlyUsed" }
             };
 
-            GetResponseAsync<TagCollection>(parameters, callback);
+            return await GetResponseAsync<TagCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Returns a list of tags 'related' to the given tag, based on clustered usage analysis.
         /// </summary>
         /// <param name="tag">The tag to fetch related tags for.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void TagsGetRelatedAsync(string tag, Action<FlickrResult<TagCollection>> callback)
+        public async Task<TagCollection> TagsGetRelatedAsync(string tag, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -184,15 +165,14 @@ namespace FlickrNet
                 { "tag", tag }
             };
 
-            GetResponseAsync<TagCollection>(parameters, callback);
+            return await GetResponseAsync<TagCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Gives you a list of tag clusters for the given tag.
         /// </summary>
         /// <param name="tag">The tag to fetch clusters for.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void TagsGetClustersAsync(string tag, Action<FlickrResult<ClusterCollection>> callback)
+        public async Task<ClusterCollection> TagsGetClustersAsync(string tag, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -200,17 +180,16 @@ namespace FlickrNet
                 { "tag", tag }
             };
 
-            GetResponseAsync<ClusterCollection>(parameters, callback);
+            return await GetResponseAsync<ClusterCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Returns the first 24 photos for a given tag cluster.
         /// </summary>
         /// <param name="cluster">The <see cref="Cluster"/> instance to return the photos for.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void TagsGetClusterPhotosAsync(Cluster cluster, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> TagsGetClusterPhotosAsync(Cluster cluster, CancellationToken cancellationToken = default)
         {
-            TagsGetClusterPhotosAsync(cluster.SourceTag, cluster.ClusterId, PhotoSearchExtras.None, callback);
+            return await TagsGetClusterPhotosAsync(cluster.SourceTag, cluster.ClusterId, PhotoSearchExtras.None, cancellationToken);
         }
 
         /// <summary>
@@ -218,10 +197,9 @@ namespace FlickrNet
         /// </summary>
         /// <param name="cluster">The <see cref="Cluster"/> instance to return the photos for.</param>
         /// <param name="extras">Extra information to return with each photo.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void TagsGetClusterPhotosAsync(Cluster cluster, PhotoSearchExtras extras, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> TagsGetClusterPhotosAsync(Cluster cluster, PhotoSearchExtras extras, CancellationToken cancellationToken = default)
         {
-            TagsGetClusterPhotosAsync(cluster.SourceTag, cluster.ClusterId, extras, callback);
+            return await TagsGetClusterPhotosAsync(cluster.SourceTag, cluster.ClusterId, extras, cancellationToken);
         }
 
         /// <summary>
@@ -230,8 +208,7 @@ namespace FlickrNet
         /// <param name="tag">The tag whose cluster photos you want to return.</param>
         /// <param name="clusterId">The cluster id for the cluster you want to return the photos. This is the first three subtags of the tag cluster appended with hyphens ('-').</param>
         /// <param name="extras">Extra information to return with each photo.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void TagsGetClusterPhotosAsync(string tag, string clusterId, PhotoSearchExtras extras, Action<FlickrResult<PhotoCollection>> callback)
+        public async Task<PhotoCollection> TagsGetClusterPhotosAsync(string tag, string clusterId, PhotoSearchExtras extras, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {
@@ -244,16 +221,15 @@ namespace FlickrNet
                 parameters.Add("extras", UtilityMethods.ExtrasToString(extras));
             }
 
-            GetResponseAsync<PhotoCollection>(parameters, callback);
+            return await GetResponseAsync<PhotoCollection>(parameters, cancellationToken);
         }
 
         /// <summary>
         /// Returns a list of hot tags for the given period.
         /// </summary>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void TagsGetHotListAsync(Action<FlickrResult<HotTagCollection>> callback)
+        public async Task<HotTagCollection> TagsGetHotListAsync(CancellationToken cancellationToken = default)
         {
-            TagsGetHotListAsync(null, 0, callback);
+            return await TagsGetHotListAsync(null, 0, cancellationToken);
         }
 
         /// <summary>
@@ -261,8 +237,7 @@ namespace FlickrNet
         /// </summary>
         /// <param name="period">The period for which to fetch hot tags. Valid values are day and week (defaults to day).</param>
         /// <param name="count">The number of tags to return. Defaults to 20. Maximum allowed value is 200.</param>
-        /// <param name="callback">Callback method to call upon return of the response from Flickr.</param>
-        public void TagsGetHotListAsync(string period, int count, Action<FlickrResult<HotTagCollection>> callback)
+        public async Task<HotTagCollection> TagsGetHotListAsync(string period, int count, CancellationToken cancellationToken = default)
         {
             if (!string.IsNullOrEmpty(period) && period != "day" && period != "week")
             {
@@ -283,7 +258,7 @@ namespace FlickrNet
                 parameters.Add("count", count.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             }
 
-            GetResponseAsync<HotTagCollection>(parameters, callback);
+            return await GetResponseAsync<HotTagCollection>(parameters, cancellationToken);
         }
     }
 }

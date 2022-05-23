@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Net;
 using System.Net.Http;
 using System.Text;
 
@@ -42,7 +40,6 @@ namespace FlickrNet.Exceptions
 
             _mess = "OAuth Exception occurred: " + OAuthErrorPameters["oauth_problem"];
         }
-
 
         /// <summary>
         /// Constructor for the OAuthException class.

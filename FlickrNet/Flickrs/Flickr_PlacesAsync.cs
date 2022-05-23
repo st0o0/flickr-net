@@ -2,7 +2,6 @@
 using FlickrNet.Common;
 using FlickrNet.Enums;
 using FlickrNet.Exceptions;
-using FlickrNet.Flickrs.Results;
 using FlickrNet.Models;
 using System;
 using System.Collections.Generic;
