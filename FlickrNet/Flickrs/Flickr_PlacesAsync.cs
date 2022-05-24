@@ -437,7 +437,7 @@ namespace FlickrNet
         public async Task<PlaceCollection> PlacesPlacesForContactsAsync(PlaceType placeType, string woeId, string placeId, int threshold,
                                                  ContactSearch contactType, DateTime minUploadDate,
                                                  DateTime maxUploadDate, DateTime minTakenDate, DateTime maxTakenDate,
-                                                 CancellationToken cancellationToken = default +)
+                                                 CancellationToken cancellationToken = default)
         {
             CheckRequiresAuthentication();
 
