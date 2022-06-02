@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FlickrNet
+namespace FlickrNet.Models
 {
     /// <summary>
     /// The access authentication token return by Flickr after a successful authentication.

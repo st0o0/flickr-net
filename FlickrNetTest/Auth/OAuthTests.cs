@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using FlickrNet.Enums;
 using FlickrNet.CollectionModels;
+using FlickrNet.Models;
 
 namespace FlickrNetTest
 {

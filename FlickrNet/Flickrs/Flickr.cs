@@ -1,12 +1,12 @@
 using FlickrNet.Common;
 using FlickrNet.Enums;
 using FlickrNet.Exceptions;
+using FlickrNet.Exceptions.Handlers;
 using FlickrNet.HttpContents;
 using FlickrNet.Models.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -280,54 +280,6 @@ namespace FlickrNet
         public static void FlushCache(Uri url)
         {
             Cache.FlushCache(url);
-        }
-
-        /// <summary>
-        /// Constructor loads configuration settings from app.config or web.config file if they exist.
-        /// </summary>
-        public Flickr()
-        {
-            InstanceCacheDisabled = CacheDisabled;
-            CurrentService = DefaultService;
-
-            FlickrConfigurationSettings settings = FlickrConfigurationManager.Settings;
-            if (settings == null)
-            {
-                return;
-            }
-
-            if (settings.CacheSize != 0)
-            {
-                CacheSizeLimit = settings.CacheSize;
-            }
-
-            if (settings.CacheTimeout != TimeSpan.MinValue)
-            {
-                CacheTimeout = settings.CacheTimeout;
-            }
-
-            ApiKey = settings.ApiKey;
-            ApiSecret = settings.SharedSecret;
-
-            if (!settings.IsProxyDefined)
-            {
-                return;
-            }
-
-            Proxy = new WebProxy { Address = new Uri("http://" + settings.ProxyIPAddress + ":" + settings.ProxyPort) };
-
-            if (string.IsNullOrEmpty(settings.ProxyUsername))
-            {
-                return;
-            }
-
-            NetworkCredential creds = new()
-            {
-                UserName = settings.ProxyUsername,
-                Password = settings.ProxyPassword,
-                Domain = settings.ProxyDomain
-            };
-            Proxy.Credentials = creds;
         }
 
         /// <summary>

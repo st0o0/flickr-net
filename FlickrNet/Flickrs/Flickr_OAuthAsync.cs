@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using FlickrNet.Models;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -64,7 +65,7 @@ namespace FlickrNet
 
             byte[] result = await FlickrResponder.GetDataResponseAsync(this, url, parameters, cancellationToken);
 
-            return FlickrNet.OAuthAccessToken.ParseResponse(result);
+            return Models.OAuthAccessToken.ParseResponse(result);
         }
     }
 }
