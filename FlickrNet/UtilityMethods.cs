@@ -18,7 +18,7 @@ namespace FlickrNet
     /// <summary>
     /// Internal class providing certain utility functions to other classes.
     /// </summary>
-    internal static class UtilityMethods
+    public static class UtilityMethods
     {
         private static readonly DateTime UnixStartDate = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 

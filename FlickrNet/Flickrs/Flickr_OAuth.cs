@@ -1,8 +1,11 @@
 ﻿using FlickrNet.Enums;
+using FlickrNet.Models;
 using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNet
 {
@@ -70,6 +73,22 @@ namespace FlickrNet
             string permsString = (perms == AuthLevel.None) ? "" : "&perms=" + UtilityMethods.AuthLevelToString(perms);
 
             return "https://" + (mobile ? "m" : "www") + ".flickr.com/services/oauth/authorize?oauth_token=" + requestToken + permsString;
+        }
+
+        /// <summary>
+        /// Checks the OAuth token, returns user information and permissions if valid.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<Auth> AuthOAuthCheckTokenAsync(CancellationToken cancellationToken = default)
+        {
+            CheckRequiresAuthentication();
+
+            var parameters = new Dictionary<string, string>
+            {
+                { "method", "flickr.auth.oauth.checkToken" }
+            };
+
+            return await GetResponseAsync<Auth>(parameters, cancellationToken);
         }
 
         /// <summary>

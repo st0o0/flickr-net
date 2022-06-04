@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using NUnit.Framework;
-using FlickrNet;
-using Shouldly;
-using System.Threading.Tasks;
-using System.Threading;
-using FlickrNet.Enums;
+﻿using FlickrNet;
 using FlickrNet.CollectionModels;
+using FlickrNet.Enums;
+using FlickrNet.Exceptions;
 using FlickrNet.Models;
+using NUnit.Framework;
+using Shouldly;
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {
@@ -23,7 +24,7 @@ namespace FlickrNetTest
         {
             Flickr f = TestData.GetSignedInstance();
 
-            OAuthRequestToken requestToken = (await f.OAuthGetRequestTokenAsync("oob", cancellationToken)).Result;
+            OAuthRequestToken requestToken = await f.OAuthGetRequestTokenAsync("oob", cancellationToken);
 
             Assert.IsNotNull(requestToken);
             Assert.IsNotNull(requestToken.Token, "Token should not be null.");
@@ -51,7 +52,7 @@ namespace FlickrNetTest
             };
             string verifier = "846-116-116";
 
-            OAuthAccessToken accessToken = (await f.OAuthGetAccessTokenAsync(requestToken, verifier, cancellationToken)).Result;
+            OAuthAccessToken accessToken = await f.OAuthGetAccessTokenAsync(requestToken, verifier, cancellationToken);
 
             Console.WriteLine("access token = " + accessToken.Token);
             Console.WriteLine("access token secret = " + accessToken.TokenSecret);
@@ -62,26 +63,26 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void OAuthPeopleGetPhotosBasicTest()
+        public async Task OAuthPeopleGetPhotosBasicTest(CancellationToken cancellationToken = default)
         {
-            PhotoCollection photos = AuthInstance.PeopleGetPhotosAsync("me",);
+            PhotoCollection photos = await AuthInstance.PeopleGetPhotosAsync("me", cancellationToken);
         }
 
         [Test]
-        public void OAuthInvalidAccessTokenTest()
+        public async Task OAuthInvalidAccessTokenTest(CancellationToken cancellationToken = default)
         {
             Instance.ApiSecret = "asdasd";
 
-            Should.Throw<OAuthException>(() => { Instance.OAuthGetRequestToken("oob"); });
+            Should.Throw<OAuthException>(async () => { await Instance.OAuthGetRequestTokenAsync("oob", cancellationToken); });
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void OAuthCheckTokenTest()
+        public async Task OAuthCheckTokenTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            Auth a = f.AuthOAuthCheckToken();
+            Auth a = await f.AuthOAuthCheckTokenAsync(cancellationToken);
 
             Assert.AreEqual(a.Token, f.OAuthAccessToken);
         }

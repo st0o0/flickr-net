@@ -10,6 +10,7 @@ namespace FlickrNetTest
 
         // https://www.flickr.com/photos/samjudson/3547139066 - Apple Store
         public const string PhotoId = "3547139066";
+
         // https://www.flickr.com/photos/samjudson/5890800 - Grey Street
         public const string FavouritedPhotoId = "5890800";
 
@@ -33,55 +34,42 @@ namespace FlickrNetTest
 
         public static string AuthToken
         {
-            get { return GetRegistryKey("AuthToken"); }
-            set { SetRegistryKey("AuthToken", value); }
+            get { return GetEnvironmentVariable("AuthToken"); }
+            set { SetEnvironmentVariable("AuthToken", value); }
         }
 
         public static string RequestToken
         {
-            get { return GetRegistryKey("RequestToken"); }
-            set { SetRegistryKey("RequestToken", value); }
+            get { return GetEnvironmentVariable("RequestToken"); }
+            set { SetEnvironmentVariable("RequestToken", value); }
         }
 
         public static string RequestTokenSecret
         {
-            get { return GetRegistryKey("RequestTokenSecret"); }
-            set { SetRegistryKey("RequestTokenSecret", value); }
+            get { return GetEnvironmentVariable("RequestTokenSecret"); }
+            set { SetEnvironmentVariable("RequestTokenSecret", value); }
         }
 
         public static string AccessToken
         {
-            get { return GetRegistryKey("AccessToken"); }
-            set { SetRegistryKey("AccessToken", value); }
+            get { return GetEnvironmentVariable("AccessToken"); }
+            set { SetEnvironmentVariable("AccessToken", value); }
         }
 
         public static string AccessTokenSecret
         {
-            get { return GetRegistryKey("AccessTokenSecret"); }
-            set { SetRegistryKey("AccessTokenSecret", value); }
+            get { return GetEnvironmentVariable("AccessTokenSecret"); }
+            set { SetEnvironmentVariable("AccessTokenSecret", value); }
         }
 
-        static void SetRegistryKey(string name, string value)
+        private static void SetEnvironmentVariable(string name, string value)
         {
-            Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"SOFTWARE\FlickrNetTest", true);
-            if (key == null)
-                key = Microsoft.Win32.Registry.CurrentUser.CreateSubKey(@"SOFTWARE\FlickrNetTest");
-            key.SetValue(name, value);
+            Environment.SetEnvironmentVariable("FLICKR_TEST_" + name.ToUpper(), value);
         }
 
-        static string GetRegistryKey(string name)
+        private static string GetEnvironmentVariable(string name)
         {
-            var value = Environment.GetEnvironmentVariable("FLICKR_TEST_" + name.ToUpper());
-            return value;
-            //if (!string.IsNullOrEmpty(value))
-            //{
-            //    return value;
-            //}
-            //Microsoft.Win32.RegistryKey key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"SOFTWARE\FlickrNetTest", true);
-            //if (key != null && key.GetValue(name) != null)
-            //    return key.GetValue(name).ToString();
-            //else
-            //    return null;
+            return Environment.GetEnvironmentVariable("FLICKR_TEST_" + name.ToUpper());
         }
 
         public static Flickr GetInstance()
@@ -108,15 +96,5 @@ namespace FlickrNetTest
         {
             return new Flickr("3dce465686fd9144c157cb5157bd0e78", "aea31b62c6714269") { InstanceCacheDisabled = true };
         }
-
-        public static Flickr GetOldAuthInstance()
-        {
-            return new Flickr("3dce465686fd9144c157cb5157bd0e78", "aea31b62c6714269", AuthToken)
-            {
-                InstanceCacheDisabled
-                                   = true
-            };
-        }
-
     }
 }

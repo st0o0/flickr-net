@@ -1,7 +1,11 @@
-﻿
+﻿using FlickrNet;
+using FlickrNet.CollectionModels;
+using FlickrNet.Exceptions;
+using FlickrNet.Models;
 using NUnit.Framework;
-using FlickrNet;
 using Shouldly;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {
@@ -14,17 +18,17 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void TagsGetListUserRawAuthenticationTest()
+        public void TagsGetListUserRawAuthenticationTest(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
-            Should.Throw<SignatureRequiredException>(() => f.TagsGetListUserRaw());
+            Should.Throw<SignatureRequiredException>(async () => await f.TagsGetListUserRawAsync(cancellationToken));
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void TagsGetListUserRawBasicTest()
+        public async Task TagsGetListUserRawBasicTest(CancellationToken cancellationToken = default)
         {
-            var tags = AuthInstance.TagsGetListUserRaw();
+            var tags = await AuthInstance.TagsGetListUserRawAsync(cancellationToken);
 
             Assert.AreNotEqual(0, tags.Count, "There should be one or more raw tags returned");
 
@@ -38,9 +42,9 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void TagsGetListUserPopularBasicTest()
+        public async Task TagsGetListUserPopularBasicTest(CancellationToken cancellationToken = default)
         {
-            TagCollection tags = AuthInstance.TagsGetListUserPopular();
+            TagCollection tags = await AuthInstance.TagsGetListUserPopularAsync(cancellationToken);
 
             Assert.IsNotNull(tags, "TagCollection should not be null.");
             Assert.AreNotEqual(0, tags.Count, "TagCollection.Count should not be zero.");
@@ -54,9 +58,9 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void TagsGetListUserBasicTest()
+        public async Task TagsGetListUserBasicTest(CancellationToken cancellationToken = default)
         {
-            TagCollection tags = AuthInstance.TagsGetListUser();
+            TagCollection tags = await AuthInstance.TagsGetListUserAsync(cancellationToken);
 
             Assert.IsNotNull(tags, "TagCollection should not be null.");
             Assert.AreNotEqual(0, tags.Count, "TagCollection.Count should not be zero.");
@@ -69,9 +73,9 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void TagsGetListPhotoBasicTest()
+        public async Task TagsGetListPhotoBasicTest(CancellationToken cancellationToken = default)
         {
-            var tags = Instance.TagsGetListPhoto(TestData.PhotoId);
+            var tags = await Instance.TagsGetListPhotoAsync(TestData.PhotoId, cancellationToken);
 
             Assert.IsNotNull(tags, "tags should not be null.");
             Assert.AreNotEqual(0, tags.Count, "Length should be greater than zero.");
@@ -83,7 +87,6 @@ namespace FlickrNetTest
                 Assert.IsNotNull(tag.Raw, "Raw should not be null.");
                 Assert.IsNotNull(tag.IsMachineTag, "IsMachineTag should not be null.");
             }
-
         }
 
         [Test]
@@ -109,23 +112,23 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void TagsGetClusterPhotosNewcastleTest()
+        public async Task TagsGetClusterPhotosNewcastleTest(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
-            var col = f.TagsGetClusters("newcastle");
+            var col = await f.TagsGetClustersAsync("newcastle", cancellationToken);
 
             foreach (var c in col)
             {
-                var ps = f.TagsGetClusterPhotos(c);
+                var ps = await f.TagsGetClusterPhotosAsync(c, cancellationToken);
                 Assert.IsNotNull(ps);
                 Assert.AreNotEqual(0, ps.Count);
             }
         }
 
         [Test]
-        public void TagsGetHotListTest()
+        public async Task TagsGetHotListTest(CancellationToken cancellationToken = default)
         {
-            var col = Instance.TagsGetHotList();
+            var col = await Instance.TagsGetHotListAsync(cancellationToken);
 
             Assert.AreNotEqual(0, col.Count, "Count should not be zero.");
 
@@ -138,18 +141,18 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void TagsGetListUserTest()
+        public async Task TagsGetListUserTest(CancellationToken cancellationToken = default)
         {
-            var col = Instance.TagsGetListUser(TestData.TestUserId);
+            var col = await Instance.TagsGetListUserAsync(TestData.TestUserId, cancellationToken);
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void TagsGetMostFrequentlyUsedTest()
+        public async Task TagsGetMostFrequentlyUsedTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            var tags = f.TagsGetMostFrequentlyUsed();
+            var tags = await f.TagsGetMostFrequentlyUsedAsync(cancellationToken);
 
             Assert.IsNotNull(tags);
 
