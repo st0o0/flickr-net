@@ -1,6 +1,10 @@
 ﻿using System;
 using NUnit.Framework;
 using FlickrNet;
+using FlickrNet.CollectionModels;
+using FlickrNet.Enums;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace FlickrNetTest
 {
@@ -8,12 +12,12 @@ namespace FlickrNetTest
     public class InterestingnessTests : BaseTest
     {
         [Test]
-        public void InterestingnessGetListTestsBasicTest()
+        public async Task InterestingnessGetListTestsBasicTest(CancellationToken cancellationToken = default)
         {
             DateTime date = DateTime.Today.AddDays(-2);
             DateTime datePlusOne = date.AddDays(1);
 
-            PhotoCollection photos = Instance.InterestingnessGetList(date, PhotoSearchExtras.All, 1, 100);
+            PhotoCollection photos = await Instance.InterestingnessGetListAsync(date, PhotoSearchExtras.All, 1, 100, cancellationToken);
 
             Assert.IsNotNull(photos, "Photos should not be null.");
 

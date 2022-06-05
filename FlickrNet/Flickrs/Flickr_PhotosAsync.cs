@@ -47,7 +47,7 @@ namespace FlickrNet
         /// <remarks>
         /// Requires Delete permissions. Also note, photos cannot be recovered once deleted.</remarks>
         /// <param name="photoId">The ID of the photo to delete.</param>
-        public async Task PhotosDeleteAsync(string photoId, CancellationToken cancellationToken = default)
+        public async Task PhotoDeleteAsync(string photoId, CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new()
             {

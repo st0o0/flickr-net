@@ -299,5 +299,26 @@ namespace FlickrNet
 
             return await GetResponseAsync<GalleryPhotoCollection>(parameters, cancellationToken);
         }
+
+        /// <summary>
+        /// Remove a photo from a gallery (and optionally update the gallery description).
+        /// </summary>
+        /// <param name="galleryId"></param>
+        /// <param name="photoId"></param>
+        /// <param name="fullResponse"></param>
+        public async Task GalleriesRemovePhoto(string galleryId, string photoId, string fullResponse = null, CancellationToken cancellationToken = default)
+        {
+            CheckRequiresAuthentication();
+
+            var parameters = new Dictionary<string, string>
+            {
+                { "method", "flickr.galleries.removePhoto" },
+                { "gallery_id", galleryId },
+                { "photo_id", photoId },
+                { "full_response", fullResponse ?? "" }
+            };
+
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
+        }
     }
 }

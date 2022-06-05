@@ -2,6 +2,10 @@
 
 using NUnit.Framework;
 using FlickrNet;
+using FlickrNet.CollectionModels;
+using System.Threading.Tasks;
+using System.Threading;
+using FlickrNet.Models;
 
 namespace FlickrNetTest
 {
@@ -9,9 +13,9 @@ namespace FlickrNetTest
     public class MachinetagsTests : BaseTest
     {
         [Test]
-        public void MachinetagsGetNamespacesBasicTest()
+        public async Task MachinetagsGetNamespacesBasicTest(CancellationToken cancellationToken = default)
         {
-            NamespaceCollection col = Instance.MachineTagsGetNamespaces();
+            NamespaceCollection col = await Instance.MachineTagsGetNamespacesAsync(cancellationToken);
 
             Assert.IsTrue(col.Count > 10, "Should be greater than 10 namespaces.");
 
@@ -24,9 +28,9 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void MachinetagsGetPredicatesBasicTest()
+        public async Task MachinetagsGetPredicatesBasicTest(CancellationToken cancellationToken = default)
         {
-            var col = Instance.MachineTagsGetPredicates();
+            var col = await Instance.MachineTagsGetPredicatesAsync(cancellationToken);
 
             Assert.IsTrue(col.Count > 10, "Should be greater than 10 namespaces.");
 
@@ -39,9 +43,9 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void MachinetagsGetPairsBasicTest()
+        public async Task MachinetagsGetPairsBasicTest(CancellationToken cancellationToken = default)
         {
-            var pairs = Instance.MachineTagsGetPairs(null, null, 0, 0);
+            var pairs = await Instance.MachineTagsGetPairsAsync(null, null, 0, 0, cancellationToken);
             Assert.IsNotNull(pairs);
 
             Assert.AreNotEqual(0, pairs.Count, "Count should not be zero.");
@@ -55,11 +59,10 @@ namespace FlickrNetTest
             }
         }
 
-
         [Test]
-        public void MachinetagsGetPairsNamespaceTest()
+        public async Task MachinetagsGetPairsNamespaceTest(CancellationToken cancellationToken = default)
         {
-            var pairs = Instance.MachineTagsGetPairs("dc", null, 0, 0);
+            var pairs = await Instance.MachineTagsGetPairsAsync("dc", null, 0, 0, cancellationToken);
             Assert.IsNotNull(pairs);
 
             Assert.AreNotEqual(0, pairs.Count, "Count should not be zero.");
@@ -71,14 +74,13 @@ namespace FlickrNetTest
                 Assert.IsTrue(p.PairName.StartsWith("dc:", StringComparison.Ordinal), "PairName should start with 'dc:'.");
                 Assert.IsNotNull(p.PredicateName, "PredicateName should not be null.");
                 Assert.AreNotEqual(0, p.Usage, "Usage should be greater than zero.");
-
             }
         }
 
         [Test]
-        public void MachinetagsGetPairsPredicateTest()
+        public async Task MachinetagsGetPairsPredicateTest(CancellationToken cancellationToken = default)
         {
-            var pairs = Instance.MachineTagsGetPairs(null, "author", 0, 0);
+            var pairs = await Instance.MachineTagsGetPairsAsync(null, "author", 0, 0, cancellationToken);
             Assert.IsNotNull(pairs);
 
             Assert.AreNotEqual(0, pairs.Count, "Count should not be zero.");
@@ -90,14 +92,13 @@ namespace FlickrNetTest
                 Assert.IsTrue(p.PairName.EndsWith(":author", StringComparison.Ordinal), "PairName should end with ':author'.");
                 Assert.IsNotNull(p.NamespaceName, "NamespaceName should not be null.");
                 Assert.AreNotEqual(0, p.Usage, "Usage should be greater than zero.");
-
             }
         }
 
         [Test]
-        public void MachinetagsGetPairsDcAuthorTest()
+        public async Task MachinetagsGetPairsDcAuthorTest(CancellationToken cancellationToken = default)
         {
-            var pairs = Instance.MachineTagsGetPairs("dc", "author", 0, 0);
+            var pairs = await Instance.MachineTagsGetPairsAsync("dc", "author", 0, 0, cancellationToken);
             Assert.IsNotNull(pairs);
 
             Assert.AreEqual(1, pairs.Count, "Count should be 1.");
@@ -108,14 +109,13 @@ namespace FlickrNetTest
                 Assert.AreEqual("dc", p.NamespaceName, "NamespaceName should be 'dc'.");
                 Assert.AreEqual("dc:author", p.PairName, "PairName should be 'dc:author'.");
                 Assert.AreNotEqual(0, p.Usage, "Usage should be greater than zero.");
-
             }
         }
 
         [Test]
-        public void MachinetagsGetValuesTest()
+        public async Task MachinetagsGetValuesTest(CancellationToken cancellationToken = default)
         {
-            var items = Instance.MachineTagsGetValues("dc", "author");
+            var items = await Instance.MachineTagsGetValuesAsync("dc", "author", cancellationToken);
             Assert.IsNotNull(items);
 
             Assert.AreNotEqual(0, items.Count, "Count should be not be zero.");
@@ -133,9 +133,9 @@ namespace FlickrNetTest
 
         [Test]
         [Ignore("This method is throwing a Not Available error at the moment.")]
-        public void MachinetagsGetRecentValuesTest()
+        public async Task MachinetagsGetRecentValuesTest(CancellationToken cancellationToken = default)
         {
-            var items = Instance.MachineTagsGetRecentValues(DateTime.Now.AddHours(-5));
+            var items = await Instance.MachineTagsGetRecentValuesAsync(DateTime.Now.AddHours(-5), cancellationToken);
             Assert.IsNotNull(items);
 
             Assert.AreNotEqual(0, items.Count, "Count should be not be zero.");

@@ -4,6 +4,12 @@ using NUnit.Framework;
 using FlickrNet;
 using System.IO;
 using Shouldly;
+using FlickrNet.Enums;
+using System.Threading;
+using System.Threading.Tasks;
+using FlickrNet.Exceptions;
+using FlickrNet.CollectionModels;
+using FlickrNet.Models;
 
 namespace FlickrNetTest
 {
@@ -13,10 +19,9 @@ namespace FlickrNetTest
     [TestFixture]
     public class GroupsPoolsTests : BaseTest
     {
-       
         [Test]
         [Category("AccessTokenRequired")]
-        public void GroupsPoolsAddBasicTest()
+        public async Task GroupsPoolsAddBasicTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
@@ -27,34 +32,33 @@ namespace FlickrNetTest
             string title = "Test Title";
             string desc = "Test Description\nSecond Line";
             string tags = "testtag1,testtag2";
-            string photoId = f.UploadPicture(s, "Test.jpg", title, desc, tags, false, false, false, ContentType.Other, SafetyLevel.Safe, HiddenFromSearch.Visible);
+            string photoId = await f.UploadPictureAsync(s, "Test.jpg", title, desc, tags, false, false, false, ContentType.Other, SafetyLevel.Safe, HiddenFromSearch.Visible, cancellationToken: cancellationToken);
 
             try
             {
-                f.GroupsPoolsAdd(photoId, TestData.FlickrNetTestGroupId);
+                await f.GroupsPoolsAddAsync(photoId, TestData.FlickrNetTestGroupId, cancellationToken);
             }
             finally
             {
-                f.PhotosDelete(photoId);
+                await f.PhotoDeleteAsync(photoId, cancellationToken);
             }
-
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void GroupsPoolsAddNotAuthTestTest()
+        public void GroupsPoolsAddNotAuthTestTest(CancellationToken cancellationToken = default)
         {
             string photoId = "12345";
 
-            Should.Throw<SignatureRequiredException>(() => Instance.GroupsPoolsAdd(photoId, TestData.FlickrNetTestGroupId));
+            Should.Throw<SignatureRequiredException>(async () => await Instance.GroupsPoolsAddAsync(photoId, TestData.FlickrNetTestGroupId, cancellationToken));
         }
 
         [Test]
-        public void GroupsPoolGetPhotosFullParamTest()
+        public async Task GroupsPoolGetPhotosFullParamTest(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
 
-            PhotoCollection photos = f.GroupsPoolsGetPhotos(TestData.GroupId, null, TestData.TestUserId, PhotoSearchExtras.All, 1, 20);
+            PhotoCollection photos = await f.GroupsPoolsGetPhotosAsync(TestData.GroupId, null, TestData.TestUserId, PhotoSearchExtras.All, 1, 20, cancellationToken);
 
             Assert.IsNotNull(photos, "Photos should not be null");
             Assert.IsTrue(photos.Count > 0, "Should be more than 0 photos returned");
@@ -66,15 +70,14 @@ namespace FlickrNetTest
                 Assert.AreNotEqual(default(DateTime), p.DateAddedToGroup, "DateAddedToGroup should not be default value");
                 Assert.IsTrue(p.DateAddedToGroup < DateTime.Now, "DateAddedToGroup should be in the past");
             }
-
         }
 
         [Test]
-        public void GroupsPoolGetPhotosDateAddedTest()
+        public async Task GroupsPoolGetPhotosDateAddedTest(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
 
-            PhotoCollection photos = f.GroupsPoolsGetPhotos(TestData.GroupId);
+            PhotoCollection photos = await f.GroupsPoolsGetPhotosAsync(TestData.GroupId, cancellationToken);
 
             Assert.IsNotNull(photos, "Photos should not be null");
             Assert.IsTrue(photos.Count > 0, "Should be more than 0 photos returned");
@@ -84,14 +87,13 @@ namespace FlickrNetTest
                 Assert.AreNotEqual(default(DateTime), p.DateAddedToGroup, "DateAddedToGroup should not be default value");
                 Assert.IsTrue(p.DateAddedToGroup < DateTime.Now, "DateAddedToGroup should be in the past");
             }
-
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void GroupsPoolsGetGroupsBasicTest()
+        public async Task GroupsPoolsGetGroupsBasicTest(CancellationToken cancellationToken = default)
         {
-            MemberGroupInfoCollection groups = AuthInstance.GroupsPoolsGetGroups();
+            MemberGroupInfoCollection groups = await AuthInstance.GroupsPoolsGetGroupsAsync(cancellationToken);
 
             Assert.IsNotNull(groups, "MemberGroupInfoCollection should not be null.");
             Assert.AreNotEqual(0, groups.Count, "MemberGroupInfoCollection.Count should not be zero.");

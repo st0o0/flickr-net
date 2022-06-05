@@ -39,11 +39,11 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public async Task GalleriesGetListForPhotoTest()
+        public async Task GalleriesGetListForPhotoTest(CancellationToken cancellationToken = default)
         {
             string photoId = "2891347068";
 
-            var galleries = Instance.GalleriesGetListForPhoto(photoId);
+            var galleries = await Instance.GalleriesGetListForPhotoAsync(photoId, cancellationToken);
 
             Assert.IsNotNull(galleries, "GalleryCollection should not be null.");
             Assert.AreNotEqual(0, galleries.Count, "Count should not be zero.");
@@ -129,34 +129,35 @@ namespace FlickrNetTest
 
             await f.GalleriesEditMetaAsync(galleryId, title, description, cancellationToken);
 
-            Gallery gallery = f.GalleriesGetInfo(galleryId);
+            Gallery gallery = await f.GalleriesGetInfoAsync(galleryId, cancellationToken);
 
             Assert.AreEqual(title, gallery.Title);
             Assert.AreEqual(description, gallery.Description);
         }
 
         [Test, Category("AccessTokenRequired")]
-        public async Task GalleriesAddRemovePhoto()
+        public async Task GalleriesAddRemovePhoto(CancellationToken cancellationToken = default)
         {
             string photoId = "18841298081";
             string galleryId = "78188-72157622589312064";
             string comment = "no comment";
 
             Flickr f = AuthInstance;
-            f.GalleriesAddPhoto(galleryId, photoId, comment);
+            await f.GalleriesAddPhotoAsync(galleryId, photoId, comment, cancellationToken);
 
-            var photos = f.GalleriesGetPhotos(galleryId);
+            var photos = await f.GalleriesGetPhotosAsync(galleryId, cancellationToken);
+
             photos.ShouldContain(p => p.PhotoId == photoId);
 
-            f.GalleriesRemovePhoto(galleryId, photoId, "");
+            await f.GalleriesRemovePhoto(galleryId, photoId, "", cancellationToken);
 
-            photos = f.GalleriesGetPhotos(galleryId);
+            photos = await f.GalleriesGetPhotosAsync(galleryId, cancellationToken);
             photos.ShouldNotContain(p => p.PhotoId == photoId);
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void GalleriesEditPhotoTest()
+        public async Task GalleriesEditPhotoTest(CancellationToken cancellationToken = default)
         {
             Flickr.FlushCache();
             Flickr.CacheDisabled = true;
@@ -167,9 +168,9 @@ namespace FlickrNetTest
             string comment = "You don't get much better than this for the best Entrance to Hell.\n\n" + DateTime.Now.ToString();
 
             Flickr f = AuthInstance;
-            f.GalleriesEditPhoto(galleryId, photoId, comment);
+            await f.GalleriesEditPhotoAsync(galleryId, photoId, comment, cancellationToken);
 
-            var photos = f.GalleriesGetPhotos(galleryId);
+            var photos = await f.GalleriesGetPhotosAsync(galleryId, cancellationToken);
 
             bool found = false;
 
@@ -188,7 +189,7 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task GalleriesEditComplexTest()
+        public async Task GalleriesEditComplexTest(CancellationToken cancellationToken = default)
         {
             Flickr.CacheDisabled = true;
             Flickr.FlushCache();
@@ -200,20 +201,19 @@ namespace FlickrNetTest
             Flickr f = AuthInstance;
 
             // Get photos
-            var photos = f.GalleriesGetPhotos(galleryId);
+            var photos = await f.GalleriesGetPhotosAsync(galleryId, cancellationToken);
 
-            var photoIds = new List<string>();
-            foreach (var p in photos) photoIds.Add(p.PhotoId);
+            var photoIds = photos.Select(x => x.PhotoId).ToList();
 
             // Remove the last one.
             GalleryPhoto photo = photos.Last(p => p.PhotoId != primaryPhotoId);
             photoIds.Remove(photo.PhotoId);
 
             // Update the gallery
-            f.GalleriesEditPhotos(galleryId, primaryPhotoId, photoIds);
+            await f.GalleriesEditPhotosAsync(galleryId, primaryPhotoId, photoIds, cancellationToken);
 
             // Check removed photo no longer returned.
-            var photos2 = f.GalleriesGetPhotos(galleryId);
+            var photos2 = await f.GalleriesGetPhotosAsync(galleryId, cancellationToken);
 
             Assert.AreEqual(photos.Count - 1, photos2.Count, "Should be one less photo.");
 
@@ -229,9 +229,9 @@ namespace FlickrNetTest
             Assert.IsFalse(false, "Should not have found the photo in the gallery.");
 
             // Add photo back in
-            f.GalleriesAddPhoto(galleryId, photo.PhotoId, photo.Comment);
+            await f.GalleriesAddPhotoAsync(galleryId, photo.PhotoId, photo.Comment, cancellationToken);
 
-            var photos3 = f.GalleriesGetPhotos(galleryId);
+            var photos3 = await f.GalleriesGetPhotosAsync(galleryId, cancellationToken);
             Assert.AreEqual(photos.Count, photos3.Count, "Count should match now photo added back in.");
 
             found = false;

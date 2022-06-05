@@ -1,6 +1,9 @@
-﻿
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using FlickrNet;
+using FlickrNet.Models;
+using System.Threading.Tasks;
+using System.Threading;
+using FlickrNet.CollectionModels;
 
 namespace FlickrNetTest
 {
@@ -10,12 +13,11 @@ namespace FlickrNetTest
     [TestFixture]
     public class GeoTests : BaseTest
     {
-       
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosGeoGetPermsBasicTest()
+        public async Task PhotosGeoGetPermsBasicTest(CancellationToken cancellationToken = default)
         {
-            GeoPermissions perms = AuthInstance.PhotosGeoGetPerms(TestData.PhotoId);
+            GeoPermissions perms = await AuthInstance.PhotosGeoGetPermsAsync(TestData.PhotoId, cancellationToken);
 
             Assert.IsNotNull(perms);
             Assert.AreEqual(TestData.PhotoId, perms.PhotoId);
@@ -24,9 +26,9 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosGetWithGeoDataBasicTest()
+        public async Task PhotosGetWithGeoDataBasicTest(CancellationToken cancellationToken = default)
         {
-            PhotoCollection photos = AuthInstance.PhotosGetWithGeoData();
+            PhotoCollection photos = await AuthInstance.PhotosGetWithGeoDataAsync(cancellationToken);
 
             Assert.IsNotNull(photos);
             Assert.AreNotEqual(0, photos.Count);
@@ -39,7 +41,6 @@ namespace FlickrNetTest
             {
                 Assert.IsNotNull(p.PhotoId);
             }
-
         }
     }
 }

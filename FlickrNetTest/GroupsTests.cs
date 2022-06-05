@@ -1,6 +1,10 @@
-﻿
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using FlickrNet;
+using FlickrNet.Models;
+using System.Threading.Tasks;
+using System.Threading;
+using FlickrNet.CollectionModels;
+using FlickrNet.Enums;
 
 namespace FlickrNetTest
 {
@@ -12,10 +16,10 @@ namespace FlickrNetTest
     {
         [Test]
         [Category("AccessTokenRequired")]
-        public void GroupsBrowseBasicTest()
+        public async Task GroupsBrowseBasicTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
-            GroupCategory cat = f.GroupsBrowse();
+            GroupCategory cat = await f.GroupsBrowseAsync(cancellationToken);
 
             Assert.IsNotNull(cat, "GroupCategory should not be null.");
             Assert.AreEqual("/", cat.CategoryName, "CategoryName should be '/'.");
@@ -26,11 +30,11 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void GroupsSearchBasicTest()
+        public async Task GroupsSearchBasicTest(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
 
-            GroupSearchResultCollection results = f.GroupsSearch("Buses");
+            GroupSearchResultCollection results = await f.GroupsSearchAsync("Buses", cancellationToken);
 
             Assert.IsNotNull(results, "GroupSearchResults should not be null.");
             Assert.AreNotEqual(0, results.Count, "Count should not be zero.");
@@ -46,11 +50,11 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void GroupsGetInfoBasicTest()
+        public async Task GroupsGetInfoBasicTest(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
 
-            GroupFullInfo info = f.GroupsGetInfo(TestData.GroupId);
+            GroupFullInfo info = await f.GroupsGetInfoAsync(TestData.GroupId, cancellationToken);
 
             Assert.IsNotNull(info, "GroupFullInfo should not be null");
             Assert.AreEqual(TestData.GroupId, info.GroupId);
@@ -69,24 +73,23 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void GroupsGetInfoNoGroupIconTest()
+        public async Task GroupsGetInfoNoGroupIconTest(CancellationToken cancellationToken = default)
         {
             string groupId = "562176@N20";
             Flickr f = Instance;
 
-            GroupFullInfo info = f.GroupsGetInfo(groupId);
+            GroupFullInfo info = await f.GroupsGetInfoAsync(groupId, cancellationToken);
 
             Assert.IsNotNull(info, "GroupFullInfo should not be null");
             Assert.AreEqual("0", info.IconServer, "Icon Server should be zero");
             Assert.AreEqual("https://www.flickr.com/images/buddyicon.jpg", info.GroupIconUrl);
-
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void GroupsMembersGetListBasicTest()
+        public async Task GroupsMembersGetListBasicTest(CancellationToken cancellationToken = default)
         {
-            var ms = AuthInstance.GroupsMembersGetList(TestData.GroupId);
+            var ms = await AuthInstance.GroupsMembersGetListAsync(TestData.GroupId, cancellationToken);
 
             Assert.IsNotNull(ms);
             Assert.AreNotEqual(0, ms.Count, "Count should not be zero.");
@@ -94,7 +97,6 @@ namespace FlickrNetTest
             Assert.AreEqual(1, ms.Page, "Page should be one.");
             Assert.AreNotEqual(0, ms.PerPage, "PerPage should not be zero.");
             Assert.AreNotEqual(0, ms.Pages, "Pages should not be zero.");
-
         }
     }
 }
