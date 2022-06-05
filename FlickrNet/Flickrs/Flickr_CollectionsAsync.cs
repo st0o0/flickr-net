@@ -60,5 +60,27 @@ namespace FlickrNet
             }
             return await GetResponseAsync<CollectionCollection>(parameters, cancellationToken);
         }
+
+        /// <summary>
+        /// Allows you to update the title and description for a collection.
+        /// </summary>
+        /// <remarks>This method is unsupported by Flickr currently, but it does appear to work.</remarks>
+        /// <param name="collectionId">The collection id of the collection, in the format nnnnn-nnnnnnnnnnnnnnnnn.</param>
+        /// <param name="title">The new title.</param>
+        /// <param name="description">The new description.</param>
+        public async Task CollectionsEditMetaAsync(string collectionId, string title, string description, CancellationToken cancellationToken = default)
+        {
+            CheckRequiresAuthentication();
+
+            Dictionary<string, string> parameters = new()
+            {
+                { "method", "flickr.collections.editMeta" },
+                { "collection_id", collectionId },
+                { "title", title },
+                { "description", description }
+            };
+
+            await GetResponseAsync<NoResponse>(parameters, cancellationToken);
+        }
     }
 }

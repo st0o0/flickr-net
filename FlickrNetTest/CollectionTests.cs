@@ -116,6 +116,27 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
+        public async Task CollectionsEditMetaTest(CancellationToken cancellationToken = default)
+        {
+            string id = "78188-72157618817175751";
+
+            Flickr.CacheDisabled = true;
+            Flickr f = AuthInstance;
+
+            CollectionInfo info = await f.CollectionsGetInfoAsync(id, cancellationToken);
+
+            await f.CollectionsEditMetaAsync(id, info.Title, info.Description + "TEST", cancellationToken);
+
+            var info2 = await f.CollectionsGetInfoAsync(id, cancellationToken);
+
+            Assert.AreNotEqual(info.Description, info2.Description);
+
+            // Revert description
+            await f.CollectionsEditMetaAsync(id, info.Title, info.Description, cancellationToken);
+        }
+
+        [Test]
+        [Category("AccessTokenRequired")]
         public async Task CollectionsEmptyCollection(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;

@@ -9,6 +9,7 @@ using FlickrNet.CollectionModels;
 using System.Threading.Tasks;
 using System.Threading;
 using FlickrNet.Models;
+using FlickrNet.Enums;
 
 namespace FlickrNetTest
 {
@@ -57,7 +58,7 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public async Task GalleriesGetPhotos()
+        public async Task GalleriesGetPhotos(CancellationToken cancellationToken = default)
         {
             // Dogs + Tennis Balls
             // https://www.flickr.com/photos/lesliescarter/galleries/72157622656415345
@@ -65,7 +66,7 @@ namespace FlickrNetTest
 
             Flickr f = Instance;
 
-            GalleryPhotoCollection photos = f.GalleriesGetPhotos(galleryId, PhotoSearchExtras.All);
+            GalleryPhotoCollection photos = await f.GalleriesGetPhotosAsync(galleryId, PhotoSearchExtras.All, cancellationToken);
 
             Console.WriteLine(f.LastRequest);
 
@@ -81,7 +82,7 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task GalleriesEditPhotosTest()
+        public async Task GalleriesEditPhotosTest(CancellationToken cancellationToken = default)
         {
             Flickr.FlushCache();
             Flickr.CacheDisabled = true;
@@ -90,19 +91,17 @@ namespace FlickrNetTest
 
             string galleryId = "78188-72157622589312064";
 
-            var gallery = f.GalleriesGetInfo(galleryId);
+            var gallery = await f.GalleriesGetInfoAsync(galleryId, cancellationToken);
 
             Console.WriteLine("GalleryUrl = " + gallery.GalleryUrl);
 
-            var photos = f.GalleriesGetPhotos(galleryId);
+            var photos = await f.GalleriesGetPhotosAsync(galleryId, cancellationToken);
 
-            var photoIds = new List<string>();
+            var photoIds = photos.Select(x => x.PhotoId);
 
-            foreach (var photo in photos) photoIds.Add(photo.PhotoId);
+            await f.GalleriesEditPhotosAsync(galleryId, gallery.PrimaryPhotoId, photoIds, cancellationToken);
 
-            f.GalleriesEditPhotos(galleryId, gallery.PrimaryPhotoId, photoIds);
-
-            var photos2 = f.GalleriesGetPhotos(gallery.GalleryId);
+            var photos2 = await f.GalleriesGetPhotosAsync(gallery.GalleryId, cancellationToken);
 
             Assert.AreEqual(photos.Count, photos2.Count);
 
@@ -114,7 +113,7 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task GalleriesEditMetaTest()
+        public async Task GalleriesEditMetaTest(CancellationToken cancellationToken = default)
         {
             Flickr.FlushCache();
             Flickr.CacheDisabled = true;
@@ -128,7 +127,7 @@ namespace FlickrNetTest
                                  "<a href=\"https://www.flickr.com/groups/entrancetohell\">www.flickr.com/groups/entrancetohell</a>\n\n";
             description += DateTime.Now.ToString();
 
-            f.GalleriesEditMeta(galleryId, title, description);
+            await f.GalleriesEditMetaAsync(galleryId, title, description, cancellationToken);
 
             Gallery gallery = f.GalleriesGetInfo(galleryId);
 

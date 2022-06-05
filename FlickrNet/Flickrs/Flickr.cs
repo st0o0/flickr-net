@@ -466,7 +466,7 @@ namespace FlickrNet
         {
             try
             {
-                XmlReader reader = XmlReader.Create(new MemoryStream(bytes), new XmlReaderSettings
+                using XmlReader reader = XmlReader.Create(new MemoryStream(bytes), new XmlReaderSettings
                 {
                     IgnoreWhitespace = true
                 });

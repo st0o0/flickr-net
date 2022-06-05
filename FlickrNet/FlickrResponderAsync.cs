@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -119,20 +120,19 @@ namespace FlickrNet
                 RequestUri = new Uri(baseUrl)
             };
 
-            if (!string.IsNullOrEmpty(contentType))
-            {
-                message.Headers.Add("Content-Type", contentType);
-            }
-
             if (!string.IsNullOrEmpty(authHeader))
             {
-                message.Headers.Add("Authorization", authHeader);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("OAuth", authHeader.Replace("OAuth ", ""));
             }
 
             if (method == "POST")
             {
                 message.Method = HttpMethod.Post;
                 message.Content = new StringContent(data);
+                if (!string.IsNullOrEmpty(contentType))
+                {
+                    message.Content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType);
+                }
             }
             else
             {
