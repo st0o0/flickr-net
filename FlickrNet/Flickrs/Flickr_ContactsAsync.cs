@@ -141,9 +141,9 @@ namespace FlickrNet
         /// Gets a list of the given users contact, or those that are publically avaiable.
         /// </summary>
         /// <param name="userId">The Id of the user who's contacts you want to return.</param>
-        public void ContactsGetPublicListAsync(string userId, CancellationToken cancellationToken = default)
+        public async Task<ContactCollection> ContactsGetPublicListAsync(string userId, CancellationToken cancellationToken = default)
         {
-            ContactsGetPublicListAsync(userId, 0, 0, cancellationToken);
+            return await ContactsGetPublicListAsync(userId, 0, 0, cancellationToken);
         }
 
         /// <summary>

@@ -17,28 +17,22 @@ namespace FlickrNetTest
 
         protected Flickr Instance
         {
-            get
-            {
-                return _instance ??= TestData.GetInstance();
-            }
+            get => _instance ??= TestData.GetInstance();
         }
 
         protected Flickr AuthInstance
         {
-            get
-            {
-                return _authInstance ??= TestData.GetAuthInstance();
-            }
+            get => _authInstance ??= TestData.GetAuthInstance();
         }
 
         protected bool InstanceUsed
         {
-            get { return _instance != null; }
+            get => _instance != null;
         }
 
         protected bool AuthInstanceUsed
         {
-            get { return _authInstance != null; }
+            get => _authInstance != null;
         }
 
         [SetUp]

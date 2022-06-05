@@ -3,6 +3,9 @@
 using NUnit.Framework;
 using FlickrNet;
 using System.IO;
+using FlickrNet.Common;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {
@@ -28,11 +31,10 @@ namespace FlickrNetTest
             Flickr.CacheLocation = origLocation;
 
             Assert.AreEqual(Flickr.CacheLocation, origLocation);
-
         }
 
         [Test]
-        public void CacheHitTest()
+        public async Task CacheHitTest(CancellationToken cancellationToken = default)
         {
             if (Directory.Exists(Flickr.CacheLocation))
             {
@@ -43,7 +45,7 @@ namespace FlickrNetTest
             Flickr.FlushCache();
             f.InstanceCacheDisabled = false;
 
-            f.PeopleGetPublicPhotos(TestData.TestUserId);
+            await f.PeopleGetPublicPhotosAsync(TestData.TestUserId, cancellationToken);
 
             string lastUrl = f.LastRequest;
 

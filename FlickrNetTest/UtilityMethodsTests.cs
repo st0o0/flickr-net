@@ -1,6 +1,7 @@
-﻿using System;
-using FlickrNet;
+﻿using FlickrNet;
+using FlickrNet.Enums;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 
 namespace FlickrNetTest
@@ -12,7 +13,7 @@ namespace FlickrNetTest
     [TestFixture]
     public class UtilityMethodsTests : BaseTest
     {
-        readonly Dictionary<DateTime, string> _timestampTests = new Dictionary<DateTime, string>
+        private readonly Dictionary<DateTime, string> _timestampTests = new Dictionary<DateTime, string>
                                                                             {
                 { new DateTime(1970, 1, 1), "0" },
                 { new DateTime(2011, 1, 1), "1293840000" },
@@ -30,7 +31,6 @@ namespace FlickrNetTest
 
             actual = UtilityMethods.CleanCollectionId(expected);
             Assert.AreEqual(expected, actual);
-
         }
 
         [Test]
@@ -63,10 +63,11 @@ namespace FlickrNetTest
                 Assert.AreEqual(expected, actual, orig + " should have converted to " + expected);
             }
         }
+
         [Test]
         public void ExtrasToStringTestNoExtras()
         {
-            const PhotoSearchExtras extras = PhotoSearchExtras.None; 
+            const PhotoSearchExtras extras = PhotoSearchExtras.None;
 
             var expected = string.Empty;
 
@@ -78,7 +79,7 @@ namespace FlickrNetTest
         [Test]
         public void ExtrasToStringTestTags()
         {
-            const PhotoSearchExtras extras = PhotoSearchExtras.Tags; 
+            const PhotoSearchExtras extras = PhotoSearchExtras.Tags;
 
             const string expected = "tags";
 
@@ -90,7 +91,7 @@ namespace FlickrNetTest
         [Test]
         public void ExtrasToStringTestMultiple()
         {
-            const PhotoSearchExtras extras = PhotoSearchExtras.Tags | PhotoSearchExtras.OriginalFormat; 
+            const PhotoSearchExtras extras = PhotoSearchExtras.Tags | PhotoSearchExtras.OriginalFormat;
 
             const string expected = "original_format,tags";
 
@@ -118,7 +119,7 @@ namespace FlickrNetTest
         public void MachineTagModeToStringTests()
         {
             var test = new Dictionary<MachineTagMode, string>
-                           { 
+                           {
                 { MachineTagMode.AllTags, "all" } ,
                 { MachineTagMode.AnyTag, "any" },
                 { MachineTagMode.None, "" },
@@ -206,7 +207,6 @@ namespace FlickrNetTest
 
                 Assert.AreEqual(expected, actual);
             }
-
         }
 
         [Test]
@@ -226,7 +226,7 @@ namespace FlickrNetTest
                 var expected = pair.Value;
 
                 var actual = UtilityMethods.MemberTypeToString(orig);
-                
+
                 Assert.AreEqual(expected, actual);
             }
         }
@@ -256,7 +256,6 @@ namespace FlickrNetTest
 
                 Assert.AreEqual(expected, actual);
             }
-
         }
 
         [Test]
@@ -280,14 +279,13 @@ namespace FlickrNetTest
 
                 Assert.AreEqual(expected, actual);
             }
-
         }
 
         [Test]
         public void TagModeToStringTests()
         {
             var test = new Dictionary<TagMode, string>
-                           { 
+                           {
                 { TagMode.AllTags, "all" } ,
                 { TagMode.AnyTag, "any" },
                 { TagMode.Boolean, "bool" },
@@ -399,7 +397,7 @@ namespace FlickrNetTest
                 { "original", "https://farm1.staticflickr.com/2/3_4_o.jpg"}
             };
 
-            foreach(var pair in sizeTests)
+            foreach (var pair in sizeTests)
             {
                 var size = pair.Key;
                 var expected = pair.Value;
@@ -422,8 +420,6 @@ namespace FlickrNetTest
             var actual = UtilityMethods.UrlFormat(photoInfo, size, extension);
 
             Assert.AreEqual(expected, actual);
-
-
         }
 
         [Test]

@@ -2,6 +2,8 @@
 using FlickrNet;
 using FlickrNet.CollectionModels;
 using FlickrNet.Models;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace FlickrNetTest
 {
@@ -13,11 +15,11 @@ namespace FlickrNetTest
     {
         [Test]
         [Category("AccessTokenRequired")]
-        public void BlogsGetListTest()
+        public async Task BlogsGetListTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            BlogCollection blogs = f.BlogsGetList();
+            BlogCollection blogs = await f.BlogsGetListAsync(cancellationToken);
 
             Assert.IsNotNull(blogs, "Blogs should not be null.");
 
@@ -32,11 +34,11 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void BlogGetServicesTest()
+        public async Task BlogGetServicesTest(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
 
-            BlogServiceCollection services = f.BlogsGetServicesAsync();
+            BlogServiceCollection services = await f.BlogsGetServicesAsync(cancellationToken);
 
             Assert.IsNotNull(services, "BlogServices should not be null.");
             Assert.AreNotEqual(0, services.Count, "BlogServices.Count should not be zero.");

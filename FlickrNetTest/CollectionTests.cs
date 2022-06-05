@@ -1,6 +1,9 @@
-﻿
+﻿using FlickrNet;
+using FlickrNet.CollectionModels;
+using FlickrNet.Models;
 using NUnit.Framework;
-using FlickrNet;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {
@@ -10,16 +13,15 @@ namespace FlickrNetTest
     [TestFixture]
     public class CollectionTests : BaseTest
     {
-        
         [Test]
         [Category("AccessTokenRequired")]
-        public void CollectionGetInfoBasicTest()
+        public async Task CollectionGetInfoBasicTest(CancellationToken cancellation = default)
         {
             string id = "78188-72157618817175751";
 
             Flickr f = AuthInstance;
 
-            CollectionInfo info = f.CollectionsGetInfo(id);
+            CollectionInfo info = await f.CollectionsGetInfoAsync(id, cancellation);
 
             Assert.AreEqual(id, info.CollectionId, "CollectionId should be correct.");
             Assert.AreEqual(1, info.ChildCount, "ChildCount should be 1.");
@@ -34,10 +36,10 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void CollectionGetTreeRootTest()
+        public async Task CollectionGetTreeRootTest(CancellationToken cancellation = default)
         {
             Flickr f = AuthInstance;
-            CollectionCollection tree = f.CollectionsGetTree();
+            CollectionCollection tree = await f.CollectionsGetTreeAsync(cancellation);
 
             Assert.IsNotNull(tree, "CollectionList should not be null.");
             Assert.AreNotEqual(0, tree.Count, "CollectionList.Count should not be zero.");
@@ -60,10 +62,10 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void CollectionGetTreeRootForSpecificUser()
+        public async Task CollectionGetTreeRootForSpecificUser(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
-            CollectionCollection tree = f.CollectionsGetTree(null, TestData.TestUserId);
+            CollectionCollection tree = await f.CollectionsGetTreeAsync(null, TestData.TestUserId, cancellationToken);
 
             Assert.IsNotNull(tree, "CollectionList should not be null.");
             Assert.AreNotEqual(0, tree.Count, "CollectionList.Count should not be zero.");
@@ -86,11 +88,11 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void CollectionGetSubTreeForSpecificUser()
+        public async Task CollectionGetSubTreeForSpecificUser(CancellationToken cancellationToken = default)
         {
             string id = "78188-72157618817175751";
             Flickr f = Instance;
-            CollectionCollection tree = f.CollectionsGetTree(id, TestData.TestUserId);
+            CollectionCollection tree = await f.CollectionsGetTreeAsync(id, TestData.TestUserId, cancellationToken);
 
             Assert.IsNotNull(tree, "CollectionList should not be null.");
             Assert.AreNotEqual(0, tree.Count, "CollectionList.Count should not be zero.");
@@ -114,34 +116,12 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void CollectionsEditMetaTest()
-        {
-            string id = "78188-72157618817175751";
-
-            Flickr.CacheDisabled = true;
-            Flickr f = AuthInstance;
-
-            CollectionInfo info = f.CollectionsGetInfo(id);
-
-            f.CollectionsEditMeta(id, info.Title, info.Description + "TEST");
-
-            var info2 = f.CollectionsGetInfo(id);
-
-            Assert.AreNotEqual(info.Description, info2.Description);
-
-            // Revert description
-            f.CollectionsEditMeta(id, info.Title, info.Description);
-
-        }
-
-        [Test]
-        [Category("AccessTokenRequired")]
-        public void CollectionsEmptyCollection()
+        public async Task CollectionsEmptyCollection(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
             // Get global collection
-            CollectionCollection collections = f.CollectionsGetTree("78188-72157618817175751", null);
+            CollectionCollection collections = await f.CollectionsGetTreeAsync("78188-72157618817175751", null, cancellationToken);
 
             Assert.IsNotNull(collections);
             Assert.IsTrue(collections.Count > 0, "Global collection should be greater than zero.");
@@ -157,7 +137,6 @@ namespace FlickrNetTest
 
             Assert.IsNotNull(subsol.Collections, "Child collection Collections property should ne null.");
             Assert.AreEqual(0, subsol.Collections.Count, "Child collection should not have and sub collections.");
-
         }
     }
 }

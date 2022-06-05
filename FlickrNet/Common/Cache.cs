@@ -46,10 +46,6 @@ namespace FlickrNet.Common
         {
             get
             {
-                if (cacheDisabled == Tristate.Null && FlickrConfigurationManager.Settings != null)
-                {
-                    cacheDisabled = FlickrConfigurationManager.Settings.CacheDisabled ? Tristate.True : Tristate.False;
-                }
                 if (cacheDisabled == Tristate.Null)
                 {
                     cacheDisabled = Tristate.False;
@@ -72,10 +68,6 @@ namespace FlickrNet.Common
         {
             get
             {
-                if (cacheLocation == null && FlickrConfigurationManager.Settings != null)
-                {
-                    cacheLocation = FlickrConfigurationManager.Settings.CacheLocation;
-                }
                 if (cacheLocation == null)
                 {
                     try

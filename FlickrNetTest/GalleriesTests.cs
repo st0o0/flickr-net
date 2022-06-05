@@ -5,6 +5,10 @@ using NUnit.Framework;
 using FlickrNet;
 using Shouldly;
 using System.Linq;
+using FlickrNet.CollectionModels;
+using System.Threading.Tasks;
+using System.Threading;
+using FlickrNet.Models;
 
 namespace FlickrNetTest
 {
@@ -14,13 +18,12 @@ namespace FlickrNetTest
     [TestFixture]
     public class GalleriesTests : BaseTest
     {
-        
         [Test]
-        public void GalleriesGetListUserIdTest()
+        public async Task GalleriesGetListUserIdTest(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
 
-            GalleryCollection galleries = f.GalleriesGetList(TestData.TestUserId);
+            GalleryCollection galleries = await f.GalleriesGetListAsync(TestData.TestUserId, cancellationToken);
 
             Assert.IsNotNull(galleries, "GalleryCollection should not be null.");
             Assert.AreNotEqual(0, galleries.Count, "Count should not be zero.");
@@ -35,7 +38,7 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void GalleriesGetListForPhotoTest()
+        public async Task GalleriesGetListForPhotoTest()
         {
             string photoId = "2891347068";
 
@@ -54,7 +57,7 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void GalleriesGetPhotos()
+        public async Task GalleriesGetPhotos()
         {
             // Dogs + Tennis Balls
             // https://www.flickr.com/photos/lesliescarter/galleries/72157622656415345
@@ -78,7 +81,7 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void GalleriesEditPhotosTest()
+        public async Task GalleriesEditPhotosTest()
         {
             Flickr.FlushCache();
             Flickr.CacheDisabled = true;
@@ -111,7 +114,7 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void GalleriesEditMetaTest()
+        public async Task GalleriesEditMetaTest()
         {
             Flickr.FlushCache();
             Flickr.CacheDisabled = true;
@@ -134,7 +137,7 @@ namespace FlickrNetTest
         }
 
         [Test, Category("AccessTokenRequired")]
-        public void GalleriesAddRemovePhoto()
+        public async Task GalleriesAddRemovePhoto()
         {
             string photoId = "18841298081";
             string galleryId = "78188-72157622589312064";
@@ -186,7 +189,7 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void GalleriesEditComplexTest()
+        public async Task GalleriesEditComplexTest()
         {
             Flickr.CacheDisabled = true;
             Flickr.FlushCache();
@@ -220,7 +223,7 @@ namespace FlickrNetTest
             {
                 if (p.PhotoId == photo.PhotoId)
                 {
-                    found = true; 
+                    found = true;
                     break;
                 }
             }
@@ -245,6 +248,5 @@ namespace FlickrNetTest
 
             Assert.IsTrue(found, "Should have found the photo in the gallery.");
         }
-
     }
 }

@@ -1,4 +1,5 @@
 ﻿using FlickrNet;
+using FlickrNet.Exceptions;
 using NUnit.Framework;
 using Shouldly;
 
@@ -12,7 +13,7 @@ namespace FlickrNetTest
         [Test]
         public void CheckApiKeyThrowsExceptionWhenNotPresent()
         {
-            var f = new Flickr();
+            var f = new Flickr("");
 
             Should.Throw<ApiKeyRequiredException>(() => f.CheckApiKey());
         }
@@ -20,7 +21,7 @@ namespace FlickrNetTest
         [Test]
         public void CheckApiKeyDoesNotThrowWhenPresent()
         {
-            var f = new Flickr();
+            var f = new Flickr("");
             f.ApiKey = "X";
 
             Should.NotThrow(() => f.CheckApiKey());
@@ -29,7 +30,7 @@ namespace FlickrNetTest
         [Test]
         public void CheckSignatureKeyThrowsExceptionWhenSecretNotPresent()
         {
-            var f = new Flickr();
+            var f = new Flickr("");
             f.ApiKey = "X";
             Should.Throw<SignatureRequiredException>(() => f.CheckSigned());
         }
@@ -37,7 +38,7 @@ namespace FlickrNetTest
         [Test]
         public void CheckSignatureKeyDoesntThrowWhenSecretPresent()
         {
-            var f = new Flickr();
+            var f = new Flickr("");
             f.ApiKey = "X";
             f.ApiSecret = "Y";
 
@@ -47,7 +48,7 @@ namespace FlickrNetTest
         [Test]
         public void CheckRequestAuthenticationThrowsExceptionWhenNothingPresent()
         {
-            var f = new Flickr();
+            var f = new Flickr("");
             f.ApiKey = "X";
             f.ApiSecret = "Y";
 
@@ -57,7 +58,7 @@ namespace FlickrNetTest
         [Test]
         public void CheckRequestAuthenticationDoesNotThrowWhenAuthTokenPresent()
         {
-            var f = new Flickr();
+            var f = new Flickr("");
             f.ApiKey = "X";
             f.ApiSecret = "Y";
 
@@ -69,7 +70,7 @@ namespace FlickrNetTest
         [Test]
         public void CheckRequestAuthenticationDoesNotThrowWhenOAuthTokenPresent()
         {
-            var f = new Flickr();
+            var f = new Flickr("");
             f.ApiKey = "X";
             f.ApiSecret = "Y";
 

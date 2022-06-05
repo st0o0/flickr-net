@@ -304,7 +304,7 @@ namespace FlickrNet
             this.sharedSecret = sharedSecret;
         }
 
-        internal void CheckApiKey()
+        public void CheckApiKey()
         {
             if (string.IsNullOrEmpty(ApiKey))
             {
@@ -312,7 +312,7 @@ namespace FlickrNet
             }
         }
 
-        internal void CheckSigned()
+        public void CheckSigned()
         {
             CheckApiKey();
 
@@ -322,7 +322,7 @@ namespace FlickrNet
             }
         }
 
-        internal void CheckRequiresAuthentication()
+        public void CheckRequiresAuthentication()
         {
             CheckSigned();
 

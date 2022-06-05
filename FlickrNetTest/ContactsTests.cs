@@ -3,6 +3,8 @@ using NUnit.Framework;
 using FlickrNet;
 using FlickrNet.Flickrs;
 using FlickrNet.CollectionModels;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace FlickrNetTest
 {
@@ -14,10 +16,10 @@ namespace FlickrNetTest
     {
         [Test]
         [Category("AccessTokenRequired")]
-        public void ContactsGetListTestBasicTest()
+        public async Task ContactsGetListTestBasicTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
-            var contacts = f.ContactsGetList();
+            ContactCollection contacts = await f.ContactsGetListAsync(cancellationToken);
 
             Assert.IsNotNull(contacts);
 
@@ -31,21 +33,21 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void ContactsGetListFullParamTest()
+        public async Task ContactsGetListFullParamTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            ContactCollection contacts = f.ContactsGetList(null, 0, 0);
+            ContactCollection contacts = await f.ContactsGetListAsync(null, 0, 0, cancellationToken);
 
             Assert.IsNotNull(contacts, "Contacts should not be null.");
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void ContactsGetListFilteredTest()
+        public async Task ContactsGetListFilteredTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
-            var contacts = f.ContactsGetList("friends");
+            ContactCollection contacts = await f.ContactsGetListAsync("friends", cancellationToken);
 
             Assert.IsNotNull(contacts);
 
@@ -61,10 +63,10 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void ContactsGetListPagedTest()
+        public async Task ContactsGetListPagedTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
-            var contacts = f.ContactsGetList(2, 20);
+            ContactCollection contacts = await f.ContactsGetListAsync(2, 20, cancellationToken);
 
             Assert.IsNotNull(contacts);
             Assert.AreEqual(2, contacts.Page);
@@ -80,11 +82,11 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void ContactsGetPublicListTest()
+        public async Task ContactsGetPublicListTest(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
 
-            ContactCollection contacts = f.ContactsGetPublicList(TestData.TestUserId);
+            ContactCollection contacts = await f.ContactsGetPublicListAsync(TestData.TestUserId, cancellationToken);
 
             Assert.IsNotNull(contacts, "Contacts should not be null.");
 
@@ -94,22 +96,22 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void ContactsGetRecentlyUpdatedTest()
+        public async Task ContactsGetRecentlyUpdatedTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            ContactCollection contacts = f.ContactsGetListRecentlyUploaded(DateTime.Now.AddDays(-1), null);
+            ContactCollection contacts = await f.ContactsGetListRecentlyUploadedAsync(DateTime.Now.AddDays(-1), null, cancellationToken);
 
             Assert.IsNotNull(contacts, "Contacts should not be null.");
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void ContactsGetTaggingSuggestions()
+        public async Task ContactsGetTaggingSuggestions(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            var contacts = f.ContactsGetTaggingSuggestions();
+            var contacts = await f.ContactsGetTaggingSuggestionsAsync(cancellationToken);
 
             Assert.IsNotNull(contacts);
         }

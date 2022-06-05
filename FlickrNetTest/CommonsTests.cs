@@ -1,6 +1,8 @@
-﻿
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using FlickrNet;
+using System.Threading.Tasks;
+using System.Threading;
+using FlickrNet.CollectionModels;
 
 namespace FlickrNetTest
 {
@@ -10,11 +12,10 @@ namespace FlickrNetTest
     [TestFixture]
     public class CommonsTests : BaseTest
     {
-       
         [Test]
-        public void CommonsGetInstitutions()
+        public async Task CommonsGetInstitutions(CancellationToken cancellationToken = default)
         {
-            InstitutionCollection insts = Instance.CommonsGetInstitutions();
+            InstitutionCollection insts = await Instance.CommonsGetInstitutionsAsync(cancellationToken);
 
             Assert.IsNotNull(insts);
             Assert.IsTrue(insts.Count > 5);

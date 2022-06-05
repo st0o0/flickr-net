@@ -504,7 +504,7 @@ namespace FlickrNet
             return string.Format(System.Globalization.CultureInfo.InvariantCulture, format, parameters);
         }
 
-        internal static MemberTypes ParseIdToMemberType(string memberTypeId)
+        public static MemberTypes ParseIdToMemberType(string memberTypeId)
         {
             return memberTypeId switch
             {
@@ -534,7 +534,7 @@ namespace FlickrNet
             }
         }
 
-        internal static string MemberTypeToString(MemberTypes memberTypes)
+        public static string MemberTypeToString(MemberTypes memberTypes)
         {
             List<string> types = new();
 
@@ -578,7 +578,7 @@ namespace FlickrNet
             return BitConverter.ToString(hashedBytes).Replace("-", string.Empty).ToLower();
         }
 
-        internal static DateTime MySqlToDate(string p)
+        public static DateTime MySqlToDate(string p)
         {
             string format1 = "yyyy-MM-dd";
             string format2 = "yyyy-MM-dd hh:mm:ss";
@@ -642,7 +642,7 @@ namespace FlickrNet
             return output;
         }
 
-        internal static string DateToMySql(DateTime date)
+        public static string DateToMySql(DateTime date)
         {
             return date.ToString("yyyy-MM-dd HH:mm:ss", System.Globalization.DateTimeFormatInfo.InvariantInfo);
         }
@@ -762,7 +762,7 @@ namespace FlickrNet
             return value;
         }
 
-        internal static string CleanCollectionId(string collectionId)
+        public static string CleanCollectionId(string collectionId)
         {
             return collectionId.IndexOf("-", StringComparison.Ordinal) < 0
                        ? collectionId

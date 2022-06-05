@@ -2,6 +2,9 @@
 
 using NUnit.Framework;
 using FlickrNet;
+using System.Threading.Tasks;
+using System.Threading;
+using FlickrNet.Models;
 
 namespace FlickrNetTest
 {
@@ -12,39 +15,43 @@ namespace FlickrNetTest
     public class TestTests : BaseTest
     {
         [Test]
-        public void TestGenericGroupSearch()
+        public async Task TestGenericGroupSearch(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
 
-            var parameters = new Dictionary<string, string>();
-            parameters.Add("text", "Flowers");
-            UnknownResponse response = f.TestGeneric("flickr.groups.search", parameters);
+            var parameters = new Dictionary<string, string>
+            {
+                { "text", "Flowers" }
+            };
+
+            UnknownResponse response = await f.TestGenericAsync("flickr.groups.search", parameters, cancellationToken);
 
             Assert.IsNotNull(response, "UnknownResponse should not be null.");
             Assert.IsNotNull(response.ResponseXml, "ResponseXml should not be null.");
-
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void TestGenericTestNull()
+        public async Task TestGenericTestNull(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            UnknownResponse response = f.TestGeneric("flickr.test.null", null);
+            UnknownResponse response = await f.TestGenericAsync("flickr.test.null", null, cancellationToken);
 
             Assert.IsNotNull(response, "UnknownResponse should not be null.");
             Assert.IsNotNull(response.ResponseXml, "ResponseXml should not be null.");
         }
 
         [Test]
-        public void TestEcho()
+        public async Task TestEcho(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
-            var parameters = new Dictionary<string, string>();
-            parameters.Add("test1", "testvalue");
+            var parameters = new Dictionary<string, string>
+            {
+                { "test1", "testvalue" }
+            };
 
-            Dictionary<string, string> returns = f.TestEcho(parameters);
+            Dictionary<string, string> returns = await f.TestEchoAsync(parameters, cancellationToken);
 
             Assert.IsNotNull(returns);
 
@@ -53,7 +60,6 @@ namespace FlickrNetTest
 
             Assert.AreEqual("flickr.test.echo", returns["method"]);
             Assert.AreEqual("testvalue", returns["test1"]);
-
         }
     }
 }
