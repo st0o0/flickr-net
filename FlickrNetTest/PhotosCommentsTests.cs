@@ -2,6 +2,10 @@
 
 using NUnit.Framework;
 using FlickrNet;
+using System.Threading.Tasks;
+using System.Threading;
+using FlickrNet.CollectionModels;
+using FlickrNet.Enums;
 
 namespace FlickrNetTest
 {
@@ -12,11 +16,11 @@ namespace FlickrNetTest
     public class PhotosCommentsTests : BaseTest
     {
         [Test]
-        public void PhotosCommentsGetListBasicTest()
+        public async Task PhotosCommentsGetListBasicTest(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
 
-            PhotoCommentCollection comments = f.PhotosCommentsGetList("3546335765");
+            PhotoCommentCollection comments = await f.PhotosCommentsGetListAsync("3546335765", cancellationToken);
 
             Assert.IsNotNull(comments, "PhotoCommentCollection should not be null.");
 
@@ -28,21 +32,21 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosCommentsGetRecentForContactsBasicTest()
+        public async Task PhotosCommentsGetRecentForContactsBasicTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            var photos = f.PhotosCommentsGetRecentForContacts();
+            var photos = await f.PhotosCommentsGetRecentForContactsAsync(cancellationToken);
             Assert.IsNotNull(photos, "PhotoCollection should not be null.");
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosCommentsGetRecentForContactsFullParamTest()
+        public async Task PhotosCommentsGetRecentForContactsFullParamTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            var photos = f.PhotosCommentsGetRecentForContacts(DateTime.Now.AddHours(-1), PhotoSearchExtras.All, 1, 20);
+            var photos = await f.PhotosCommentsGetRecentForContactsAsync(DateTime.Now.AddHours(-1), PhotoSearchExtras.All, 1, 20, cancellationToken);
             Assert.IsNotNull(photos, "PhotoCollection should not be null.");
             Assert.AreEqual(20, photos.PerPage);
         }

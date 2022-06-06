@@ -1,7 +1,10 @@
-﻿
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using FlickrNet;
 using System.Collections.Generic;
+using FlickrNet.SearchOptions;
+using FlickrNet.Enums;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace FlickrNetTest
 {
@@ -14,7 +17,7 @@ namespace FlickrNetTest
         [Test]
         public void PhotoSearchOptionsCalculateSlideshowUrlBasicTest()
         {
-            var o = new PhotoSearchOptions {Text = "kittens", InGallery = true};
+            var o = new PhotoSearchOptions { Text = "kittens", InGallery = true };
 
             var url = o.CalculateSlideshowUrl();
 
@@ -23,15 +26,14 @@ namespace FlickrNetTest
             const string expected = "https://www.flickr.com/show.gne?api_method=flickr.photos.search&method_params=text|kittens;in_gallery|1";
 
             Assert.AreEqual(expected, url);
-
         }
 
         [Test]
-        public void PhotoSearchExtrasViews()
+        public async Task PhotoSearchExtrasViews(CancellationToken cancellationToken = default)
         {
-            var o = new PhotoSearchOptions {Tags = "kittens", Extras = PhotoSearchExtras.Views};
+            var o = new PhotoSearchOptions { Tags = "kittens", Extras = PhotoSearchExtras.Views };
 
-            var photos = Instance.PhotosSearch(o);
+            var photos = await Instance.PhotosSearchAsync(o, cancellationToken);
 
             foreach (var photo in photos)
             {
@@ -45,7 +47,7 @@ namespace FlickrNetTest
             var o = new PhotoSearchOptions();
             var parameters = new Dictionary<string, string>();
 
-            o.AddToDictionary(parameters);
+            o.AddToDictionary(ref parameters);
 
             Assert.IsFalse(parameters.ContainsKey("styles"));
         }
@@ -56,7 +58,7 @@ namespace FlickrNetTest
             var o = new PhotoSearchOptions { Styles = new List<Style>() };
             var parameters = new Dictionary<string, string>();
 
-            o.AddToDictionary(parameters);
+            o.AddToDictionary(ref parameters);
 
             Assert.IsFalse(parameters.ContainsKey("styles"));
         }
@@ -70,7 +72,7 @@ namespace FlickrNetTest
             var o = new PhotoSearchOptions { Styles = new List<Style>(styles) };
             var parameters = new Dictionary<string, string>();
 
-            o.AddToDictionary(parameters);
+            o.AddToDictionary(ref parameters);
 
             Assert.IsTrue(parameters.ContainsKey("styles"));
         }

@@ -1,6 +1,7 @@
-﻿
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using FlickrNet;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace FlickrNetTest
 {
@@ -11,9 +12,9 @@ namespace FlickrNetTest
     public class PandaTest : BaseTest
     {
         [Test]
-        public void PandaGetListBasicTest()
+        public async Task PandaGetListBasicTest(CancellationToken cancellationToken = default)
         {
-            string[] pandas = Instance.PandaGetList();
+            string[] pandas = await Instance.PandaGetListAsync(cancellationToken);
 
             Assert.IsNotNull(pandas, "Should return string array");
             Assert.IsTrue(pandas.Length > 0, "Should not return empty array");
@@ -24,9 +25,9 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PandaGetPhotosLingLingTest()
+        public async Task PandaGetPhotosLingLingTest(CancellationToken cancellationToken = default)
         {
-            var photos = Instance.PandaGetPhotos("ling ling");
+            var photos = await Instance.PandaGetPhotosAsync("ling ling", cancellationToken);
 
             Assert.IsNotNull(photos, "PandaPhotos should not be null.");
             Assert.AreEqual(photos.Count, photos.Total, "PandaPhotos.Count should equal PandaPhotos.Total.");

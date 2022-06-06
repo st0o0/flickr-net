@@ -1,6 +1,10 @@
-﻿
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using FlickrNet;
+using FlickrNet.SearchOptions;
+using FlickrNet.Enums;
+using FlickrNet.CollectionModels;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace FlickrNetTest
 {
@@ -11,29 +15,28 @@ namespace FlickrNetTest
     public class PhotoOwnerNameTest : BaseTest
     {
         [Test]
-        public void PhotosSearchOwnerNameTest()
+        public async Task PhotosSearchOwnerNameTest(CancellationToken cancellationToken = default)
         {
-            var o = new PhotoSearchOptions();
-
-            o.UserId = TestData.TestUserId;
-            o.PerPage = 10;
-            o.Extras = PhotoSearchExtras.OwnerName;
+            PhotoSearchOptions o = new()
+            {
+                UserId = TestData.TestUserId,
+                PerPage = 10,
+                Extras = PhotoSearchExtras.OwnerName
+            };
 
             Flickr f = Instance;
-            PhotoCollection photos = f.PhotosSearch(o);
+            PhotoCollection photos = await f.PhotosSearchAsync(o, cancellationToken);
 
             Assert.IsNotNull(photos[0].OwnerName);
-           
         }
 
         [Test]
-        public void PhotosGetContactsPublicPhotosOwnerNameTest()
+        public async Task PhotosGetContactsPublicPhotosOwnerNameTest(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
-            PhotoCollection photos = f.PhotosGetContactsPublicPhotos(TestData.TestUserId, PhotoSearchExtras.OwnerName);
+            PhotoCollection photos = await f.PhotosGetContactsPublicPhotosAsync(TestData.TestUserId, PhotoSearchExtras.OwnerName, cancellationToken);
 
             Assert.IsNotNull(photos[0].OwnerName);
         }
-
     }
 }
