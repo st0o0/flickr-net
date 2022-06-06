@@ -1,6 +1,8 @@
-﻿
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using FlickrNet;
+using System.Threading.Tasks;
+using System.Threading;
+using FlickrNet.Models;
 
 namespace FlickrNetTest
 {
@@ -12,9 +14,9 @@ namespace FlickrNetTest
     {
         [Test]
         [Category("AccessTokenRequired")]
-        public void UrlsLookupUserTest1()
+        public async Task UrlsLookupUserTest1(CancellationToken cancellationToken = default)
         {
-            FoundUser user = AuthInstance.UrlsLookupUser("https://www.flickr.com/photos/samjudson");
+            FoundUser user = await AuthInstance.UrlsLookupUserAsync("https://www.flickr.com/photos/samjudson", cancellationToken);
 
             Assert.AreEqual("41888973@N00", user.UserId);
             Assert.AreEqual("Sam Judson", user.UserName);
@@ -22,53 +24,49 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void UrlsLookupGroup()
+        public async Task UrlsLookupGroup(CancellationToken cancellationToken = default)
         {
             string groupUrl = "https://www.flickr.com/groups/angels_of_the_north/";
 
-            string groupId = AuthInstance.UrlsLookupGroup(groupUrl);
+            string groupId = await AuthInstance.UrlsLookupGroupAsync(groupUrl, cancellationToken);
 
             Assert.AreEqual("71585219@N00", groupId);
         }
 
         [Test]
-        public void UrlsLookupGalleryTest()
+        public async Task UrlsLookupGalleryTest(CancellationToken cancellationToken = default)
         {
             string galleryUrl = "https://www.flickr.com/photos/samjudson/galleries/72157622589312064";
 
             Flickr f = Instance;
 
-            Gallery gallery = f.UrlsLookupGallery(galleryUrl);
+            Gallery gallery = await f.UrlsLookupGalleryAsync(galleryUrl, cancellationToken);
 
             Assert.AreEqual(galleryUrl, gallery.GalleryUrl);
-
         }
 
         [Test]
-        public void UrlsGetUserPhotosTest()
+        public async Task UrlsGetUserPhotosTest(CancellationToken cancellationToken = default)
         {
-            string url = Instance.UrlsGetUserPhotos(TestData.TestUserId);
+            string url = await Instance.UrlsGetUserPhotosAsync(TestData.TestUserId, cancellationToken);
 
             Assert.AreEqual("https://www.flickr.com/photos/samjudson/", url);
         }
 
         [Test]
-        public void UrlsGetUserProfileTest()
+        public async Task UrlsGetUserProfileTest(CancellationToken cancellationToken = default)
         {
-            string url = Instance.UrlsGetUserProfile(TestData.TestUserId);
+            string url = await Instance.UrlsGetUserProfileAsync(TestData.TestUserId, cancellationToken);
 
             Assert.AreEqual("https://www.flickr.com/people/samjudson/", url);
         }
 
         [Test]
-        public void UrlsGetGroupTest()
+        public async Task UrlsGetGroupTest(CancellationToken cancellationToken = default)
         {
-            string url = Instance.UrlsGetGroup(TestData.GroupId);
+            string url = await Instance.UrlsGetGroupAsync(TestData.GroupId, cancellationToken);
 
             Assert.AreEqual("https://www.flickr.com/groups/lakedistrict/", url);
         }
-
-
-
     }
 }

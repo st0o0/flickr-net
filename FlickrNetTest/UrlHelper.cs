@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Net;
 using System.Net.Cache;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {
@@ -15,17 +18,27 @@ namespace FlickrNetTest
 
             try
             {
-                using (var res = (HttpWebResponse)req.GetResponse())
-                {
-                    return res.StatusCode == HttpStatusCode.OK;
-                }
+                using var res = (HttpWebResponse)req.GetResponse();
+                return res.StatusCode == HttpStatusCode.OK;
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 Console.WriteLine(exception.GetType() + " thrown.");
                 Console.WriteLine("Message:" + exception.Message);
                 return false;
             }
+        }
+
+        public static async Task<bool> Exists(string url, CancellationToken cancellationToken = default)
+        {
+            using HttpClient client = new();
+            HttpResponseMessage result = await client.GetAsync(url, cancellationToken);
+            return result.StatusCode switch
+            {
+                HttpStatusCode.Accepted => true,
+                HttpStatusCode.OK => true,
+                _ => false,
+            };
         }
     }
 }
