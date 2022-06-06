@@ -1,6 +1,8 @@
-﻿
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using FlickrNet;
+using FlickrNet.CollectionModels;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace FlickrNetTest
 {
@@ -10,12 +12,12 @@ namespace FlickrNetTest
     [TestFixture]
     public class PhotosetCommentsGetListTests : BaseTest
     {
-       [Test]
-        public void PhotosetsCommentsGetListBasicTest()
+        [Test]
+        public async Task PhotosetsCommentsGetListBasicTest(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
 
-            PhotosetCommentCollection comments = f.PhotosetsCommentsGetList("1335934");
+            PhotosetCommentCollection comments = await f.PhotosetsCommentsGetListAsync("1335934", cancellationToken);
 
             Assert.IsNotNull(comments);
 

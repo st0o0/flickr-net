@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 namespace FlickrNetTest
@@ -8,20 +10,19 @@ namespace FlickrNetTest
     public class PhotosetsOrderSets : BaseTest
     {
         [Test]
-        public void PhotosetsOrderSetsStringTest()
+        public async Task PhotosetsOrderSetsStringTest(CancellationToken cancellationToken = default)
         {
-            var mySets = AuthInstance.PhotosetsGetList();
+            var mySets = await AuthInstance.PhotosetsGetListAsync(cancellationToken);
 
-            AuthInstance.PhotosetsOrderSets(string.Join(",", mySets.Select(myset => myset.PhotosetId).ToArray()));
-
+            await AuthInstance.PhotosetsOrderSetsAsync(string.Join(",", mySets.Select(myset => myset.PhotosetId).ToArray()), cancellationToken);
         }
 
         [Test]
-        public void PhotosetsOrderSetsArrayTest()
+        public async Task PhotosetsOrderSetsArrayTest(CancellationToken cancellationToken = default)
         {
-            var mySets = AuthInstance.PhotosetsGetList();
+            var mySets = await AuthInstance.PhotosetsGetListAsync(cancellationToken);
 
-            AuthInstance.PhotosetsOrderSets(mySets.Select(myset => myset.PhotosetId).ToArray());
+            await AuthInstance.PhotosetsOrderSetsAsync(mySets.Select(myset => myset.PhotosetId).ToArray(), cancellationToken);
         }
     }
 }

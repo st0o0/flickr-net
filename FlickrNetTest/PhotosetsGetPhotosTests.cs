@@ -2,6 +2,10 @@ using System;
 using System.Linq;
 using NUnit.Framework;
 using FlickrNet;
+using FlickrNet.CollectionModels;
+using FlickrNet.Enums;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace FlickrNetTest
 {
@@ -12,18 +16,18 @@ namespace FlickrNetTest
     public class PhotosetsGetPhotosTests : BaseTest
     {
         [Test]
-        public void PhotosetsGetPhotosBasicTest()
+        public async Task PhotosetsGetPhotosBasicTest(CancellationToken cancellationToken = default)
         {
-            PhotosetPhotoCollection set = Instance.PhotosetsGetPhotos("72157618515066456", PhotoSearchExtras.All, PrivacyFilter.None, 1, 10);
+            PhotosetPhotoCollection set = await Instance.PhotosetsGetPhotosAsync("72157618515066456", PhotoSearchExtras.All, PrivacyFilter.None, 1, 10, cancellationToken);
 
             Assert.AreEqual(8, set.Total, "NumberOfPhotos should be 8.");
             Assert.AreEqual(8, set.Count, "Should be 8 photos returned.");
         }
 
         [Test]
-        public void PhotosetsGetPhotosMachineTagsTest()
+        public async Task PhotosetsGetPhotosMachineTagsTest(CancellationToken cancellationToken = default)
         {
-            var set = Instance.PhotosetsGetPhotos("72157594218885767", PhotoSearchExtras.MachineTags, PrivacyFilter.None, 1, 10);
+            var set = await Instance.PhotosetsGetPhotosAsync("72157594218885767", PhotoSearchExtras.MachineTags, PrivacyFilter.None, 1, 10, cancellationToken);
 
             var machineTagsFound = set.Any(p => !string.IsNullOrEmpty(p.MachineTags));
 
@@ -31,11 +35,11 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PhotosetsGetPhotosFilterMediaTest()
+        public async Task PhotosetsGetPhotosFilterMediaTest(CancellationToken cancellationToken = default)
         {
             // https://www.flickr.com/photos/sgoralnick/sets/72157600283870192/
             // Set contains videos and photos
-            var theset = Instance.PhotosetsGetPhotos("72157600283870192", PhotoSearchExtras.Media, PrivacyFilter.None, 1, 100, MediaType.Videos);
+            var theset = await Instance.PhotosetsGetPhotosAsync("72157600283870192", PhotoSearchExtras.Media, PrivacyFilter.None, 1, 100, MediaType.Videos, cancellationToken);
 
             Assert.AreEqual("Canon 5D", theset.Title);
 
@@ -44,20 +48,19 @@ namespace FlickrNetTest
                 Assert.AreEqual("video", p.Media, "Should be video.");
             }
 
-            var theset2 = Instance.PhotosetsGetPhotos("72157600283870192", PhotoSearchExtras.Media, PrivacyFilter.None, 1, 100, MediaType.Photos);
+            var theset2 = await Instance.PhotosetsGetPhotosAsync("72157600283870192", PhotoSearchExtras.Media, PrivacyFilter.None, 1, 100, MediaType.Photos, cancellationToken);
             foreach (var p in theset2)
             {
                 Assert.AreEqual("photo", p.Media, "Should be photo.");
             }
-
         }
 
         [Test]
-        public void PhotosetsGetPhotosWebUrlTest()
+        public async Task PhotosetsGetPhotosWebUrlTest(CancellationToken cancellationToken = default)
         {
-            var theset = Instance.PhotosetsGetPhotos("72157618515066456");
+            var theset = await Instance.PhotosetsGetPhotosAsync("72157618515066456", cancellationToken);
 
-            foreach(var p in theset)
+            foreach (var p in theset)
             {
                 Assert.IsNotNull(p.UserId, "UserId should not be null.");
                 Assert.AreNotEqual(string.Empty, p.UserId, "UserId should not be an empty string.");
@@ -67,9 +70,9 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PhotosetsGetPhotosPrimaryPhotoTest()
+        public async Task PhotosetsGetPhotosPrimaryPhotoTest(CancellationToken cancellationToken = default)
         {
-            var theset = Instance.PhotosetsGetPhotos("72157618515066456", 1, 100);
+            var theset = await Instance.PhotosetsGetPhotosAsync("72157618515066456", 1, 100, cancellationToken);
 
             Assert.IsNotNull(theset.PrimaryPhotoId, "PrimaryPhotoId should not be null.");
 
@@ -82,9 +85,9 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosetsGetPhotosOrignalTest()
+        public async Task PhotosetsGetPhotosOrignalTest(CancellationToken cancellationToken = default)
         {
-            var photos = AuthInstance.PhotosetsGetPhotos("72157623027759445", PhotoSearchExtras.AllUrls);
+            var photos = await AuthInstance.PhotosetsGetPhotosAsync("72157623027759445", PhotoSearchExtras.AllUrls, cancellationToken);
 
             foreach (var photo in photos)
             {
@@ -93,21 +96,21 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void ShouldReturnDateTakenWhenAsked()
+        public async Task ShouldReturnDateTakenWhenAsked(CancellationToken cancellationToken = default)
         {
-            var theset = Instance.PhotosetsGetPhotos("72157618515066456", PhotoSearchExtras.DateTaken | PhotoSearchExtras.DateUploaded, 1, 10);
+            var theset = await Instance.PhotosetsGetPhotosAsync("72157618515066456", PhotoSearchExtras.DateTaken | PhotoSearchExtras.DateUploaded, 1, 10, cancellationToken);
 
             var firstInvalid = theset.FirstOrDefault(p => p.DateTaken == DateTime.MinValue || p.DateUploaded == DateTime.MinValue);
 
             Assert.IsNull(firstInvalid, "There should not be a photo with not date taken or date uploaded");
 
-            theset = Instance.PhotosetsGetPhotos("72157618515066456", PhotoSearchExtras.All, 1, 10);
+            theset = await Instance.PhotosetsGetPhotosAsync("72157618515066456", PhotoSearchExtras.All, 1, 10, cancellationToken);
 
             firstInvalid = theset.FirstOrDefault(p => p.DateTaken == DateTime.MinValue || p.DateUploaded == DateTime.MinValue);
 
             Assert.IsNull(firstInvalid, "There should not be a photo with not date taken or date uploaded");
 
-            theset = Instance.PhotosetsGetPhotos("72157618515066456", PhotoSearchExtras.None, 1, 10);
+            theset = await Instance.PhotosetsGetPhotosAsync("72157618515066456", PhotoSearchExtras.None, 1, 10, cancellationToken);
 
             var noDateCount = theset.Count(p => p.DateTaken == DateTime.MinValue || p.DateUploaded == DateTime.MinValue);
 

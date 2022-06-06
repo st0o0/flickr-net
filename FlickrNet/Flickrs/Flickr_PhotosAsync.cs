@@ -748,7 +748,7 @@ namespace FlickrNet
                 { "method", "flickr.photos.search" }
             };
 
-            options.AddToDictionary(parameters);
+            options.AddToDictionary(ref parameters);
 
             return await GetResponseAsync<PhotoCollection>(parameters, cancellationToken);
         }

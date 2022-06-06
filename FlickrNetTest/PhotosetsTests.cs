@@ -1,7 +1,12 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using FlickrNet;
+using FlickrNet.CollectionModels;
+using FlickrNet.Enums;
+using FlickrNet.Models;
 using NUnit.Framework;
 using Shouldly;
 
@@ -14,16 +19,16 @@ namespace FlickrNetTest
     public class PhotosetsTests : BaseTest
     {
         [Test]
-        public void GetContextTest()
+        public async Task GetContextTest(CancellationToken cancellationToken = default)
         {
             const string photosetId = "72157594532130119";
 
-            var photos = Instance.PhotosetsGetPhotos(photosetId);
+            var photos = await Instance.PhotosetsGetPhotosAsync(photosetId, cancellationToken);
 
             var firstPhoto = photos.First();
             var lastPhoto = photos.Last();
 
-            var context1 = Instance.PhotosetsGetContext(firstPhoto.PhotoId, photosetId);
+            var context1 = await Instance.PhotosetsGetContextAsync(firstPhoto.PhotoId, photosetId, cancellationToken);
 
             Assert.IsNotNull(context1, "Context should not be null.");
             Assert.IsNull(context1.PreviousPhoto, "PreviousPhoto should be null for first photo.");
@@ -34,7 +39,7 @@ namespace FlickrNetTest
                 Assert.AreEqual(photos[1].PhotoId, context1.NextPhoto.PhotoId, "NextPhoto should be the second photo in photoset.");
             }
 
-            var context2 = Instance.PhotosetsGetContext(lastPhoto.PhotoId, photosetId);
+            var context2 = await Instance.PhotosetsGetContextAsync(lastPhoto.PhotoId, photosetId, cancellationToken);
 
             Assert.IsNotNull(context2, "Last photo context should not be null.");
             Assert.IsNotNull(context2.PreviousPhoto, "PreviousPhoto should not be null for first photo.");
@@ -46,13 +51,12 @@ namespace FlickrNetTest
             }
         }
 
-
         [Test]
-        public void PhotosetsGetInfoBasicTest()
+        public async Task PhotosetsGetInfoBasicTest(CancellationToken cancellationToken = default)
         {
             const string photosetId = "72157594532130119";
 
-            var p = Instance.PhotosetsGetInfo(photosetId);
+            var p = await Instance.PhotosetsGetInfoAsync(photosetId, cancellationToken);
 
             Assert.IsNotNull(p);
             Assert.AreEqual(photosetId, p.PhotosetId);
@@ -61,9 +65,9 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PhotosetsGetListBasicTest()
+        public async Task PhotosetsGetListBasicTest(CancellationToken cancellationToken = default)
         {
-            PhotosetCollection photosets = Instance.PhotosetsGetList(TestData.TestUserId);
+            PhotosetCollection photosets = await Instance.PhotosetsGetListAsync(TestData.TestUserId, cancellationToken);
 
             Assert.IsTrue(photosets.Count > 0, "Should be at least one photoset");
             Assert.IsTrue(photosets.Count > 100, "Should be greater than 100 photosets. (" + photosets.Count + " returned)");
@@ -80,9 +84,9 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosetsGetListWithExtras()
+        public async Task PhotosetsGetListWithExtras(CancellationToken cancellationToken = default)
         {
-            var testUserPhotoSets = AuthInstance.PhotosetsGetList(TestData.TestUserId, 1, 5, PhotoSearchExtras.All);
+            var testUserPhotoSets = await AuthInstance.PhotosetsGetListAsync(TestData.TestUserId, 1, 5, cancellationToken);
 
             testUserPhotoSets.Count.ShouldBeGreaterThan(0, "Should have returned at least 1 set for the authenticated user.");
 
@@ -93,9 +97,9 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PhotosetsGetListWebUrlTest()
+        public async Task PhotosetsGetListWebUrlTest(CancellationToken cancellationToken = default)
         {
-            PhotosetCollection photosets = Instance.PhotosetsGetList(TestData.TestUserId);
+            PhotosetCollection photosets = await Instance.PhotosetsGetListAsync(TestData.TestUserId, cancellationToken);
 
             Assert.IsTrue(photosets.Count > 0, "Should be at least one photoset");
 
@@ -109,7 +113,7 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosetsCreateAddPhotosTest()
+        public async Task PhotosetsCreateAddPhotosTest(CancellationToken cancellationToken = default)
         {
             byte[] imageBytes = TestData.TestImageBytes;
             var s = new MemoryStream(imageBytes);
@@ -122,76 +126,74 @@ namespace FlickrNetTest
 
             s.Position = 0;
             // Upload photo once
-            var photoId1 = AuthInstance.UploadPicture(s, "Test1.jpg", initialPhotoTitle, initialPhotoDescription, initialTags, false, false, false, ContentType.Other, SafetyLevel.Safe, HiddenFromSearch.Visible);
+            var photoId1 = await AuthInstance.UploadPictureAsync(s, "Test1.jpg", initialPhotoTitle, initialPhotoDescription, initialTags, false, false, false, ContentType.Other, SafetyLevel.Safe, HiddenFromSearch.Visible, cancellationToken: cancellationToken);
 
             s.Position = 0;
             // Upload photo a second time
-            var photoId2 = AuthInstance.UploadPicture(s, "Test2.jpg", initialPhotoTitle, initialPhotoDescription, initialTags, false, false, false, ContentType.Other, SafetyLevel.Safe, HiddenFromSearch.Visible);
+            var photoId2 = await AuthInstance.UploadPictureAsync(s, "Test2.jpg", initialPhotoTitle, initialPhotoDescription, initialTags, false, false, false, ContentType.Other, SafetyLevel.Safe, HiddenFromSearch.Visible, cancellationToken: cancellationToken);
 
             // Creat photoset
-            Photoset photoset = AuthInstance.PhotosetsCreate("Test photoset", photoId1);
+            Photoset photoset = await AuthInstance.PhotosetsCreateAsync("Test photoset", photoId1, cancellationToken);
 
             try
             {
-                var photos = AuthInstance.PhotosetsGetPhotos(photoset.PhotosetId, PhotoSearchExtras.OriginalFormat | PhotoSearchExtras.Media, PrivacyFilter.None, 1, 30, MediaType.None);
+                var photos = await AuthInstance.PhotosetsGetPhotosAsync(photoset.PhotosetId, PhotoSearchExtras.OriginalFormat | PhotoSearchExtras.Media, PrivacyFilter.None, 1, 30, MediaType.None, cancellationToken);
 
                 photos.Count.ShouldBe(1, "Photoset should contain 1 photo");
                 photos[0].IsPublic.ShouldBe(false, "Photo 1 should be private");
 
                 // Add second photo to photoset.
-                AuthInstance.PhotosetsAddPhoto(photoset.PhotosetId, photoId2);
+                await AuthInstance.PhotosetsAddPhotoAsync(photoset.PhotosetId, photoId2, cancellationToken);
 
                 // Remove second photo from photoset
-                AuthInstance.PhotosetsRemovePhoto(photoset.PhotosetId, photoId2);
+                await AuthInstance.PhotosetsRemovePhotoAsync(photoset.PhotosetId, photoId2, cancellationToken);
 
-                AuthInstance.PhotosetsEditMeta(photoset.PhotosetId, updatedPhotoTitle, updatedPhotoDescription);
+                await AuthInstance.PhotosetsEditMetaAsync(photoset.PhotosetId, updatedPhotoTitle, updatedPhotoDescription, cancellationToken);
 
-                photoset = AuthInstance.PhotosetsGetInfo(photoset.PhotosetId);
+                photoset = await AuthInstance.PhotosetsGetInfoAsync(photoset.PhotosetId, cancellationToken);
 
                 photoset.Title.ShouldBe(updatedPhotoTitle, "New Title should be set.");
                 photoset.Description.ShouldBe(updatedPhotoDescription, "New description should be set");
 
-                AuthInstance.PhotosetsEditPhotos(photoset.PhotosetId, photoId1, new[] { photoId2, photoId1 });
+                await AuthInstance.PhotosetsEditPhotosAsync(photoset.PhotosetId, photoId1, new[] { photoId2, photoId1 }, cancellationToken);
 
-                AuthInstance.PhotosetsRemovePhoto(photoset.PhotosetId, photoId2);
+                await AuthInstance.PhotosetsRemovePhotoAsync(photoset.PhotosetId, photoId2, cancellationToken);
             }
             finally
             {
                 // Delete photoset completely
-                AuthInstance.PhotosetsDelete(photoset.PhotosetId);
+                await AuthInstance.PhotosetsDeleteAsync(photoset.PhotosetId, cancellationToken);
 
                 // Delete both photos.
-                AuthInstance.PhotosDelete(photoId1);
-                AuthInstance.PhotosDelete(photoId2);
+                await AuthInstance.PhotoDeleteAsync(photoId1, cancellationToken);
+                await AuthInstance.PhotoDeleteAsync(photoId2, cancellationToken);
             }
         }
 
         [Test]
-        public void PhotosetsGetInfoEncodingCorrect()
+        public async Task PhotosetsGetInfoEncodingCorrect(CancellationToken cancellationToken = default)
         {
-            Photoset pset = Instance.PhotosetsGetInfo("72157627650627399");
+            Photoset pset = await Instance.PhotosetsGetInfoAsync("72157627650627399", cancellationToken);
 
             Assert.AreEqual("Sítio em Arujá - 14/08/2011", pset.Title);
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosetGetInfoGetList()
+        public async Task PhotosetGetInfoGetList(CancellationToken cancellationToken = default)
         {
             const string photosetId = "72157660633195178";
 
-            var photosetInfo = AuthInstance.PhotosetsGetInfo(photosetId);
+            var photosetInfo = await AuthInstance.PhotosetsGetInfoAsync(photosetId, cancellationToken);
 
             photosetInfo.NumberOfVideos.ShouldBe(2);
             photosetInfo.NumberOfPhotos.ShouldBe(72);
-            photosetInfo.Total.ShouldBe(74);
 
-            var photosetList = AuthInstance.PhotosetsGetList();
+            var photosetList = await AuthInstance.PhotosetsGetListAsync(cancellationToken);
 
             var photosetListInfo = photosetList.First(s => s.PhotosetId == photosetId);
             photosetListInfo.NumberOfVideos.ShouldBe(2);
             photosetListInfo.NumberOfPhotos.ShouldBe(72);
-            photosetListInfo.Total.ShouldBe(74);
         }
     }
 }
