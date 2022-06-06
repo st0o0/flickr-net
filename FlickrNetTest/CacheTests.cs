@@ -1,9 +1,8 @@
-﻿using System;
-
-using NUnit.Framework;
-using FlickrNet;
-using System.IO;
+﻿using FlickrNet;
 using FlickrNet.Common;
+using NUnit.Framework;
+using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 

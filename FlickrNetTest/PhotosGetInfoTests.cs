@@ -1,11 +1,12 @@
-﻿using System;
-using System.Linq;
+﻿using FlickrNet;
+using FlickrNet.Enums;
 using FlickrNet.Exceptions;
+using FlickrNet.Models;
+using FlickrNet.SearchOptions;
 using NUnit.Framework;
-using FlickrNet;
-using System.Reactive.Subjects;
-using System.Reactive.Linq;
 using Shouldly;
+using System;
+using System.Linq;
 
 namespace FlickrNetTest
 {
@@ -76,7 +77,6 @@ namespace FlickrNetTest
             Assert.AreEqual(1, info.Urls.Count);
             Assert.AreEqual("photopage", info.Urls[0].UrlType);
             Assert.AreEqual("https://www.flickr.com/photos/samjudson/4268023123/", info.Urls[0].Url);
-
         }
 
         [Test]
@@ -149,8 +149,8 @@ namespace FlickrNetTest
             Assert.AreEqual(photoId, info.PhotoId);
             Assert.AreEqual("63226137@N02", info.OwnerUserId);
             Assert.AreEqual("https://www.flickr.com/photos/63226137@N02/14042679057/", info.WebUrl);
-
         }
+
         [Test]
         [Category("AccessTokenRequired")]
         public void PhotosGetInfoTestLocation()
@@ -171,7 +171,6 @@ namespace FlickrNetTest
 
             Assert.IsNotNull(info);
             Assert.IsTrue(info.HasPeople, "HasPeople should be true.");
-
         }
 
         [Test]
@@ -197,7 +196,6 @@ namespace FlickrNetTest
 
             Assert.AreEqual(new DateTime(2009, 1, 1), info.DateTaken);
             Assert.AreEqual(DateGranularity.Circa, info.DateTakenGranularity);
-
         }
 
         [Test]
@@ -214,7 +212,7 @@ namespace FlickrNetTest
         [Test]
         public void TestPhotoNotFound()
         {
-            Should.Throw< PhotoNotFoundException>(() => Instance.PhotosGetInfo("abcd"));
+            Should.Throw<PhotoNotFoundException>(() => Instance.PhotosGetInfo("abcd"));
         }
 
         [Test]
@@ -258,11 +256,11 @@ namespace FlickrNetTest
         {
             var photos =
                 Instance.PhotosSearch(new PhotoSearchOptions
-                                          {
-                                              UserId = TestData.TestUserId,
-                                              PerPage = 1,
-                                              Extras = PhotoSearchExtras.AllUrls
-                                          });
+                {
+                    UserId = TestData.TestUserId,
+                    PerPage = 1,
+                    Extras = PhotoSearchExtras.AllUrls
+                });
 
             var photo = photos.First();
 
@@ -280,6 +278,5 @@ namespace FlickrNetTest
             Assert.That(userInfo.UserId, Is.EqualTo(userId));
             Assert.That(userInfo.Location, Is.EqualTo(location));
         }
-
     }
 }

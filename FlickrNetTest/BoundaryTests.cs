@@ -1,5 +1,4 @@
-﻿using FlickrNet;
-using FlickrNet.Common;
+﻿using FlickrNet.Common;
 using NUnit.Framework;
 using Shouldly;
 using System;

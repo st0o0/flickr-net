@@ -47,10 +47,10 @@ namespace FlickrNetTest
 
             string userId = TestData.TestUserId;
 
-            int count = 4; 
-            bool justFriends = true; 
-            bool singlePhoto = true; 
-            bool includeSelf = false; 
+            int count = 4;
+            bool justFriends = true;
+            bool singlePhoto = true;
+            bool includeSelf = false;
 
             var photos = f.PhotosGetContactsPublicPhotos(userId, count, justFriends, singlePhoto, includeSelf);
 
@@ -78,7 +78,7 @@ namespace FlickrNetTest
 
             string userId = TestData.TestUserId;
 
-            int count = 5; 
+            int count = 5;
             PhotoSearchExtras extras = PhotoSearchExtras.None;
 
             var photos = f.PhotosGetContactsPublicPhotos(userId, count, extras);

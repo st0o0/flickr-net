@@ -1,5 +1,5 @@
-using System;
 using FlickrNet;
+using System;
 
 namespace FlickrNetTest
 {

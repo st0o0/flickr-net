@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-
+﻿using FlickrNet;
 using NUnit.Framework;
-using FlickrNet;
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace FlickrNetTest
@@ -61,7 +60,7 @@ namespace FlickrNetTest
                 }
             }
 
-            if( failCount > 0)
+            if (failCount > 0)
             {
                 Assert.Inconclusive("FailCount should be zero. Currently " + failCount + " unsupported methods found.");
             }
@@ -135,7 +134,7 @@ namespace FlickrNetTest
                 bool found = false;
 
                 string arg = argument.Name.Replace("_", "").ToLower();
-                
+
                 if (exceptions.ContainsKey(arg)) arg = exceptions[arg];
 
                 foreach (PropertyInfo info in properties)

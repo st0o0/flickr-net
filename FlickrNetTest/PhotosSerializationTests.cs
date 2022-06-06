@@ -1,6 +1,6 @@
 ﻿
-using NUnit.Framework;
 using FlickrNet;
+using NUnit.Framework;
 using System.IO;
 using System.Xml;
 
@@ -28,11 +28,11 @@ namespace FlickrNetTest
             var photos = new PhotoCollection();
 
             var sr = new StringReader(xml);
-            var reader = new XmlTextReader(sr) {WhitespaceHandling = WhitespaceHandling.Significant};
+            var reader = new XmlTextReader(sr) { WhitespaceHandling = WhitespaceHandling.Significant };
 
             reader.ReadToDescendant("photos");
 
-            ((IFlickrParsable) photos).Load(reader);
+            ((IFlickrParsable)photos).Load(reader);
 
             Assert.IsNotNull(photos, "Photos should not be null");
             Assert.AreEqual(500, photos.Total, "Total photos should be 500");

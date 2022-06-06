@@ -1,12 +1,9 @@
-﻿using System;
-
+﻿using FlickrNet;
 using NUnit.Framework;
-using FlickrNet;
+using System;
 using System.IO;
-using System.Net;
 using System.Linq;
-using System.Reactive.Subjects;
-using System.Reactive.Linq;
+using System.Net;
 
 namespace FlickrNetTest
 {
@@ -54,7 +51,8 @@ namespace FlickrNetTest
         {
             Flickr f = AuthInstance;
 
-            f.OnUploadProgress += (sender, args) => {
+            f.OnUploadProgress += (sender, args) =>
+            {
                 // Do nothing
             };
 
@@ -109,8 +107,8 @@ namespace FlickrNetTest
             var client = new WebClient();
             var data = client.DownloadData(url);
 
-            var ms = new MemoryStream(data) {Position = 0};
-            
+            var ms = new MemoryStream(data) { Position = 0 };
+
             var photoId = AuthInstance.UploadPicture(ms, "test.jpg", "Test Photo", "Test Description", "", false, false, false, ContentType.Photo, SafetyLevel.Safe, HiddenFromSearch.Hidden);
             Assert.IsNotNull(photoId, "PhotoId should not be null");
 
@@ -164,7 +162,7 @@ namespace FlickrNetTest
         {
             string url = "http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_50mb.mp4";
             Flickr f = AuthInstance;
-            
+
             using (WebClient client = new WebClient())
             {
                 using (Stream s = client.OpenRead(url))

@@ -3,7 +3,6 @@ using FlickrNet.Enums;
 using FlickrNet.Exceptions;
 using FlickrNet.Exceptions.Handlers;
 using FlickrNet.HttpContents;
-using FlickrNet.Models;
 using FlickrNet.Models.Interfaces;
 using System;
 using System.Collections.Generic;

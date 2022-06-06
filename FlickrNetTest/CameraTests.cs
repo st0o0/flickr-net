@@ -1,7 +1,7 @@
-﻿using System.Linq;
+﻿using NUnit.Framework;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using NUnit.Framework;
 
 namespace FlickrNetTest
 {

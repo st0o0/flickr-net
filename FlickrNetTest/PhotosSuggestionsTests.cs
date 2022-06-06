@@ -1,7 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿using FlickrNet;
 using NUnit.Framework;
-using FlickrNet;
+using System;
+using System.Linq;
 
 namespace FlickrNetTest
 {
@@ -15,7 +15,7 @@ namespace FlickrNetTest
         {
             Flickr.CacheDisabled = true;
         }
-        
+
         [Test]
         [Category("AccessTokenRequired")]
         [Ignore("Throws a 500 exception for some reason.")]

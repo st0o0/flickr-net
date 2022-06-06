@@ -1,8 +1,7 @@
-﻿using NUnit.Framework;
-using FlickrNet;
-using System.Threading.Tasks;
+﻿using FlickrNet.CollectionModels;
+using NUnit.Framework;
 using System.Threading;
-using FlickrNet.CollectionModels;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {

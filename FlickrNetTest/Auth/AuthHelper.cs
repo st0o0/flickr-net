@@ -1,7 +1,7 @@
-using System;
 using FlickrNet;
 using NUnit.Framework;
 using Shouldly;
+using System;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 

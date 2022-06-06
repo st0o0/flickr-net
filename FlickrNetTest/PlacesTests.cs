@@ -1,8 +1,7 @@
-﻿using System;
-
+﻿using FlickrNet;
 using NUnit.Framework;
-using FlickrNet;
 using Shouldly;
+using System;
 
 namespace FlickrNetTest
 {
@@ -170,7 +169,7 @@ namespace FlickrNetTest
         public void PlacesPlacesForTagsBasicTest()
         {
             var f = AuthInstance;
-            var places = f.PlacesPlacesForTags(PlaceType.Country, null, null, 0, new string[] {"newcastle"},
+            var places = f.PlacesPlacesForTags(PlaceType.Country, null, null, 0, new string[] { "newcastle" },
                                                TagMode.AllTags, null, MachineTagMode.None, DateTime.MinValue,
                                                DateTime.MinValue, DateTime.MinValue, DateTime.MinValue);
 
@@ -190,8 +189,8 @@ namespace FlickrNetTest
         public void PlacesPlacesForTagsFullParamTest()
         {
             var f = AuthInstance;
-            var places = f.PlacesPlacesForTags(PlaceType.Country, null, null, 0, new string[] {"newcastle"},
-                                               TagMode.AllTags, new string[] {"dc:author=*"}, MachineTagMode.AllTags,
+            var places = f.PlacesPlacesForTags(PlaceType.Country, null, null, 0, new string[] { "newcastle" },
+                                               TagMode.AllTags, new string[] { "dc:author=*" }, MachineTagMode.AllTags,
                                                DateTime.Today.AddYears(-10), DateTime.Today,
                                                DateTime.Today.AddYears(-10), DateTime.Today);
 

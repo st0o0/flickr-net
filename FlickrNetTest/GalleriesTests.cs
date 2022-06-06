@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-
-using NUnit.Framework;
-using FlickrNet;
-using Shouldly;
-using System.Linq;
+﻿using FlickrNet;
 using FlickrNet.CollectionModels;
-using System.Threading.Tasks;
-using System.Threading;
-using FlickrNet.Models;
 using FlickrNet.Enums;
+using FlickrNet.Models;
+using NUnit.Framework;
+using Shouldly;
+using System;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {

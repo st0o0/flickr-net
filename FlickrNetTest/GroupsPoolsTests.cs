@@ -1,15 +1,14 @@
-﻿using System;
-
-using NUnit.Framework;
-using FlickrNet;
-using System.IO;
-using Shouldly;
+﻿using FlickrNet;
+using FlickrNet.CollectionModels;
 using FlickrNet.Enums;
+using FlickrNet.Exceptions;
+using FlickrNet.Models;
+using NUnit.Framework;
+using Shouldly;
+using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using FlickrNet.Exceptions;
-using FlickrNet.CollectionModels;
-using FlickrNet.Models;
 
 namespace FlickrNetTest
 {

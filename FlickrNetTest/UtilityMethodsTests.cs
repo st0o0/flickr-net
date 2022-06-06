@@ -3,6 +3,8 @@ using FlickrNet.Enums;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {
@@ -408,14 +410,14 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void UrlFormatPhotoInfoTest()
+        public async Task UrlFormatPhotoInfoTest(CancellationToken cancellationToken = default)
         {
             var photoId = "7176125763"; // Rainbow rose
             var size = "medium";
             var extension = "jpg";
             var expected = "https://farm9.staticflickr.com/8162/7176125763_7eac68f450.jpg";
 
-            var photoInfo = AuthInstance.PhotosGetInfo(photoId);
+            var photoInfo = await AuthInstance.PhotosGetInfoAsync(photoId, cancellationToken);
 
             var actual = UtilityMethods.UrlFormat(photoInfo, size, extension);
 

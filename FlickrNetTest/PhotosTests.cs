@@ -1,9 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Net;
-using FlickrNet;
+﻿using FlickrNet;
 using NUnit.Framework;
 using Shouldly;
+using System;
+using System.Linq;
+using System.Net;
 
 namespace FlickrNetTest
 {

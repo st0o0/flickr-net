@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-
+﻿using FlickrNet;
 using NUnit.Framework;
-using FlickrNet;
+using System;
+using System.Collections.Generic;
 
 namespace FlickrNetTest
 {

@@ -1,7 +1,6 @@
-﻿using System;
-
+﻿using FlickrNet;
 using NUnit.Framework;
-using FlickrNet;
+using System;
 
 namespace FlickrNetTest
 {
@@ -12,11 +11,10 @@ namespace FlickrNetTest
     [Category("AccessTokenRequired")]
     public class StatsGetReferrerTests : BaseTest
     {
-        string collectionId = "78188-72157600072356354";
-        string photoId = "5890800";
-        string photosetId = "1493109";
-        readonly DateTime lastWeek = DateTime.Today.AddDays(-7);
-
+        private string collectionId = "78188-72157600072356354";
+        private string photoId = "5890800";
+        private string photosetId = "1493109";
+        private readonly DateTime lastWeek = DateTime.Today.AddDays(-7);
 
         [Test]
         public void StatsGetPhotoReferrersBasicTest()
@@ -50,7 +48,6 @@ namespace FlickrNetTest
 
             referrers = f.StatsGetPhotoReferrers(lastWeek, domain, photoId, 1, 10);
             Assert.IsNotNull(referrers);
-
         }
 
         [Test]
@@ -88,7 +85,6 @@ namespace FlickrNetTest
 
             referrers = f.StatsGetPhotosetReferrers(lastWeek, domain, photosetId, 1, 10);
             Assert.IsNotNull(referrers);
-
         }
 
         [Test]
@@ -144,7 +140,7 @@ namespace FlickrNetTest
                 Assert.IsNotNull(referrer.Url, "StatReferrer.Url should not be null.");
                 Assert.AreNotEqual(0, referrer.Views, "StatReferrer.Views should be greater than zero.");
             }
-            
+
             // Overloads
             referrers = f.StatsGetCollectionReferrers(lastWeek, domain);
             Assert.IsNotNull(referrers);
@@ -155,6 +151,5 @@ namespace FlickrNetTest
             referrers = f.StatsGetCollectionReferrers(lastWeek, domain, collectionId, 1, 10);
             Assert.IsNotNull(referrers);
         }
-
     }
 }

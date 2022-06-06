@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace FlickrNet.Settings.Interfaces
+﻿namespace FlickrNet.Settings.Interfaces
 {
     public interface IFlickrSettings
     {
