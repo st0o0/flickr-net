@@ -1,6 +1,12 @@
+using FlickrNet.CollectionModels;
+using FlickrNet.Enums;
+using FlickrNet.Exceptions;
+using FlickrNet.Models;
 using NUnit.Framework;
 using Shouldly;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {
@@ -9,30 +15,29 @@ namespace FlickrNetTest
     public class PhotosGetContactsPhotos : BaseTest
     {
         [Test]
-        public void PhotosGetContactsPhotosSignatureRequiredTest()
+        public async Task PhotosGetContactsPhotosSignatureRequiredTest(CancellationToken cancellationToken = default)
         {
-            Should.Throw<SignatureRequiredException>(() => Instance.PhotosGetContactsPhotos());
+            Should.Throw<SignatureRequiredException>(async () => await Instance.PhotosGetContactsPhotosAsync(cancellationToken));
         }
 
         [Test]
-        public void PhotosGetContactsPhotosIncorrectCountTest()
+        public async Task PhotosGetContactsPhotosIncorrectCountTest(CancellationToken cancellationToken = default)
         {
-            Should.Throw<ArgumentOutOfRangeException>(() => AuthInstance.PhotosGetContactsPhotos(51));
+            Should.Throw<ArgumentOutOfRangeException>(async () => await AuthInstance.PhotosGetContactsPhotosAsync(51, cancellationToken));
         }
 
         [Test]
-        public void PhotosGetContactsPhotosBasicTest()
+        public async Task PhotosGetContactsPhotosBasicTest(CancellationToken cancellationToken = default)
         {
-            PhotoCollection photos = AuthInstance.PhotosGetContactsPhotos(10);
+            PhotoCollection photos = await AuthInstance.PhotosGetContactsPhotosAsync(10, cancellationToken);
 
             photos.Count.ShouldBeInRange(9, 10, "Should return 9-10 photos");
-
         }
 
         [Test]
-        public void PhotosGetContactsPhotosExtrasTest()
+        public async Task PhotosGetContactsPhotosExtrasTest(CancellationToken cancellationToken = default)
         {
-            PhotoCollection photos = AuthInstance.PhotosGetContactsPhotos(10, false, false, false, PhotoSearchExtras.All);
+            PhotoCollection photos = await AuthInstance.PhotosGetContactsPhotosAsync(10, false, false, false, PhotoSearchExtras.All, cancellationToken);
 
             photos.Count.ShouldBeInRange(9, 10, "Should return 9-10 photos");
 

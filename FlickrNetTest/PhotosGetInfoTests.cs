@@ -1,4 +1,5 @@
 ﻿using FlickrNet;
+using FlickrNet.CollectionModels;
 using FlickrNet.Enums;
 using FlickrNet.Exceptions;
 using FlickrNet.Models;
@@ -7,6 +8,8 @@ using NUnit.Framework;
 using Shouldly;
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {
@@ -18,9 +21,9 @@ namespace FlickrNetTest
     {
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosGetInfoBasicTest()
+        public async Task PhotosGetInfoBasicTest(CancellationToken cancellationToken = default)
         {
-            PhotoInfo info = AuthInstance.PhotosGetInfo("4268023123");
+            PhotoInfo info = await AuthInstance.PhotosGetInfoAsync("4268023123", cancellationToken);
 
             Assert.IsNotNull(info);
 
@@ -80,9 +83,9 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PhotosGetInfoUnauthenticatedTest()
+        public async Task PhotosGetInfoUnauthenticatedTest(CancellationToken cancellationToken = default)
         {
-            PhotoInfo info = Instance.PhotosGetInfo("4268023123");
+            PhotoInfo info = await Instance.PhotosGetInfoAsync("4268023123", cancellationToken);
 
             Assert.IsNotNull(info);
 
@@ -141,10 +144,10 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PhotosGetInfoTestUserIssue()
+        public async Task PhotosGetInfoTestUserIssue(CancellationToken cancellationToken = default)
         {
             var photoId = "14042679057";
-            var info = Instance.PhotosGetInfo(photoId);
+            var info = await Instance.PhotosGetInfoAsync(photoId, cancellationToken);
 
             Assert.AreEqual(photoId, info.PhotoId);
             Assert.AreEqual("63226137@N02", info.OwnerUserId);
@@ -153,84 +156,74 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosGetInfoTestLocation()
+        public async Task PhotosGetInfoTestLocation(CancellationToken cancellationToken = default)
         {
             const string photoId = "4268756940";
 
-            PhotoInfo info = AuthInstance.PhotosGetInfo(photoId);
+            PhotoInfo info = await AuthInstance.PhotosGetInfoAsync(photoId, cancellationToken);
 
             Assert.IsNotNull(info.Location);
         }
 
         [Test]
-        public void PhotosGetInfoWithPeople()
+        public async Task PhotosGetInfoWithPeople(CancellationToken cancellationToken = default)
         {
             const string photoId = "3547137580"; // https://www.flickr.com/photos/samjudson/3547137580/in/photosof-samjudson/
 
-            PhotoInfo info = Instance.PhotosGetInfo(photoId);
+            PhotoInfo info = await Instance.PhotosGetInfoAsync(photoId, cancellationToken);
 
             Assert.IsNotNull(info);
             Assert.IsTrue(info.HasPeople, "HasPeople should be true.");
         }
 
         [Test]
-        public void PhotosGetInfoCanBlogTest()
+        public async Task PhotosGetInfoCanBlogTest(CancellationToken cancellationToken = default)
         {
-            var o = new PhotoSearchOptions();
-            o.UserId = TestData.TestUserId;
-            o.PerPage = 5;
+            var o = new PhotoSearchOptions
+            {
+                UserId = TestData.TestUserId,
+                PerPage = 5
+            };
 
-            PhotoCollection photos = Instance.PhotosSearch(o);
-            PhotoInfo info = Instance.PhotosGetInfo(photos[0].PhotoId);
+            PhotoCollection photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            PhotoInfo info = await Instance.PhotosGetInfoAsync(photos[0].PhotoId, cancellationToken);
 
             Assert.AreEqual(false, info.CanBlog);
             Assert.AreEqual(true, info.CanDownload);
         }
 
         [Test]
-        public void PhotosGetInfoDataTakenGranularityTest()
+        public async Task PhotosGetInfoDataTakenGranularityTest(CancellationToken cancellationToken = default)
         {
             const string photoid = "4386780023";
 
-            PhotoInfo info = Instance.PhotosGetInfo(photoid);
+            PhotoInfo info = await Instance.PhotosGetInfoAsync(photoid, cancellationToken);
 
             Assert.AreEqual(new DateTime(2009, 1, 1), info.DateTaken);
             Assert.AreEqual(DateGranularity.Circa, info.DateTakenGranularity);
         }
 
         [Test]
-        public void PhotosGetInfoVideoTest()
+        public async Task PhotosGetInfoVideoTest(CancellationToken cancellationToken = default)
         {
             const string videoId = "2926486605";
 
-            var info = Instance.PhotosGetInfo(videoId);
+            var info = await Instance.PhotosGetInfoAsync(videoId, cancellationToken);
 
             Assert.IsNotNull(info);
             Assert.AreEqual(videoId, info.PhotoId);
         }
 
         [Test]
-        public void TestPhotoNotFound()
+        public void TestPhotoNotFound(CancellationToken cancellationToken = default)
         {
-            Should.Throw<PhotoNotFoundException>(() => Instance.PhotosGetInfo("abcd"));
+            Should.Throw<PhotoNotFoundException>(async () => await Instance.PhotosGetInfoAsync("abcd", cancellationToken));
         }
 
         [Test]
-        public void TestPhotoNotFoundAsync()
+        public async Task ShouldReturnPhotoInfoWithGeoData(CancellationToken cancellationToken = default)
         {
-            var w = new AsyncSubject<FlickrResult<PhotoInfo>>();
-
-            Instance.PhotosGetInfoAsync("abcd", r => { w.OnNext(r); w.OnCompleted(); });
-            var result = w.Next().First();
-
-            result.HasError.ShouldBeTrue();
-            result.Error.ShouldBeOfType<PhotoNotFoundException>();
-        }
-
-        [Test]
-        public void ShouldReturnPhotoInfoWithGeoData()
-        {
-            var info = Instance.PhotosGetInfo("54071193");
+            var info = await Instance.PhotosGetInfoAsync("54071193", cancellationToken);
 
             Assert.IsNotNull(info, "PhotoInfo should not be null.");
             Assert.IsNotNull(info.Location, "Location should not be null.");
@@ -240,31 +233,30 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void ShouldReturnPhotoInfoWithValidUrls()
+        public async Task ShouldReturnPhotoInfoWithValidUrls(CancellationToken cancellationToken = default)
         {
-            var info = Instance.PhotosGetInfo("9671143400");
+            var info = await Instance.PhotosGetInfoAsync("9671143400", cancellationToken);
 
-            Assert.IsTrue(UrlHelper.Exists(info.Small320Url), "Small320Url is not valid url : " + info.Small320Url);
-            Assert.IsTrue(UrlHelper.Exists(info.Medium640Url), "Medium640Url is not valid url : " + info.Medium640Url);
-            Assert.IsTrue(UrlHelper.Exists(info.Medium800Url), "Medium800Url is not valid url : " + info.Medium800Url);
+            Assert.IsTrue(await UrlHelper.Exists(info.Small320Url, cancellationToken), "Small320Url is not valid url : " + info.Small320Url);
+            Assert.IsTrue(await UrlHelper.Exists(info.Medium640Url, cancellationToken), "Medium640Url is not valid url : " + info.Medium640Url);
+            Assert.IsTrue(await UrlHelper.Exists(info.Medium800Url, cancellationToken), "Medium800Url is not valid url : " + info.Medium800Url);
             Assert.AreNotEqual(info.SmallUrl, info.LargeUrl, "URLs should all be different.");
         }
 
         [Test]
         [Ignore("Photo urls appear to have changed to start with 'live' so test is invalid")]
-        public void PhotoInfoUrlsShouldMatchSizes()
+        public async Task PhotoInfoUrlsShouldMatchSizes(CancellationToken cancellationToken = default)
         {
-            var photos =
-                Instance.PhotosSearch(new PhotoSearchOptions
-                {
-                    UserId = TestData.TestUserId,
-                    PerPage = 1,
-                    Extras = PhotoSearchExtras.AllUrls
-                });
+            var photos = await Instance.PhotosSearchAsync(new PhotoSearchOptions
+            {
+                UserId = TestData.TestUserId,
+                PerPage = 1,
+                Extras = PhotoSearchExtras.AllUrls
+            }, cancellationToken);
 
             var photo = photos.First();
 
-            var info = Instance.PhotosGetInfo(photo.PhotoId);
+            var info = await Instance.PhotosGetInfoAsync(photo.PhotoId, cancellationToken);
 
             Assert.AreEqual(photo.LargeUrl, info.LargeUrl);
             Assert.AreEqual(photo.Small320Url, info.Small320Url);
@@ -272,9 +264,9 @@ namespace FlickrNetTest
 
         [Test]
         [TestCase("46611802@N00", "")]
-        public void GetInfoWithInvalidXmlTests(string userId, string location)
+        public async Task GetInfoWithInvalidXmlTests(string userId, string location, CancellationToken cancellationToken = default)
         {
-            var userInfo = Instance.PeopleGetInfo(userId);
+            var userInfo = await Instance.PeopleGetInfoAsync(userId, cancellationToken);
             Assert.That(userInfo.UserId, Is.EqualTo(userId));
             Assert.That(userInfo.Location, Is.EqualTo(location));
         }

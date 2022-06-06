@@ -1,5 +1,9 @@
-﻿using NUnit.Framework;
+﻿using FlickrNet.CollectionModels;
+using FlickrNet.Models;
+using NUnit.Framework;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {
@@ -7,19 +11,18 @@ namespace FlickrNetTest
     public class PhotosGetFavouritesTests : BaseTest
     {
         [Test]
-        public void PhotosGetFavoritesNoFavourites()
+        public async Task PhotosGetFavoritesNoFavourites(CancellationToken cancellationToken = default)
         {
             // No favourites
-            PhotoFavoriteCollection favs = Instance.PhotosGetFavorites(TestData.PhotoId);
+            PhotoFavoriteCollection favs = await Instance.PhotosGetFavoritesAsync(TestData.PhotoId, cancellationToken);
 
             Assert.AreEqual(0, favs.Count, "Should have no favourites");
-
         }
 
         [Test]
-        public void PhotosGetFavoritesHasFavourites()
+        public async Task PhotosGetFavoritesHasFavourites(CancellationToken cancellationToken = default)
         {
-            PhotoFavoriteCollection favs = Instance.PhotosGetFavorites(TestData.FavouritedPhotoId, 500, 1);
+            PhotoFavoriteCollection favs = await Instance.PhotosGetFavoritesAsync(TestData.FavouritedPhotoId, 500, 1, cancellationToken);
 
             Assert.IsNotNull(favs, "PhotoFavourites instance should not be null.");
 
@@ -37,9 +40,9 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PhotosGetFavoritesPaging()
+        public async Task PhotosGetFavoritesPaging(CancellationToken cancellationToken = default)
         {
-            PhotoFavoriteCollection favs = Instance.PhotosGetFavorites(TestData.FavouritedPhotoId, 10, 1);
+            PhotoFavoriteCollection favs = await Instance.PhotosGetFavoritesAsync(TestData.FavouritedPhotoId, 10, 1, cancellationToken);
 
             Assert.AreEqual(10, favs.Count, "PhotoFavourites.Count should be 10.");
             Assert.AreEqual(10, favs.PerPage, "PhotoFavourites.PerPage should be 10");
@@ -49,9 +52,9 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PhotosGetFavoritesPagingTwo()
+        public async Task PhotosGetFavoritesPagingTwo(CancellationToken cancellationToken = default)
         {
-            PhotoFavoriteCollection favs = Instance.PhotosGetFavorites(TestData.FavouritedPhotoId, 10, 2);
+            PhotoFavoriteCollection favs = await Instance.PhotosGetFavoritesAsync(TestData.FavouritedPhotoId, 10, 2, cancellationToken);
 
             Assert.AreEqual(10, favs.Count, "PhotoFavourites.Count should be 10.");
             Assert.AreEqual(10, favs.PerPage, "PhotoFavourites.PerPage should be 10");

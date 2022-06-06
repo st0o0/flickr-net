@@ -1,7 +1,10 @@
 ﻿using FlickrNet;
+using FlickrNet.CollectionModels;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {
@@ -13,7 +16,7 @@ namespace FlickrNetTest
     {
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosGetCountTakenTest()
+        public async Task PhotosGetCountTakenTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
@@ -26,7 +29,7 @@ namespace FlickrNetTest
             dates.Add(date1);
             dates.Add(date3);
 
-            PhotoCountCollection counts = f.PhotosGetCounts(dates.ToArray(), true);
+            PhotoCountCollection counts = await f.PhotosGetCountsAsync(dates.ToArray(), true, cancellationToken);
 
             Assert.IsNotNull(counts, "PhotoCounts should not be null.");
             Assert.AreEqual(2, counts.Count, "PhotoCounts.Count should be two.");
@@ -37,12 +40,11 @@ namespace FlickrNetTest
             Assert.AreEqual(date2, counts[0].ToDate, "ToDate should be 12th July.");
             Assert.AreEqual(date2, counts[1].FromDate, "FromDate should be 12th July.");
             Assert.AreEqual(date3, counts[1].ToDate, "ToDate should be 12th December.");
-
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosGetCountUloadTest()
+        public async Task PhotosGetCountUloadTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
@@ -55,7 +57,7 @@ namespace FlickrNetTest
             dates.Add(date1);
             dates.Add(date3);
 
-            PhotoCountCollection counts = f.PhotosGetCounts(dates.ToArray(), false);
+            PhotoCountCollection counts = await f.PhotosGetCountsAsync(dates.ToArray(), false, cancellationToken);
 
             Assert.IsNotNull(counts, "PhotoCounts should not be null.");
             Assert.AreEqual(2, counts.Count, "PhotoCounts.Count should be two.");
@@ -64,7 +66,6 @@ namespace FlickrNetTest
             Assert.AreEqual(date2, counts[0].ToDate, "ToDate should be 12th September.");
             Assert.AreEqual(date2, counts[1].FromDate, "FromDate should be 12th September.");
             Assert.AreEqual(date3, counts[1].ToDate, "ToDate should be 12th December.");
-
         }
     }
 }

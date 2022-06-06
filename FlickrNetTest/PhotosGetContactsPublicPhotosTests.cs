@@ -1,28 +1,29 @@
 ﻿using FlickrNet;
+using FlickrNet.Enums;
 using NUnit.Framework;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {
-
-    [TestFixtureAttribute]
+    [TestFixture]
     public class PhotosGetContactsPublicPhotosTests : BaseTest
     {
-
-        [TestAttribute]
-        public void PhotosGetContactsPublicPhotosUserIdExtrasTest()
+        [Test]
+        public async Task PhotosGetContactsPublicPhotosUserIdExtrasTest(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
 
             string userId = TestData.TestUserId;
             PhotoSearchExtras extras = PhotoSearchExtras.All;
-            var photos = f.PhotosGetContactsPublicPhotos(userId, extras);
+            var photos = await f.PhotosGetContactsPublicPhotosAsync(userId, extras, cancellationToken);
 
             Assert.IsNotNull(photos);
             Assert.AreNotEqual(0, photos.Count, "Should have returned more than 0 photos");
         }
 
-        [TestAttribute]
-        public void PhotosGetContactsPublicPhotosAllParamsTest()
+        [Test]
+        public async Task PhotosGetContactsPublicPhotosAllParamsTest(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
 
@@ -34,14 +35,14 @@ namespace FlickrNetTest
             bool includeSelf = false; // TODO: Initialize to an appropriate value
             PhotoSearchExtras extras = PhotoSearchExtras.None;
 
-            var photos = f.PhotosGetContactsPublicPhotos(userId, count, justFriends, singlePhoto, includeSelf, extras);
+            var photos = await f.PhotosGetContactsPublicPhotosAsync(userId, count, justFriends, singlePhoto, includeSelf, extras, cancellationToken);
 
             Assert.IsNotNull(photos);
             Assert.AreNotEqual(0, photos.Count, "Should have returned more than 0 photos");
         }
 
-        [TestAttribute]
-        public void PhotosGetContactsPublicPhotosExceptExtrasTest()
+        [Test]
+        public async Task PhotosGetContactsPublicPhotosExceptExtrasTest(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
 
@@ -52,27 +53,27 @@ namespace FlickrNetTest
             bool singlePhoto = true;
             bool includeSelf = false;
 
-            var photos = f.PhotosGetContactsPublicPhotos(userId, count, justFriends, singlePhoto, includeSelf);
+            var photos = await f.PhotosGetContactsPublicPhotosAsync(userId, count, justFriends, singlePhoto, includeSelf, cancellationToken);
 
             Assert.IsNotNull(photos);
             Assert.AreNotEqual(0, photos.Count, "Should have returned more than 0 photos");
         }
 
-        [TestAttribute]
-        public void PhotosGetContactsPublicPhotosUserIdTest()
+        [Test]
+        public async Task PhotosGetContactsPublicPhotosUserIdTest(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
 
             string userId = TestData.TestUserId;
 
-            var photos = f.PhotosGetContactsPublicPhotos(userId);
+            var photos = await f.PhotosGetContactsPublicPhotosAsync(userId, cancellationToken);
 
             Assert.IsNotNull(photos);
             Assert.AreNotEqual(0, photos.Count, "Should have returned more than 0 photos");
         }
 
-        [TestAttribute]
-        public void PhotosGetContactsPublicPhotosUserIdCountExtrasTest()
+        [Test]
+        public async Task PhotosGetContactsPublicPhotosUserIdCountExtrasTest(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
 
@@ -81,14 +82,14 @@ namespace FlickrNetTest
             int count = 5;
             PhotoSearchExtras extras = PhotoSearchExtras.None;
 
-            var photos = f.PhotosGetContactsPublicPhotos(userId, count, extras);
+            var photos = await f.PhotosGetContactsPublicPhotosAsync(userId, count, extras, cancellationToken);
 
             Assert.IsNotNull(photos);
             Assert.AreNotEqual(0, photos.Count, "Should have returned more than 0 photos");
         }
 
-        [TestAttribute]
-        public void PhotosGetContactsPublicPhotosUserIdCountTest()
+        [Test]
+        public async Task PhotosGetContactsPublicPhotosUserIdCountTest(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
 
@@ -96,7 +97,7 @@ namespace FlickrNetTest
 
             int count = 5;
 
-            var photos = f.PhotosGetContactsPublicPhotos(userId, count);
+            var photos = await f.PhotosGetContactsPublicPhotosAsync(userId, count, cancellationToken);
 
             Assert.IsNotNull(photos);
             Assert.AreNotEqual(0, photos.Count, "Should have returned more than 0 photos");
