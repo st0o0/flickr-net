@@ -1,9 +1,15 @@
 ﻿using FlickrNet;
+using FlickrNet.CollectionModels;
+using FlickrNet.Enums;
+using FlickrNet.Models;
+using FlickrNet.SearchOptions;
 using NUnit.Framework;
 using Shouldly;
 using System;
 using System.Linq;
 using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {
@@ -12,31 +18,31 @@ namespace FlickrNetTest
     {
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosSetDatesTest()
+        public async Task PhotosSetDatesTest(CancellationToken cancellationToken = default)
         {
             var f = AuthInstance;
             var photoId = TestData.PhotoId;
 
-            var info = f.PhotosGetInfo(photoId);
+            var info = await f.PhotosGetInfoAsync(photoId, cancellationToken);
 
-            f.PhotosSetDates(photoId, info.DatePosted, info.DateTaken, info.DateTakenGranularity);
+            await f.PhotosSetDatesAsync(photoId, info.DatePosted, info.DateTaken, info.DateTakenGranularity, cancellationToken);
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosAddTagsTest()
+        public async Task PhotosAddTagsTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
             string testtag = "thisisatesttag";
             string photoId = "6282363572";
 
             // Add the tag
-            f.PhotosAddTags(photoId, testtag);
+            await f.PhotosAddTagsAsync(photoId, new[] { testtag }, cancellationToken);
             // Add second tag using different signature
-            f.PhotosAddTags(photoId, new string[] { testtag + "2" });
+            await f.PhotosAddTagsAsync(photoId, new string[] { testtag + "2" }, cancellationToken);
 
             // Get list of tags
-            var tags = f.TagsGetListPhoto(photoId);
+            var tags = await f.TagsGetListPhotoAsync(photoId, cancellationToken);
 
             // Find the tag in the collection
             var tagsToRemove = tags.Where(t => t.TagText.StartsWith(testtag, StringComparison.Ordinal));
@@ -44,14 +50,14 @@ namespace FlickrNetTest
             foreach (var tag in tagsToRemove)
             {
                 // Remove the tag
-                f.PhotosRemoveTag(tag.TagId);
+                await f.PhotosRemoveTagAsync(tag.TagId, cancellationToken);
             }
         }
 
         [Test]
-        public void PhotosGetAllContextsBasicTest()
+        public async Task PhotosGetAllContextsBasicTest(CancellationToken cancellationToken = default)
         {
-            var a = Instance.PhotosGetAllContexts("4114887196");
+            var a = await Instance.PhotosGetAllContextsAsync("4114887196", cancellationToken);
 
             Assert.IsNotNull(a);
             Assert.IsNotNull(a.Groups, "Groups should not be null.");
@@ -62,19 +68,20 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PhotosGetPopular()
+        public async Task PhotosGetPopular(CancellationToken cancellationToken = default)
         {
-            var photos = Instance.PhotosGetPopular(TestData.TestUserId);
+            // TODO: LOST
+            var photos = await Instance.PhotosGetPopular(TestData.TestUserId);
 
             photos.ShouldNotBeEmpty();
         }
 
         [Test]
-        public void PhotosGetExifTest()
+        public async Task PhotosGetExifTest(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
 
-            ExifTagCollection tags = f.PhotosGetExif("4268023123");
+            ExifTagCollection tags = await f.PhotosGetExifAsync("4268023123", cancellationToken);
 
             Console.WriteLine(f.LastResponse);
 
@@ -91,9 +98,9 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PhotosGetContextBasicTest()
+        public async Task PhotosGetContextBasicTest(CancellationToken cancellationToken = default)
         {
-            var context = Instance.PhotosGetContext("3845365350");
+            var context = await Instance.PhotosGetContextAsync("3845365350", cancellationToken);
 
             Assert.IsNotNull(context);
 
@@ -102,12 +109,12 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PhotosGetExifIPhoneTest()
+        public async Task PhotosGetExifIPhoneTest(CancellationToken cancellationToken = default)
         {
             bool bFound = false;
             Flickr f = Instance;
 
-            ExifTagCollection tags = f.PhotosGetExif("5899928191");
+            ExifTagCollection tags = await f.PhotosGetExifAsync("5899928191", cancellationToken);
 
             Assert.AreEqual("Apple iPhone 4", tags.Camera, "Camera property should be set correctly.");
 
@@ -125,11 +132,11 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosGetNotInSetAllParamsTest()
+        public async Task PhotosGetNotInSetAllParamsTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            var photos = f.PhotosGetNotInSet(1, 10, PhotoSearchExtras.All);
+            var photos = await f.PhotosGetNotInSetAsync(1, 10, PhotoSearchExtras.All, cancellationToken);
 
             Assert.IsNotNull(photos);
             Assert.AreEqual(10, photos.Count);
@@ -137,35 +144,35 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosGetNotInSetNoParamsTest()
+        public async Task PhotosGetNotInSetNoParamsTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            var photos = f.PhotosGetNotInSet();
+            var photos = await f.PhotosGetNotInSetAsync(cancellationToken);
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosGetNotInSetPagesTest()
+        public async Task PhotosGetNotInSetPagesTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            var photos = f.PhotosGetNotInSet(1, 11);
+            var photos = await f.PhotosGetNotInSetAsync(1, 11, cancellationToken);
 
             Assert.IsNotNull(photos);
             Assert.AreEqual(11, photos.Count);
 
             // Overloads
-            f.PhotosGetNotInSet();
-            f.PhotosGetNotInSet(1);
-            f.PhotosGetNotInSet(new PartialSearchOptions() { Page = 1, PerPage = 10, PrivacyFilter = PrivacyFilter.CompletelyPrivate });
+            await f.PhotosGetNotInSetAsync(cancellationToken);
+            await f.PhotosGetNotInSetAsync(1, cancellationToken);
+            await f.PhotosGetNotInSetAsync(new PartialSearchOptions() { Page = 1, PerPage = 10, PrivacyFilter = PrivacyFilter.CompletelyPrivate }, cancellationToken);
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosGetPermsBasicTest()
+        public async Task PhotosGetPermsBasicTest(CancellationToken cancellationToken = default)
         {
-            var p = AuthInstance.PhotosGetPerms("4114887196");
+            var p = await AuthInstance.PhotosGetPermsAsync("4114887196", cancellationToken);
 
             Assert.IsNotNull(p);
             Assert.AreEqual("4114887196", p.PhotoId);
@@ -173,27 +180,17 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PhotosGetRecentBlankTest()
+        public async Task PhotosGetRecentBlankTest(CancellationToken cancellationToken = default)
         {
-            var photos = Instance.PhotosGetRecent();
+            var photos = await Instance.PhotosGetRecentAsync(cancellationToken);
 
             Assert.IsNotNull(photos);
         }
 
         [Test]
-        public void PhotosGetRecentAllParamsTest()
+        public async Task PhotosGetRecentAllParamsTest(CancellationToken cancellationToken = default)
         {
-            var photos = Instance.PhotosGetRecent(1, 20, PhotoSearchExtras.All);
-
-            Assert.IsNotNull(photos);
-            Assert.AreEqual(20, photos.PerPage);
-            Assert.AreEqual(20, photos.Count);
-        }
-
-        [Test]
-        public void PhotosGetRecentPagesTest()
-        {
-            var photos = Instance.PhotosGetRecent(1, 20);
+            var photos = await Instance.PhotosGetRecentAsync(1, 20, PhotoSearchExtras.All, cancellationToken);
 
             Assert.IsNotNull(photos);
             Assert.AreEqual(20, photos.PerPage);
@@ -201,9 +198,19 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PhotosGetRecentExtrasTest()
+        public async Task PhotosGetRecentPagesTest(CancellationToken cancellationToken = default)
         {
-            var photos = Instance.PhotosGetRecent(PhotoSearchExtras.OwnerName);
+            var photos = await Instance.PhotosGetRecentAsync(1, 20, cancellationToken);
+
+            Assert.IsNotNull(photos);
+            Assert.AreEqual(20, photos.PerPage);
+            Assert.AreEqual(20, photos.Count);
+        }
+
+        [Test]
+        public async Task PhotosGetRecentExtrasTest(CancellationToken cancellationToken = default)
+        {
+            var photos = await Instance.PhotosGetRecentAsync(PhotoSearchExtras.OwnerName, cancellationToken);
 
             Assert.IsNotNull(photos);
             Assert.AreNotEqual(0, photos.Count);
@@ -213,26 +220,25 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PhotosGetSizes10Test()
+        public async Task PhotosGetSizes10Test(CancellationToken cancellationToken = default)
         {
             var o = new PhotoSearchOptions { Tags = "microsoft", PerPage = 10 };
 
-            var photos = Instance.PhotosSearch(o);
+            var photos = await Instance.PhotosSearchAsync(o, cancellationToken);
 
             foreach (var p in photos)
             {
-                var sizes = Instance.PhotosGetSizes(p.PhotoId);
+                var sizes = await Instance.PhotosGetSizesAsync(p.PhotoId, cancellationToken);
                 foreach (var s in sizes)
                 {
-
                 }
             }
         }
 
         [Test]
-        public void PhotosGetSizesBasicTest()
+        public async Task PhotosGetSizesBasicTest(CancellationToken cancellationToken = default)
         {
-            var sizes = Instance.PhotosGetSizes("4114887196");
+            var sizes = await Instance.PhotosGetSizesAsync("4114887196", cancellationToken);
 
             Assert.IsNotNull(sizes);
             Assert.AreNotEqual(0, sizes.Count);
@@ -249,10 +255,10 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PhotosGetSizesVideoTest()
+        public async Task PhotosGetSizesVideoTest(CancellationToken cancellationToken = default)
         {
             //https://www.flickr.com/photos/tedsherarts/4399135415/
-            var sizes = Instance.PhotosGetSizes("4399135415");
+            var sizes = await Instance.PhotosGetSizesAsync("4399135415", cancellationToken);
 
             sizes.ShouldContain(s => s.MediaType == MediaType.Videos, "At least one size should contain a Video media type.");
             sizes.ShouldContain(s => s.MediaType == MediaType.Photos, "At least one size should contain a Photo media type.");
@@ -260,20 +266,20 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosGetUntaggedAllParamsTest()
+        public async Task PhotosGetUntaggedAllParamsTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            var photos = f.PhotosGetUntagged(1, 10, PhotoSearchExtras.All);
+            var photos = await f.PhotosGetUntaggedAsync(1, 10, PhotoSearchExtras.All, cancellationToken);
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosGetUntaggedNoParamsTest()
+        public async Task PhotosGetUntaggedNoParamsTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            var photos = f.PhotosGetUntagged();
+            var photos = await f.PhotosGetUntaggedAsync(cancellationToken);
 
             Assert.IsNotNull(photos);
             Assert.AreNotEqual(0, photos.Count);
@@ -283,11 +289,11 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosGetUntaggedExtrasTest()
+        public async Task PhotosGetUntaggedExtrasTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            var photos = f.PhotosGetUntagged(PhotoSearchExtras.OwnerName);
+            var photos = await f.PhotosGetUntaggedAsync(PhotoSearchExtras.OwnerName, cancellationToken);
 
             Assert.IsNotNull(photos);
             Assert.AreNotEqual(0, photos.Count);
@@ -299,11 +305,11 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosGetUntaggedPagesTest()
+        public async Task PhotosGetUntaggedPagesTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            var photos = f.PhotosGetUntagged(1, 10);
+            var photos = await f.PhotosGetUntaggedAsync(1, 10, cancellationToken);
 
             Assert.IsNotNull(photos);
             Assert.AreEqual(10, photos.Count);
@@ -311,12 +317,12 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosRecentlyUpdatedTests()
+        public async Task PhotosRecentlyUpdatedTests(CancellationToken cancellationToken = default)
         {
             var sixMonthsAgo = DateTime.Today.AddMonths(-6);
             var f = AuthInstance;
 
-            var photos = f.PhotosRecentlyUpdated(sixMonthsAgo, PhotoSearchExtras.All, 1, 20);
+            var photos = await f.PhotosRecentlyUpdatedAsync(sixMonthsAgo, PhotoSearchExtras.All, 1, 20, cancellationToken);
 
             Assert.IsNotNull(photos);
             Assert.AreEqual(20, photos.PerPage);
@@ -324,20 +330,22 @@ namespace FlickrNetTest
 
             // Overloads
 
-            photos = f.PhotosRecentlyUpdated(sixMonthsAgo);
-            photos = f.PhotosRecentlyUpdated(sixMonthsAgo, PhotoSearchExtras.DateTaken);
-            photos = f.PhotosRecentlyUpdated(sixMonthsAgo, 1, 10);
+            photos = await f.PhotosRecentlyUpdatedAsync(sixMonthsAgo, cancellationToken);
+            photos = await f.PhotosRecentlyUpdatedAsync(sixMonthsAgo, PhotoSearchExtras.DateTaken, cancellationToken);
+            photos = await f.PhotosRecentlyUpdatedAsync(sixMonthsAgo, 1, 10, cancellationToken);
         }
 
         [Test]
-        public void PhotosSearchDoesLargeExist()
+        public async Task PhotosSearchDoesLargeExist(CancellationToken cancellationToken = default)
         {
-            var o = new PhotoSearchOptions();
-            o.Extras = PhotoSearchExtras.AllUrls;
-            o.PerPage = 50;
-            o.Tags = "test";
+            var o = new PhotoSearchOptions
+            {
+                Extras = PhotoSearchExtras.AllUrls,
+                PerPage = 50,
+                Tags = "test"
+            };
 
-            PhotoCollection photos = Instance.PhotosSearch(o);
+            PhotoCollection photos = await Instance.PhotosSearchAsync(o, cancellationToken);
 
             foreach (Photo p in photos)
             {
@@ -348,7 +356,7 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosSetMetaLargeDescription()
+        public async Task PhotosSetMetaLargeDescription(CancellationToken cancellationToken = default)
         {
             string description;
 
@@ -363,11 +371,11 @@ namespace FlickrNetTest
             string photoId = "5279984467";
 
             Flickr f = AuthInstance;
-            f.PhotosSetMeta(photoId, title, description);
+            await f.PhotosSetMetaAsync(photoId, title, description, cancellationToken);
         }
 
         [Test]
-        public void PhotosUploadCheckTicketsTest()
+        public async Task PhotosUploadCheckTicketsTest(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
 
@@ -376,7 +384,7 @@ namespace FlickrNetTest
             tickets[1] = "invalid2";
             tickets[2] = "invalid3";
 
-            var t = f.PhotosUploadCheckTickets(tickets);
+            var t = await f.PhotosUploadCheckTicketsAsync(tickets, cancellationToken);
 
             Assert.AreEqual(3, t.Count);
 
@@ -386,11 +394,11 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PhotosPeopleGetListTest()
+        public async Task PhotosPeopleGetListTest(CancellationToken cancellationToken = default)
         {
             var photoId = "3547137580";
 
-            var people = Instance.PhotosPeopleGetList(photoId);
+            var people = await Instance.PhotosPeopleGetListAsync(photoId, cancellationToken);
 
             Assert.AreNotEqual(0, people.Total, "Total should not be zero.");
             Assert.AreNotEqual(0, people.Count, "Count should not be zero.");
@@ -405,20 +413,20 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PhotosPeopleGetListSpecificUserTest()
+        public async Task PhotosPeopleGetListSpecificUserTest(CancellationToken cancellationToken = default)
         {
             string photoId = "104267998"; // https://www.flickr.com/photos/thunderchild5/104267998/
             string userId = "41888973@N00"; //sam judsons nsid
 
             Flickr f = Instance;
-            PhotoPersonCollection ppl = f.PhotosPeopleGetList(photoId);
+            PhotoPersonCollection ppl = await f.PhotosPeopleGetListAsync(photoId, cancellationToken);
             PhotoPerson pp = ppl[0];
             Assert.AreEqual(userId, pp.UserId);
             Assert.IsTrue(pp.BuddyIconUrl.Contains(".staticflickr.com/"), "Buddy icon doesn't contain correct details.");
         }
 
         [Test]
-        public void WebUrlContainsUserIdIfPathAliasIsEmpty()
+        public async Task WebUrlContainsUserIdIfPathAliasIsEmpty(CancellationToken cancellationToken = default)
         {
             var options = new PhotoSearchOptions
             {
@@ -427,8 +435,8 @@ namespace FlickrNetTest
                 Extras = PhotoSearchExtras.PathAlias
             };
 
-            var flickr = Instance;
-            var photos = flickr.PhotosSearch(options);
+            var f = Instance;
+            var photos = await f.PhotosSearchAsync(options, cancellationToken);
 
             string webUrl = photos[0].WebUrl;
             string userPart = webUrl.Split('/')[4];
@@ -452,14 +460,16 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PhotosTestLargeSquareSmall320()
+        public async Task PhotosTestLargeSquareSmall320(CancellationToken cancellationToken = default)
         {
-            var o = new PhotoSearchOptions();
-            o.Extras = PhotoSearchExtras.LargeSquareUrl | PhotoSearchExtras.Small320Url;
-            o.UserId = TestData.TestUserId;
-            o.PerPage = 10;
+            var o = new PhotoSearchOptions
+            {
+                Extras = PhotoSearchExtras.LargeSquareUrl | PhotoSearchExtras.Small320Url,
+                UserId = TestData.TestUserId,
+                PerPage = 10
+            };
 
-            var photos = Instance.PhotosSearch(o);
+            var photos = await Instance.PhotosSearchAsync(o, cancellationToken);
             Assert.IsTrue(photos.Count > 0, "Should return more than zero photos.");
 
             foreach (var photo in photos)
@@ -468,6 +478,5 @@ namespace FlickrNetTest
                 Assert.IsNotNull(photo.LargeSquareThumbnailUrl, "LargeSquareThumbnailUrl should not be null.");
             }
         }
-
     }
 }

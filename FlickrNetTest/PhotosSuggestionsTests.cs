@@ -1,14 +1,17 @@
 ﻿using FlickrNet;
+using FlickrNet.Enums;
 using NUnit.Framework;
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {
     [TestFixture]
     public class PhotosSuggestionsTests : BaseTest
     {
-        string photoId = "6282363572";
+        private string photoId = "6282363572";
 
         [SetUp]
         public void TestInitialize()
@@ -19,12 +22,12 @@ namespace FlickrNetTest
         [Test]
         [Category("AccessTokenRequired")]
         [Ignore("Throws a 500 exception for some reason.")]
-        public void GetListTest()
+        public async Task GetListTest(CancellationToken cancellationToken = default)
         {
             var f = AuthInstance;
 
             // Remove any pending suggestions
-            var suggestions = f.PhotosSuggestionsGetList(photoId, SuggestionStatus.Pending);
+            var suggestions = await f.PhotosSuggestionsGetListAsync(photoId, SuggestionStatus.Pending, cancellationToken);
             Assert.IsNotNull(suggestions, "SuggestionCollection should not be null.");
 
             foreach (var s in suggestions)
@@ -35,14 +38,14 @@ namespace FlickrNetTest
                     Console.WriteLine(f.LastResponse);
                 }
                 Assert.IsNotNull(s.SuggestionId, "Suggestion ID should not be null.");
-                f.PhotosSuggestionsRemoveSuggestion(s.SuggestionId);
+                await f.PhotosSuggestionsRemoveSuggestionAsync(s.SuggestionId, cancellationToken);
             }
 
             // Add test suggestion
-            AddSuggestion();
+            await AddSuggestion(cancellationToken);
 
             // Get list of suggestions and check
-            suggestions = f.PhotosSuggestionsGetList(photoId, SuggestionStatus.Pending);
+            suggestions = await f.PhotosSuggestionsGetListAsync(photoId, SuggestionStatus.Pending, cancellationToken);
 
             Assert.IsNotNull(suggestions, "SuggestionCollection should not be null.");
             Assert.AreNotEqual(0, suggestions.Count, "Count should not be zero.");
@@ -54,17 +57,16 @@ namespace FlickrNetTest
             Assert.AreEqual("I really think this is a good suggestion.", suggestion.Note);
             Assert.AreEqual(54.977, suggestion.Latitude, "Latitude should be the same.");
 
-            f.PhotosSuggestionsRemoveSuggestion(suggestion.SuggestionId);
+            await f.PhotosSuggestionsRemoveSuggestionAsync(suggestion.SuggestionId, cancellationToken);
 
             // Add test suggestion
-            AddSuggestion();
-            suggestion = f.PhotosSuggestionsGetList(photoId, SuggestionStatus.Pending).First();
-            f.PhotosSuggestionsApproveSuggestion(suggestion.SuggestionId);
-            f.PhotosSuggestionsRemoveSuggestion(suggestion.SuggestionId);
-
+            await AddSuggestion(cancellationToken);
+            suggestion = (await f.PhotosSuggestionsGetListAsync(photoId, SuggestionStatus.Pending, cancellationToken)).First();
+            await f.PhotosSuggestionsApproveSuggestionAsync(suggestion.SuggestionId, cancellationToken);
+            await f.PhotosSuggestionsRemoveSuggestionAsync(suggestion.SuggestionId, cancellationToken);
         }
 
-        public void AddSuggestion()
+        public async Task AddSuggestion(CancellationToken cancellationToken = default)
         {
             var f = AuthInstance;
 
@@ -75,7 +77,7 @@ namespace FlickrNetTest
             var placeId = "X9sTR3BSUrqorQ";
             var note = "I really think this is a good suggestion.";
 
-            f.PhotosSuggestionsSuggestLocation(photoId, lat, lon, accuracy, woeId, placeId, note);
+            await f.PhotosSuggestionsSuggestLocationAsync(photoId, lat, lon, accuracy, woeId, placeId, note, cancellationToken);
         }
     }
 }

@@ -1,9 +1,15 @@
 ﻿using FlickrNet;
+using FlickrNet.CollectionModels;
+using FlickrNet.Enums;
+using FlickrNet.Models;
 using NUnit.Framework;
 using System;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {
@@ -15,39 +21,7 @@ namespace FlickrNetTest
     public class PhotosUploadTests : BaseTest
     {
         [Test]
-        public void UploadPictureAsyncBasicTest()
-        {
-            Flickr f = AuthInstance;
-
-            var w = new AsyncSubject<FlickrResult<string>>();
-
-            byte[] imageBytes = TestData.TestImageBytes;
-            var s = new MemoryStream(imageBytes);
-            s.Position = 0;
-
-            string title = "Test Title";
-            string desc = "Test Description\nSecond Line";
-            string tags = "testtag1,testtag2";
-
-            f.UploadPictureAsync(s, "Test.jpg", title, desc, tags, false, false, false, ContentType.Other, SafetyLevel.Safe, HiddenFromSearch.Visible,
-                r => { w.OnNext(r); w.OnCompleted(); });
-
-            var result = w.Next().First();
-
-            if (result.HasError)
-            {
-                throw result.Error;
-            }
-
-            Assert.IsNotNull(result.Result);
-            Console.WriteLine(result.Result);
-
-            // Clean up photo
-            f.PhotosDelete(result.Result);
-        }
-
-        [Test]
-        public void UploadPictureBasicTest()
+        public async Task UploadPictureBasicTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
@@ -63,11 +37,11 @@ namespace FlickrNetTest
             string title = "Test Title";
             string desc = "Test Description\nSecond Line";
             string tags = "testtag1,testtag2";
-            string photoId = f.UploadPicture(s, "Test.jpg", title, desc, tags, false, false, false, ContentType.Other, SafetyLevel.Safe, HiddenFromSearch.Visible);
+            string photoId = await f.UploadPictureAsync(s, "Test.jpg", title, desc, tags, false, false, false, ContentType.Other, SafetyLevel.Safe, HiddenFromSearch.Visible, cancellationToken: cancellationToken);
 
             try
             {
-                PhotoInfo info = f.PhotosGetInfo(photoId);
+                PhotoInfo info = await f.PhotosGetInfoAsync(photoId, cancellationToken);
 
                 Assert.AreEqual(title, info.Title);
                 Assert.AreEqual(desc, info.Description);
@@ -79,45 +53,43 @@ namespace FlickrNetTest
                 Assert.IsFalse(info.IsFamily);
                 Assert.IsFalse(info.IsFriend);
 
-                SizeCollection sizes = f.PhotosGetSizes(photoId);
+                SizeCollection sizes = await f.PhotosGetSizesAsync(photoId, cancellationToken);
 
-                string url = sizes[sizes.Count - 1].Source;
-                using (WebClient client = new WebClient())
-                {
-                    byte[] downloadBytes = client.DownloadData(url);
-                    string downloadBase64 = Convert.ToBase64String(downloadBytes);
+                string url = sizes[^1].Source;
+                using HttpClient client = new();
+                byte[] downloadBytes = await client.GetByteArrayAsync(url, cancellationToken);
+                string downloadBase64 = Convert.ToBase64String(downloadBytes);
 
-                    Assert.AreEqual(TestData.TestImageBase64, downloadBase64);
-                }
+                Assert.AreEqual(TestData.TestImageBase64, downloadBase64);
             }
             finally
             {
-                f.PhotosDelete(photoId);
+                await f.PhotoDeleteAsync(photoId, cancellationToken);
             }
         }
 
         [Test]
-        public void DownloadAndUploadImage()
+        public async Task DownloadAndUploadImage(CancellationToken cancellationToken = default)
         {
-            var photos = AuthInstance.PeopleGetPhotos(PhotoSearchExtras.Small320Url);
+            var photos = await AuthInstance.PeopleGetPhotosAsync(PhotoSearchExtras.Small320Url, cancellationToken);
 
             var photo = photos.First();
             var url = photo.Small320Url;
 
-            var client = new WebClient();
-            var data = client.DownloadData(url);
+            HttpClient client = new();
+            var data = await client.GetByteArrayAsync(url, cancellationToken);
 
             var ms = new MemoryStream(data) { Position = 0 };
 
-            var photoId = AuthInstance.UploadPicture(ms, "test.jpg", "Test Photo", "Test Description", "", false, false, false, ContentType.Photo, SafetyLevel.Safe, HiddenFromSearch.Hidden);
+            var photoId = await AuthInstance.UploadPictureAsync(ms, "test.jpg", "Test Photo", "Test Description", "", false, false, false, ContentType.Photo, SafetyLevel.Safe, HiddenFromSearch.Hidden, cancellationToken: cancellationToken);
             Assert.IsNotNull(photoId, "PhotoId should not be null");
 
             // Cleanup
-            AuthInstance.PhotosDelete(photoId);
+            await AuthInstance.PhotoDeleteAsync(photoId, cancellationToken);
         }
 
         [Test]
-        public void ReplacePictureBasicTest()
+        public async Task ReplacePictureBasicTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
@@ -128,55 +100,52 @@ namespace FlickrNetTest
             string title = "Test Title";
             string desc = "Test Description\nSecond Line";
             string tags = "testtag1,testtag2";
-            string photoId = f.UploadPicture(s, "Test.jpg", title, desc, tags, false, false, false, ContentType.Other, SafetyLevel.Safe, HiddenFromSearch.Visible);
+            string photoId = await f.UploadPictureAsync(s, "Test.jpg", title, desc, tags, false, false, false, ContentType.Other, SafetyLevel.Safe, HiddenFromSearch.Visible, cancellationToken: cancellationToken);
 
             try
             {
                 s.Position = 0;
-                f.ReplacePicture(s, "Test.jpg", photoId);
+                await f.ReplacePictureAsync(s, "Test.jpg", photoId, cancellationToken: cancellationToken);
             }
             finally
             {
-                f.PhotosDelete(photoId);
+                await f.PhotoDeleteAsync(photoId, cancellationToken);
             }
         }
 
         [Test]
-        public void UploadPictureFromUrl()
+        public async Task UploadPictureFromUrl(CancellationToken cancellationToken = default)
         {
             string url = "http://www.google.co.uk/intl/en_com/images/srpr/logo1w.png";
             Flickr f = AuthInstance;
 
-            using (WebClient client = new WebClient())
+            using (HttpClient client = new())
             {
-                using (Stream s = client.OpenRead(url))
+                using (Stream s = await client.GetStreamAsync(url, cancellationToken))
                 {
-                    string photoId = f.UploadPicture(s, "google.png", "Google Image", "Google", "", false, false, false, ContentType.Photo, SafetyLevel.None, HiddenFromSearch.None);
-                    f.PhotosDelete(photoId);
+                    string photoId = await f.UploadPictureAsync(s, "google.png", "Google Image", "Google", "", false, false, false, ContentType.Photo, SafetyLevel.None, HiddenFromSearch.None, cancellationToken: cancellationToken);
+                    await f.PhotoDeleteAsync(photoId, cancellationToken);
                 }
             }
         }
 
         [Test, Ignore("Long running test")]
-        public void UploadLargeVideoFromUrl()
+        public async Task UploadLargeVideoFromUrl(CancellationToken cancellationToken = default)
         {
             string url = "http://www.sample-videos.com/video/mp4/720/big_buck_bunny_720p_50mb.mp4";
             Flickr f = AuthInstance;
 
-            using (WebClient client = new WebClient())
-            {
-                using (Stream s = client.OpenRead(url))
-                {
-                    string photoId = f.UploadPicture(s, "bunny.mp4", "Big Buck Bunny", "Sample Video", "", false, false, false, ContentType.Photo, SafetyLevel.None, HiddenFromSearch.None);
-                    f.PhotosDelete(photoId);
-                }
-            }
+            using HttpClient client = new();
+            using Stream s = await client.GetStreamAsync(url, cancellationToken);
+            string photoId = await f.UploadPictureAsync(s, "bunny.mp4", "Big Buck Bunny", "Sample Video", "", false, false, false, ContentType.Photo, SafetyLevel.None, HiddenFromSearch.None, cancellationToken: cancellationToken);
+            await f.PhotoDeleteAsync(photoId, cancellationToken);
         }
-        // 
+
+        //
 
         [Test]
         [Ignore("Large time consuming uploads")]
-        public void UploadPictureVideoTests()
+        public async Task UploadPictureVideoTests(CancellationToken cancellationToken = default)
         {
             // Samples downloaded from http://support.apple.com/kb/HT1425
             // sample_mpeg2.m2v does not upload
@@ -188,12 +157,10 @@ namespace FlickrNetTest
             {
                 try
                 {
-                    using (Stream s = new FileStream(Path.Combine(directory, file), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-                    {
-                        Flickr f = AuthInstance;
-                        string photoId = f.UploadPicture(s, file, "Video Upload Test", file, "video, test", false, false, false, ContentType.Other, SafetyLevel.Safe, HiddenFromSearch.None);
-                        f.PhotosDelete(photoId);
-                    }
+                    using Stream s = new FileStream(Path.Combine(directory, file), FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+                    Flickr f = AuthInstance;
+                    string photoId = await f.UploadPictureAsync(s, file, "Video Upload Test", file, "video, test", false, false, false, ContentType.Other, SafetyLevel.Safe, HiddenFromSearch.None, cancellationToken: cancellationToken);
+                    await f.PhotoDeleteAsync(photoId, cancellationToken);
                 }
                 catch (Exception ex)
                 {
