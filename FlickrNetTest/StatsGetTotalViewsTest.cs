@@ -1,5 +1,9 @@
-﻿using NUnit.Framework;
+﻿using FlickrNet.CollectionModels;
+using FlickrNet.Models;
+using NUnit.Framework;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {
@@ -11,9 +15,9 @@ namespace FlickrNetTest
     public class StatsGetTotalViewsTest : BaseTest
     {
         [Test]
-        public void StatsGetTotalViewsBasicTest()
+        public async Task StatsGetTotalViewsBasicTest(CancellationToken cancellationToken = default)
         {
-            StatViews views = AuthInstance.StatsGetTotalViews();
+            StatViews views = await AuthInstance.StatsGetTotalViewsAsync(cancellationToken);
 
             Assert.IsNotNull(views, "StatViews should not be null.");
             Assert.AreNotEqual(0, views.TotalViews, "TotalViews should be greater than zero.");
@@ -22,9 +26,9 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void StatGetCsvFilesTest()
+        public async Task StatGetCsvFilesTest(CancellationToken cancellationToken = default)
         {
-            CsvFileCollection col = AuthInstance.StatsGetCsvFiles();
+            CsvFileCollection col = await AuthInstance.StatsGetCsvFilesAsync(cancellationToken);
 
             Assert.IsNotNull(col, "CsvFileCollection should not be null.");
 

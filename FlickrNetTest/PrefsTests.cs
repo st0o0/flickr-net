@@ -1,5 +1,7 @@
-﻿
+﻿using FlickrNet.Enums;
 using NUnit.Framework;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {
@@ -11,18 +13,18 @@ namespace FlickrNetTest
     public class PrefsTests : BaseTest
     {
         [Test]
-        public void PrefsGetContentTypeTest()
+        public async Task PrefsGetContentTypeTest(CancellationToken cancellationToken = default)
         {
-            var s = AuthInstance.PrefsGetContentType();
+            var s = await AuthInstance.PrefsGetContentTypeAsync(cancellationToken);
 
             Assert.IsNotNull(s);
             Assert.AreNotEqual(ContentType.None, s);
         }
 
         [Test]
-        public void PrefsGetGeoPermsTest()
+        public async Task PrefsGetGeoPermsTest(CancellationToken cancellationToken = default)
         {
-            var p = AuthInstance.PrefsGetGeoPerms();
+            var p = await AuthInstance.PrefsGetGeoPermsAsync(cancellationToken);
 
             Assert.IsNotNull(p);
             Assert.IsTrue(p.ImportGeoExif);
@@ -30,32 +32,30 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PrefsGetHiddenTest()
+        public async Task PrefsGetHiddenTest(CancellationToken cancellationToken = default)
         {
-            var s = AuthInstance.PrefsGetHidden();
+            var s = await AuthInstance.PrefsGetHiddenAsync(cancellationToken);
 
             Assert.IsNotNull(s);
             Assert.AreNotEqual(HiddenFromSearch.None, s);
         }
 
         [Test]
-        public void PrefsGetPrivacyTest()
+        public async Task PrefsGetPrivacyTest(CancellationToken cancellationToken = default)
         {
-            var p = AuthInstance.PrefsGetPrivacy();
+            var p = await AuthInstance.PrefsGetPrivacyAsync(cancellationToken);
 
             Assert.IsNotNull(p);
             Assert.AreEqual(PrivacyFilter.PublicPhotos, p);
         }
 
         [Test]
-        public void PrefsGetSafetyLevelTest()
+        public async Task PrefsGetSafetyLevelTest(CancellationToken cancellationToken = default)
         {
-            var s = AuthInstance.PrefsGetSafetyLevel();
+            var s = await AuthInstance.PrefsGetSafetyLevelAsync(cancellationToken);
 
             Assert.IsNotNull(s);
             Assert.AreEqual(SafetyLevel.Safe, s);
         }
-
-
     }
 }

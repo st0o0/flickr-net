@@ -1,6 +1,11 @@
 ﻿using FlickrNet;
+using FlickrNet.CollectionModels;
+using FlickrNet.Enums;
+using FlickrNet.Models;
 using NUnit.Framework;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {
@@ -9,9 +14,9 @@ namespace FlickrNetTest
     public class StatsGetPopularPhotosTests : BaseTest
     {
         [Test]
-        public void StatsGetPopularPhotosBasic()
+        public async Task StatsGetPopularPhotosBasic(CancellationToken cancellationToken = default)
         {
-            PopularPhotoCollection photos = AuthInstance.StatsGetPopularPhotos(DateTime.MinValue, PopularitySort.None, 0, 0);
+            PopularPhotoCollection photos = await AuthInstance.StatsGetPopularPhotosAsync(DateTime.MinValue, PopularitySort.None, 0, 0, cancellationToken);
 
             Assert.IsNotNull(photos, "PopularPhotos should not be null.");
 
@@ -32,11 +37,11 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void StatsGetPopularPhotosNoParamsTest()
+        public async Task StatsGetPopularPhotosNoParamsTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            PopularPhotoCollection photos = f.StatsGetPopularPhotos();
+            PopularPhotoCollection photos = await f.StatsGetPopularPhotosAsync(cancellationToken);
 
             Assert.IsNotNull(photos, "PopularPhotos should not be null.");
 
@@ -57,24 +62,23 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void StatsGetPopularPhotosOtherTest()
+        public async Task StatsGetPopularPhotosOtherTest(CancellationToken cancellationToken = default)
         {
             var lastWeek = DateTime.Today.AddDays(-7);
 
-            var photos = AuthInstance.StatsGetPopularPhotos(lastWeek);
+            var photos = await AuthInstance.StatsGetPopularPhotosAsync(lastWeek, cancellationToken);
             Assert.IsNotNull(photos, "PopularPhotos should not be null.");
 
-            photos = AuthInstance.StatsGetPopularPhotos(PopularitySort.Favorites);
+            photos = await AuthInstance.StatsGetPopularPhotosAsync(PopularitySort.Favorites, cancellationToken);
             Assert.IsNotNull(photos, "PopularPhotos should not be null.");
 
-            photos = AuthInstance.StatsGetPopularPhotos(lastWeek, 1, 10);
+            photos = await AuthInstance.StatsGetPopularPhotosAsync(lastWeek, 1, 10, cancellationToken);
             Assert.IsNotNull(photos, "PopularPhotos should not be null.");
             Assert.AreEqual(10, photos.Count, "Date search popular photos should return 10 photos.");
 
-            photos = AuthInstance.StatsGetPopularPhotos(PopularitySort.Favorites, 1, 10);
+            photos = await AuthInstance.StatsGetPopularPhotosAsync(PopularitySort.Favorites, 1, 10, cancellationToken);
             Assert.IsNotNull(photos, "PopularPhotos should not be null.");
             Assert.AreEqual(10, photos.Count, "Favorite search popular photos should return 10 photos.");
-
         }
     }
 }

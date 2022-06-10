@@ -1,6 +1,9 @@
 ﻿using FlickrNet;
+using FlickrNet.Models;
 using NUnit.Framework;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {
@@ -8,47 +11,47 @@ namespace FlickrNetTest
     [Category("AccessTokenRequired")]
     public class StatsGetDomainsTests : BaseTest
     {
-        string collectionId = "78188-72157600072356354";
-        string photoId = "5890800";
-        string photosetId = "1493109";
+        private string collectionId = "78188-72157600072356354";
+        private string photoId = "5890800";
+        private string photosetId = "1493109";
 
         [Test]
-        public void StatsGetCollectionDomainsBasicTest()
+        public async Task StatsGetCollectionDomainsBasicTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            var domains = f.StatsGetCollectionDomains(DateTime.Today.AddDays(-2));
+            var domains = await f.StatsGetCollectionDomainsAsync(DateTime.Today.AddDays(-2), cancellationToken);
 
             Assert.IsNotNull(domains, "StatDomains should not be null.");
             Assert.AreEqual(domains.Total, domains.Count, "StatDomains.Count should be the same as StatDomains.Total");
 
             // Overloads
-            domains = f.StatsGetCollectionDomains(DateTime.Today.AddDays(-2), collectionId);
+            domains = await f.StatsGetCollectionDomainsAsync(DateTime.Today.AddDays(-2), collectionId, cancellationToken);
             Assert.IsNotNull(domains);
 
-            domains = f.StatsGetCollectionDomains(DateTime.Today.AddDays(-2), 1, 10);
+            domains = await f.StatsGetCollectionDomainsAsync(DateTime.Today.AddDays(-2), 1, 10, cancellationToken);
             Assert.IsNotNull(domains);
 
-            domains = f.StatsGetCollectionDomains(DateTime.Today.AddDays(-2), collectionId, 1, 10);
+            domains = await f.StatsGetCollectionDomainsAsync(DateTime.Today.AddDays(-2), collectionId, 1, 10, cancellationToken);
             Assert.IsNotNull(domains);
         }
 
         [Test]
-        public void StatsGetCollectionStatsTest()
+        public async Task StatsGetCollectionStatsTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            Stats stats = f.StatsGetCollectionStats(DateTime.Today.AddDays(-2), collectionId);
+            Stats stats = await f.StatsGetCollectionStatsAsync(DateTime.Today.AddDays(-2), collectionId, cancellationToken);
 
             Assert.IsNotNull(stats, "Stats should not be null.");
         }
 
         [Test]
-        public void StatsGetPhotoDomainsTests()
+        public async Task StatsGetPhotoDomainsTests(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            var domains = f.StatsGetPhotoDomains(DateTime.Today.AddDays(-2));
+            var domains = await f.StatsGetPhotoDomainsAsync(DateTime.Today.AddDays(-2), cancellationToken);
             Assert.IsNotNull(domains, "StatDomains should not be null.");
             Assert.AreNotEqual(0, domains.Count, "StatDomains.Count should not be zero.");
 
@@ -59,33 +62,32 @@ namespace FlickrNetTest
             }
 
             // Overloads
-            domains = f.StatsGetPhotoDomains(DateTime.Today.AddDays(-2), photoId);
+            domains = await f.StatsGetPhotoDomainsAsync(DateTime.Today.AddDays(-2), photoId, cancellationToken);
             Assert.IsNotNull(domains, "StatDomains should not be null.");
 
-            domains = f.StatsGetPhotoDomains(DateTime.Today.AddDays(-2), photoId, 1, 10);
+            domains = await f.StatsGetPhotoDomainsAsync(DateTime.Today.AddDays(-2), photoId, 1, 10, cancellationToken);
             Assert.IsNotNull(domains, "StatDomains should not be null.");
 
-            domains = f.StatsGetPhotoDomains(DateTime.Today.AddDays(-2), 1, 10);
+            domains = await f.StatsGetPhotoDomainsAsync(DateTime.Today.AddDays(-2), 1, 10, cancellationToken);
             Assert.IsNotNull(domains, "StatDomains should not be null.");
-
         }
 
         [Test]
-        public void StatsGetPhotoStatsTest()
+        public async Task StatsGetPhotoStatsTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            var stats = f.StatsGetPhotoStats(DateTime.Today.AddDays(-5), photoId);
+            var stats = await f.StatsGetPhotoStatsAsync(DateTime.Today.AddDays(-5), photoId, cancellationToken);
 
             Assert.IsNotNull(stats);
         }
 
         [Test]
-        public void StatsGetPhotosetDomainsBasic()
+        public async Task StatsGetPhotosetDomainsBasic(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            var domains = f.StatsGetPhotosetDomains(DateTime.Today.AddDays(-2));
+            var domains = await f.StatsGetPhotosetDomainsAsync(DateTime.Today.AddDays(-2), cancellationToken);
             Assert.IsNotNull(domains, "StatDomains should not be null.");
 
             foreach (StatDomain domain in domains)
@@ -95,34 +97,32 @@ namespace FlickrNetTest
             }
 
             // Overloads
-            domains = f.StatsGetPhotosetDomains(DateTime.Today.AddDays(-2), 1, 10);
+            domains = await f.StatsGetPhotosetDomainsAsync(DateTime.Today.AddDays(-2), 1, 10, cancellationToken);
             Assert.IsNotNull(domains, "StatDomains should not be null.");
 
-            domains = f.StatsGetPhotosetDomains(DateTime.Today.AddDays(-2), photosetId);
+            domains = await f.StatsGetPhotosetDomainsAsync(DateTime.Today.AddDays(-2), photosetId, cancellationToken);
             Assert.IsNotNull(domains, "StatDomains should not be null.");
 
-            domains = f.StatsGetPhotosetDomains(DateTime.Today.AddDays(-2), photosetId, 1, 10);
+            domains = await f.StatsGetPhotosetDomainsAsync(DateTime.Today.AddDays(-2), photosetId, 1, 10, cancellationToken);
             Assert.IsNotNull(domains, "StatDomains should not be null.");
-
-
         }
 
         [Test]
-        public void StatsGetPhotosetStatsTest()
+        public async Task StatsGetPhotosetStatsTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            var stats = f.StatsGetPhotosetStats(DateTime.Today.AddDays(-5), photosetId);
+            var stats = await f.StatsGetPhotosetStatsAsync(DateTime.Today.AddDays(-5), photosetId, cancellationToken);
 
             Assert.IsNotNull(stats);
         }
 
         [Test]
-        public void StatsGetPhotostreamDomainsBasic()
+        public async Task StatsGetPhotostreamDomainsBasic(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            var domains = f.StatsGetPhotostreamDomains(DateTime.Today.AddDays(-2));
+            var domains = await f.StatsGetPhotostreamDomainsAsync(DateTime.Today.AddDays(-2), cancellationToken);
             Assert.IsNotNull(domains, "StatDomains should not be null.");
 
             foreach (StatDomain domain in domains)
@@ -132,20 +132,18 @@ namespace FlickrNetTest
             }
 
             // Overload
-            domains = f.StatsGetPhotostreamDomains(DateTime.Today.AddDays(-2), 1, 10);
+            domains = await f.StatsGetPhotostreamDomainsAsync(DateTime.Today.AddDays(-2), 1, 10, cancellationToken);
             Assert.IsNotNull(domains, "StatDomains should not be null.");
         }
 
         [Test]
-        public void StatsGetPhotostreamStatsTest()
+        public async Task StatsGetPhotostreamStatsTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
-            var stats = f.StatsGetPhotostreamStats(DateTime.Today.AddDays(-5));
+            var stats = await f.StatsGetPhotostreamStatsAsync(DateTime.Today.AddDays(-5), cancellationToken);
 
             Assert.IsNotNull(stats);
         }
-
-
     }
 }

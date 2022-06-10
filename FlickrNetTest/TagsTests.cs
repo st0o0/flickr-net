@@ -90,9 +90,9 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void TagsGetClustersNewcastleTest()
+        public async Task TagsGetClustersNewcastleTest(CancellationToken cancellationToken = default)
         {
-            var col = Instance.TagsGetClusters("newcastle");
+            var col = await Instance.TagsGetClustersAsync("newcastle", cancellationToken);
 
             Assert.IsNotNull(col);
 

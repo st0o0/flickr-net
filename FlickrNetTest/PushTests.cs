@@ -1,5 +1,8 @@
-﻿using NUnit.Framework;
+﻿using FlickrNet.Enums;
+using NUnit.Framework;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {
@@ -7,11 +10,11 @@ namespace FlickrNetTest
     public class PushTests : BaseTest
     {
         [Test]
-        public void GetTopicsTest()
+        public async Task GetTopicsTest(CancellationToken cancellationToken = default)
         {
             var f = Instance;
 
-            var topics = f.PushGetTopics();
+            var topics = await f.PushGetTopicsAsync(cancellationToken);
 
             Assert.IsNotNull(topics);
             Assert.AreNotEqual(0, topics.Length, "Should return greater than zero topics.");
@@ -25,7 +28,7 @@ namespace FlickrNetTest
         [Test]
         [Category("AccessTokenRequired")]
         [Ignore("Wackylabs called is broken.")]
-        public void SubscribeUnsubscribeTest()
+        public async Task SubscribeUnsubscribeTest(CancellationToken cancellationToken = default)
         {
             var callback = "http://www.wackylabs.net/dev/push/test.php";
             var topic = "contacts_photos";
@@ -33,9 +36,9 @@ namespace FlickrNetTest
             var verify = "sync";
 
             var f = AuthInstance;
-            f.PushSubscribe(topic, callback, verify, null, lease, null, null, 0, 0, 0, FlickrNet.RadiusUnit.None, FlickrNet.GeoAccuracy.None, null, null);
+            await f.PushSubscribeAsync(topic, callback, verify, null, lease, null, null, 0, 0, 0, RadiusUnit.None, GeoAccuracy.None, null, null, cancellationToken);
 
-            var subscriptions = f.PushGetSubscriptions();
+            var subscriptions = await f.PushGetSubscriptionsAsync(cancellationToken);
 
             bool found = false;
 
@@ -50,13 +53,13 @@ namespace FlickrNetTest
 
             Assert.IsTrue(found, "Should have found subscription.");
 
-            f.PushUnsubscribe(topic, callback, verify, null);
+            await f.PushUnsubscribeAsync(topic, callback, verify, null, cancellationToken);
         }
 
         [Test]
         [Category("AccessTokenRequired")]
         [Ignore("Wackylabs called is broken.")]
-        public void SubscribeTwiceUnsubscribeTest()
+        public async Task SubscribeTwiceUnsubscribeTest(CancellationToken cancellationToken = default)
         {
             var callback1 = "http://www.wackylabs.net/dev/push/test.php?id=4";
             var callback2 = "http://www.wackylabs.net/dev/push/test.php?id=5";
@@ -65,20 +68,19 @@ namespace FlickrNetTest
             var verify = "sync";
 
             var f = AuthInstance;
-            f.PushSubscribe(topic, callback1, verify, null, lease, null, null, 0, 0, 0, FlickrNet.RadiusUnit.None, FlickrNet.GeoAccuracy.None, null, null);
-            f.PushSubscribe(topic, callback2, verify, null, lease, null, null, 0, 0, 0, FlickrNet.RadiusUnit.None, FlickrNet.GeoAccuracy.None, null, null);
+            await f.PushSubscribeAsync(topic, callback1, verify, null, lease, null, null, 0, 0, 0, RadiusUnit.None, GeoAccuracy.None, null, null, cancellationToken);
+            await f.PushSubscribeAsync(topic, callback2, verify, null, lease, null, null, 0, 0, 0, RadiusUnit.None, GeoAccuracy.None, null, null, cancellationToken);
 
-            var subscriptions = f.PushGetSubscriptions();
+            var subscriptions = await f.PushGetSubscriptionsAsync(cancellationToken);
 
             try
             {
                 Assert.IsTrue(subscriptions.Count > 1, "Should be more than one subscription.");
-
             }
             finally
             {
-                f.PushUnsubscribe(topic, callback1, verify, null);
-                f.PushUnsubscribe(topic, callback2, verify, null);
+                await f.PushUnsubscribeAsync(topic, callback1, verify, null, cancellationToken);
+                await f.PushUnsubscribeAsync(topic, callback2, verify, null, cancellationToken);
             }
         }
     }

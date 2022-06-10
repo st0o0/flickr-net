@@ -1,6 +1,11 @@
 ﻿using FlickrNet;
+using FlickrNet.CollectionModels;
+using FlickrNet.Enums;
+using FlickrNet.Models;
 using NUnit.Framework;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {
@@ -8,9 +13,9 @@ namespace FlickrNetTest
     public class PhotosLicensesTests : BaseTest
     {
         [Test]
-        public void PhotosLicensesGetInfoBasicTest()
+        public async Task PhotosLicensesGetInfoBasicTest(CancellationToken cancellationToken = default)
         {
-            LicenseCollection col = Instance.PhotosLicensesGetInfo();
+            LicenseCollection col = await Instance.PhotosLicensesGetInfoAsync(cancellationToken);
 
             foreach (License lic in col)
             {
@@ -23,24 +28,23 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PhotosLicensesSetLicenseTest()
+        public async Task PhotosLicensesSetLicenseTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
             string photoId = "7176125763";
 
-            var photoInfo = f.PhotosGetInfo(photoId); // Rainbow Rose
+            var photoInfo = await f.PhotosGetInfoAsync(photoId, cancellationToken); // Rainbow Rose
             var origLicense = photoInfo.License;
 
             var newLicense = origLicense == LicenseType.AttributionCC ? LicenseType.AttributionNoDerivativesCC : LicenseType.AttributionCC;
-            f.PhotosLicensesSetLicense(photoId, newLicense);
+            await f.PhotosLicensesSetLicenseAsync(photoId, newLicense, cancellationToken);
 
-            var newPhotoInfo = f.PhotosGetInfo(photoId);
+            var newPhotoInfo = await f.PhotosGetInfoAsync(photoId, cancellationToken);
 
             Assert.AreEqual(newLicense, newPhotoInfo.License, "License has not changed");
 
-            // Reset license 
-            f.PhotosLicensesSetLicense(photoId, origLicense);
+            // Reset license
+            await f.PhotosLicensesSetLicenseAsync(photoId, origLicense, cancellationToken);
         }
-
     }
 }

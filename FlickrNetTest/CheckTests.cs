@@ -13,7 +13,7 @@ namespace FlickrNetTest
         [Test]
         public void CheckApiKeyThrowsExceptionWhenNotPresent()
         {
-            var f = new Flickr("");
+            Flickr f = new("");
 
             Should.Throw<ApiKeyRequiredException>(() => f.CheckApiKey());
         }
@@ -21,8 +21,10 @@ namespace FlickrNetTest
         [Test]
         public void CheckApiKeyDoesNotThrowWhenPresent()
         {
-            var f = new Flickr("");
-            f.ApiKey = "X";
+            Flickr f = new("")
+            {
+                ApiKey = "X"
+            };
 
             Should.NotThrow(() => f.CheckApiKey());
         }
@@ -30,17 +32,21 @@ namespace FlickrNetTest
         [Test]
         public void CheckSignatureKeyThrowsExceptionWhenSecretNotPresent()
         {
-            var f = new Flickr("");
-            f.ApiKey = "X";
+            Flickr f = new("")
+            {
+                ApiKey = "X"
+            };
             Should.Throw<SignatureRequiredException>(() => f.CheckSigned());
         }
 
         [Test]
         public void CheckSignatureKeyDoesntThrowWhenSecretPresent()
         {
-            var f = new Flickr("");
-            f.ApiKey = "X";
-            f.ApiSecret = "Y";
+            Flickr f = new("")
+            {
+                ApiKey = "X",
+                ApiSecret = "Y"
+            };
 
             Should.NotThrow(() => f.CheckSigned());
         }
@@ -48,9 +54,11 @@ namespace FlickrNetTest
         [Test]
         public void CheckRequestAuthenticationThrowsExceptionWhenNothingPresent()
         {
-            var f = new Flickr("");
-            f.ApiKey = "X";
-            f.ApiSecret = "Y";
+            Flickr f = new("")
+            {
+                ApiKey = "X",
+                ApiSecret = "Y"
+            };
 
             Should.Throw<AuthenticationRequiredException>(() => f.CheckRequiresAuthentication());
         }
@@ -58,11 +66,11 @@ namespace FlickrNetTest
         [Test]
         public void CheckRequestAuthenticationDoesNotThrowWhenAuthTokenPresent()
         {
-            var f = new Flickr("");
-            f.ApiKey = "X";
-            f.ApiSecret = "Y";
-
-            f.AuthToken = "Z";
+            Flickr f = new("")
+            {
+                ApiKey = "X",
+                ApiSecret = "Y",
+            };
 
             Assert.DoesNotThrow(f.CheckRequiresAuthentication);
         }
@@ -70,12 +78,14 @@ namespace FlickrNetTest
         [Test]
         public void CheckRequestAuthenticationDoesNotThrowWhenOAuthTokenPresent()
         {
-            var f = new Flickr("");
-            f.ApiKey = "X";
-            f.ApiSecret = "Y";
+            Flickr f = new("")
+            {
+                ApiKey = "X",
+                ApiSecret = "Y",
 
-            f.OAuthAccessToken = "Z1";
-            f.OAuthAccessTokenSecret = "Z2";
+                OAuthAccessToken = "Z1",
+                OAuthAccessTokenSecret = "Z2"
+            };
 
             Assert.DoesNotThrow(f.CheckRequiresAuthentication);
         }

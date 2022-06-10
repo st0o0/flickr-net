@@ -1,6 +1,10 @@
 ﻿using FlickrNet;
+using FlickrNet.CollectionModels;
+using FlickrNet.Models;
 using NUnit.Framework;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {
@@ -17,13 +21,13 @@ namespace FlickrNetTest
         private readonly DateTime lastWeek = DateTime.Today.AddDays(-7);
 
         [Test]
-        public void StatsGetPhotoReferrersBasicTest()
+        public async Task StatsGetPhotoReferrersBasicTest(CancellationToken cancellationToken = default)
         {
             string domain = "flickr.com";
 
             Flickr f = AuthInstance;
 
-            StatReferrerCollection referrers = f.StatsGetPhotoReferrers(lastWeek, domain, 1, 10);
+            StatReferrerCollection referrers = await f.StatsGetPhotoReferrersAsync(lastWeek, domain, 1, 10, cancellationToken);
 
             Assert.IsNotNull(referrers, "StatReferrers should not be null.");
 
@@ -40,24 +44,24 @@ namespace FlickrNetTest
             }
 
             // Overloads
-            referrers = f.StatsGetPhotoReferrers(lastWeek, domain);
+            referrers = await f.StatsGetPhotoReferrersAsync(lastWeek, domain, cancellationToken);
             Assert.IsNotNull(referrers);
 
-            referrers = f.StatsGetPhotoReferrers(lastWeek, domain, photoId);
+            referrers = await f.StatsGetPhotoReferrersAsync(lastWeek, domain, photoId, cancellationToken);
             Assert.IsNotNull(referrers);
 
-            referrers = f.StatsGetPhotoReferrers(lastWeek, domain, photoId, 1, 10);
+            referrers = await f.StatsGetPhotoReferrersAsync(lastWeek, domain, photoId, 1, 10, cancellationToken);
             Assert.IsNotNull(referrers);
         }
 
         [Test]
-        public void StatsGetPhotosetsReferrersBasicTest()
+        public async Task StatsGetPhotosetsReferrersBasicTest(CancellationToken cancellationToken = default)
         {
             string domain = "flickr.com";
 
             Flickr f = AuthInstance;
 
-            StatReferrerCollection referrers = f.StatsGetPhotosetReferrers(lastWeek, domain, 1, 10);
+            StatReferrerCollection referrers = await f.StatsGetPhotosetReferrersAsync(lastWeek, domain, 1, 10, cancellationToken);
 
             Assert.IsNotNull(referrers, "StatReferrers should not be null.");
 
@@ -77,24 +81,24 @@ namespace FlickrNetTest
             }
 
             // Overloads
-            referrers = f.StatsGetPhotosetReferrers(lastWeek, domain);
+            referrers = await f.StatsGetPhotosetReferrersAsync(lastWeek, domain, cancellationToken);
             Assert.IsNotNull(referrers);
 
-            referrers = f.StatsGetPhotosetReferrers(lastWeek, domain, photosetId);
+            referrers = await f.StatsGetPhotosetReferrersAsync(lastWeek, domain, photosetId, cancellationToken);
             Assert.IsNotNull(referrers);
 
-            referrers = f.StatsGetPhotosetReferrers(lastWeek, domain, photosetId, 1, 10);
+            referrers = await f.StatsGetPhotosetReferrersAsync(lastWeek, domain, photosetId, 1, 10, cancellationToken);
             Assert.IsNotNull(referrers);
         }
 
         [Test]
-        public void StatsGetPhotostreamReferrersBasicTest()
+        public async Task StatsGetPhotostreamReferrersBasicTest(CancellationToken cancellationToken = default)
         {
             string domain = "flickr.com";
 
             Flickr f = AuthInstance;
 
-            StatReferrerCollection referrers = f.StatsGetPhotostreamReferrers(lastWeek, domain, 1, 10);
+            StatReferrerCollection referrers = await f.StatsGetPhotostreamReferrersAsync(lastWeek, domain, 1, 10, cancellationToken);
 
             Assert.IsNotNull(referrers, "StatReferrers should not be null.");
 
@@ -114,18 +118,18 @@ namespace FlickrNetTest
             }
 
             // Overloads
-            referrers = f.StatsGetPhotostreamReferrers(lastWeek, domain);
+            referrers = await f.StatsGetPhotostreamReferrersAsync(lastWeek, domain, cancellationToken);
             Assert.IsNotNull(referrers);
         }
 
         [Test]
-        public void StatsGetCollectionReferrersBasicTest()
+        public async Task StatsGetCollectionReferrersBasicTest(CancellationToken cancellationToken = default)
         {
             string domain = "flickr.com";
 
             Flickr f = AuthInstance;
 
-            var referrers = f.StatsGetCollectionReferrers(lastWeek, domain, 1, 10);
+            var referrers = await f.StatsGetCollectionReferrersAsync(lastWeek, domain, 1, 10, cancellationToken);
 
             Assert.IsNotNull(referrers, "StatReferrers should not be null.");
 
@@ -142,13 +146,13 @@ namespace FlickrNetTest
             }
 
             // Overloads
-            referrers = f.StatsGetCollectionReferrers(lastWeek, domain);
+            referrers = await f.StatsGetCollectionReferrersAsync(lastWeek, domain, cancellationToken);
             Assert.IsNotNull(referrers);
 
-            referrers = f.StatsGetCollectionReferrers(lastWeek, domain, collectionId);
+            referrers = await f.StatsGetCollectionReferrersAsync(lastWeek, domain, collectionId, cancellationToken);
             Assert.IsNotNull(referrers);
 
-            referrers = f.StatsGetCollectionReferrers(lastWeek, domain, collectionId, 1, 10);
+            referrers = await f.StatsGetCollectionReferrersAsync(lastWeek, domain, collectionId, 1, 10, cancellationToken);
             Assert.IsNotNull(referrers);
         }
     }

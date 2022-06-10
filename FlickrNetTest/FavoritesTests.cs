@@ -61,18 +61,6 @@ namespace FlickrNetTest
         }
 
         [Test]
-        [Category("AccessTokenRequired")]
-        public async Task FavoritesGetListPartialParamTest(CancellationToken cancellationToken = default)
-        {
-            PhotoCollection photos = await AuthInstance.FavoritesGetListAsync(TestData.TestUserId, 2, 20, cancellationToken);
-            Assert.IsNotNull(photos, "PhotoCollection should not be null instance.");
-            Assert.AreNotEqual(0, photos.Count, "PhotoCollection.Count should be greater than zero.");
-            Assert.AreEqual(2, photos.Page);
-            Assert.AreEqual(20, photos.PerPage);
-            Assert.AreEqual(20, photos.Count);
-        }
-
-        [Test]
         public async Task FavoritesGetContext(CancellationToken cancellationToken = default)
         {
             const string photoId = "2502963121";

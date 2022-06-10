@@ -1,4 +1,5 @@
 using FlickrNet;
+using FlickrNet.Models;
 using NUnit.Framework;
 using Shouldly;
 using System;
@@ -18,33 +19,33 @@ namespace FlickrNetTest
         }
 
         /// <summary>
-        /// This method will authenticate the current user, and then store the AuthToken in the 
+        /// This method will authenticate the current user, and then store the AuthToken in the
         /// </summary>
         [Test]
         [Ignore("Use this to generate a new aut token if required")]
         public void AuthHelperMethod()
         {
-            Flickr f = TestData.GetOldSignedInstance();
+            //Flickr f = TestData.GetOldSignedInstance();
 
-            string frob = f.AuthGetFrob();
+            //string frob = f.AuthGetFrob();
 
-            Assert.IsNotNull(frob, "Frob should not be null.");
+            //Assert.IsNotNull(frob, "Frob should not be null.");
 
-            string url = f.AuthCalcUrl(frob, AuthLevel.Delete);
+            //string url = f.AuthCalcUrl(frob, AuthLevel.Delete);
 
-            Assert.IsNotNull(url, "url should not be null.");
+            //Assert.IsNotNull(url, "url should not be null.");
 
-            System.Diagnostics.Process.Start(url);
+            //System.Diagnostics.Process.Start(url);
 
             // Auth flickr in next 30 seconds
 
-            System.Threading.Thread.Sleep(1000 * 30);
+            //System.Threading.Thread.Sleep(1000 * 30);
 
-            Auth auth = f.AuthGetToken(frob);
+            //Auth auth = f.AuthGetToken(frob);
 
-            TestData.AuthToken = auth.Token;
+            //TestData.AuthToken = auth.Token;
 
-            Console.WriteLine(TestData.AuthToken);
+            //Console.WriteLine(TestData.AuthToken);
         }
     }
 }

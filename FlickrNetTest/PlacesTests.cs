@@ -1,7 +1,14 @@
 ﻿using FlickrNet;
+using FlickrNet.CollectionModels;
+using FlickrNet.Common;
+using FlickrNet.Enums;
+using FlickrNet.Exceptions;
+using FlickrNet.Models;
 using NUnit.Framework;
 using Shouldly;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace FlickrNetTest
 {
@@ -13,48 +20,48 @@ namespace FlickrNetTest
     public class PlacesTests : BaseTest
     {
         [Test]
-        public void PlacesFindBasicTest()
+        public async Task PlacesFindBasicTest(CancellationToken cancellationToken = default)
         {
-            var places = Instance.PlacesFind("Newcastle");
+            var places = await Instance.PlacesFindAsync("Newcastle", cancellationToken);
 
             Assert.IsNotNull(places);
             Assert.AreNotEqual(0, places.Count);
         }
 
         [Test]
-        public void PlacesFindNewcastleTest()
+        public async Task PlacesFindNewcastleTest(CancellationToken cancellationToken = default)
         {
-            var places = Instance.PlacesFind("Newcastle upon Tyne");
+            var places = await Instance.PlacesFindAsync("Newcastle upon Tyne", cancellationToken);
 
             Assert.IsNotNull(places);
             Assert.AreEqual(1, places.Count);
         }
 
         [Test]
-        public void PlacesFindByLatLongNewcastleTest()
+        public async Task PlacesFindByLatLongNewcastleTest(CancellationToken cancellationToken = default)
         {
             double lat = 54.977;
             double lon = -1.612;
 
-            var place = Instance.PlacesFindByLatLon(lat, lon);
+            var place = await Instance.PlacesFindByLatLonAsync(lat, lon, cancellationToken);
 
             Assert.IsNotNull(place);
             Assert.AreEqual("Haymarket, Newcastle upon Tyne, England, GB, United Kingdom", place.Description);
         }
 
         [Test]
-        public void PlacesPlacesForUserAuthenticationRequiredTest()
+        public async Task PlacesPlacesForUserAuthenticationRequiredTest(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
-            Should.Throw<SignatureRequiredException>(() => f.PlacesPlacesForUser());
+            Should.Throw<SignatureRequiredException>(async () => await f.PlacesPlacesForUserAsync(cancellationToken));
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PlacesPlacesForUserHasContinentsTest()
+        public async Task PlacesPlacesForUserHasContinentsTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
-            PlaceCollection places = f.PlacesPlacesForUser();
+            PlaceCollection places = await f.PlacesPlacesForUserAsync(cancellationToken);
 
             foreach (Place place in places)
             {
@@ -71,12 +78,12 @@ namespace FlickrNetTest
         }
 
         [Test, Ignore("Not currently returning any records for some reason.")]
-        public void PlacesGetChildrenWithPhotosPublicPlaceIdTest()
+        public async Task PlacesGetChildrenWithPhotosPublicPlaceIdTest(CancellationToken cancellationToken = default)
         {
             string placeId = "6dCBhRRTVrJiB5xOrg"; // Europe
             Flickr f = Instance;
 
-            var places = f.PlacesGetChildrenWithPhotosPublic(placeId, null);
+            var places = await f.PlacesGetChildrenWithPhotosPublicAsync(placeId, null, cancellationToken);
             Console.WriteLine(f.LastRequest);
             Console.WriteLine(f.LastResponse);
 
@@ -90,11 +97,11 @@ namespace FlickrNetTest
         }
 
         [Test, Ignore("Not currently returning any records for some reason.")]
-        public void PlacesGetChildrenWithPhotosPublicWoeIdTest()
+        public async Task PlacesGetChildrenWithPhotosPublicWoeIdTest(CancellationToken cancellationToken = default)
         {
             string woeId = "24865675"; // Europe
 
-            var places = Instance.PlacesGetChildrenWithPhotosPublic(null, woeId);
+            var places = await Instance.PlacesGetChildrenWithPhotosPublicAsync(null, woeId, cancellationToken);
             Assert.IsNotNull(places);
             Assert.AreNotEqual(0, places.Count);
 
@@ -106,12 +113,12 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PlacesPlacesForUserContinentHasRegionsTest()
+        public async Task PlacesPlacesForUserContinentHasRegionsTest(CancellationToken cancellationToken = default)
         {
             Flickr f = AuthInstance;
 
             // Test place ID of '6dCBhRRTVrJiB5xOrg' is Europe
-            PlaceCollection p = f.PlacesPlacesForUser(PlaceType.Region, null, "6dCBhRRTVrJiB5xOrg");
+            PlaceCollection p = await f.PlacesPlacesForUserAsync(PlaceType.Region, null, "6dCBhRRTVrJiB5xOrg", cancellationToken);
 
             foreach (Place place in p)
             {
@@ -125,10 +132,10 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PlacesPlacesForContactsBasicTest()
+        public async Task PlacesPlacesForContactsBasicTest(CancellationToken cancellationToken = default)
         {
             var f = AuthInstance;
-            var places = f.PlacesPlacesForContacts(PlaceType.Country, null, null, 0, ContactSearch.AllContacts, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue);
+            var places = await f.PlacesPlacesForContactsAsync(PlaceType.Country, null, null, 0, ContactSearch.AllContacts, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, cancellationToken);
 
             Assert.IsNotNull(places);
 
@@ -143,13 +150,13 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PlacesPlacesForContactsFullParamTest()
+        public async Task PlacesPlacesForContactsFullParamTest(CancellationToken cancellationToken = default)
         {
             DateTime lastYear = DateTime.Today.AddYears(-1);
             DateTime today = DateTime.Today;
 
             var f = AuthInstance;
-            var places = f.PlacesPlacesForContacts(PlaceType.Country, null, null, 1, ContactSearch.AllContacts, lastYear, today, lastYear, today);
+            var places = await f.PlacesPlacesForContactsAsync(PlaceType.Country, null, null, 1, ContactSearch.AllContacts, lastYear, today, lastYear, today, cancellationToken);
 
             Console.WriteLine(f.LastRequest);
 
@@ -166,12 +173,12 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PlacesPlacesForTagsBasicTest()
+        public async Task PlacesPlacesForTagsBasicTest(CancellationToken cancellationToken = default)
         {
             var f = AuthInstance;
-            var places = f.PlacesPlacesForTags(PlaceType.Country, null, null, 0, new string[] { "newcastle" },
+            var places = await f.PlacesPlacesForTagsAsync(PlaceType.Country, null, null, 0, new string[] { "newcastle" },
                                                TagMode.AllTags, null, MachineTagMode.None, DateTime.MinValue,
-                                               DateTime.MinValue, DateTime.MinValue, DateTime.MinValue);
+                                               DateTime.MinValue, DateTime.MinValue, DateTime.MinValue, cancellationToken);
 
             Assert.IsNotNull(places);
 
@@ -186,23 +193,23 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void PlacesPlacesForTagsFullParamTest()
+        public async Task PlacesPlacesForTagsFullParamTest(CancellationToken cancellationToken = default)
         {
             var f = AuthInstance;
-            var places = f.PlacesPlacesForTags(PlaceType.Country, null, null, 0, new string[] { "newcastle" },
+            var places = await f.PlacesPlacesForTagsAsync(PlaceType.Country, null, null, 0, new string[] { "newcastle" },
                                                TagMode.AllTags, new string[] { "dc:author=*" }, MachineTagMode.AllTags,
                                                DateTime.Today.AddYears(-10), DateTime.Today,
-                                               DateTime.Today.AddYears(-10), DateTime.Today);
+                                               DateTime.Today.AddYears(-10), DateTime.Today, cancellationToken);
 
             Assert.IsNotNull(places);
         }
 
         [Test]
-        public void PlacesGetInfoBasicTest()
+        public async Task PlacesGetInfoBasicTest(CancellationToken cancellationToken = default)
         {
             var f = Instance;
             var placeId = "X9sTR3BSUrqorQ";
-            PlaceInfo p = f.PlacesGetInfo(placeId, null);
+            PlaceInfo p = await f.PlacesGetInfoAsync(placeId, null, cancellationToken);
 
             Console.WriteLine(f.LastResponse);
 
@@ -227,12 +234,12 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PlacesGetInfoByUrlBasicTest()
+        public async Task PlacesGetInfoByUrlBasicTest(CancellationToken cancellationToken = default)
         {
             var f = Instance;
             var placeId = "X9sTR3BSUrqorQ";
-            PlaceInfo p1 = f.PlacesGetInfo(placeId, null);
-            PlaceInfo p2 = f.PlacesGetInfoByUrl(p1.PlaceUrl);
+            PlaceInfo p1 = await f.PlacesGetInfoAsync(placeId, null, cancellationToken);
+            PlaceInfo p2 = await f.PlacesGetInfoByUrlAsync(p1.PlaceUrl, cancellationToken);
 
             Assert.IsNotNull(p2);
             Assert.AreEqual(p1.PlaceId, p2.PlaceId);
@@ -244,10 +251,10 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PlacesGetTopPlacesListTest()
+        public async Task PlacesGetTopPlacesListTest(CancellationToken cancellationToken = default)
         {
             var f = Instance;
-            var places = f.PlacesGetTopPlacesList(PlaceType.Continent);
+            var places = await f.PlacesGetTopPlacesListAsync(PlaceType.Continent, cancellationToken);
 
             Assert.IsNotNull(places);
             Assert.AreNotEqual(0, places.Count);
@@ -261,11 +268,11 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PlacesGetShapeHistoryTest()
+        public async Task PlacesGetShapeHistoryTest(CancellationToken cancellationToken = default)
         {
             var placeId = "X9sTR3BSUrqorQ";
             var f = Instance;
-            var col = f.PlacesGetShapeHistory(placeId, null);
+            var col = await f.PlacesGetShapeHistoryAsync(placeId, null, cancellationToken);
 
             Assert.IsNotNull(col, "ShapeDataCollection should not be null.");
             Assert.AreEqual(7, col.Count, "Count should be six.");
@@ -275,11 +282,11 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PlacesGetTagsForPlace()
+        public async Task PlacesGetTagsForPlace(CancellationToken cancellationToken = default)
         {
             var placeId = "X9sTR3BSUrqorQ";
             var f = Instance;
-            var col = f.PlacesTagsForPlace(placeId, null);
+            var col = await f.PlacesTagsForPlaceAsync(placeId, null, cancellationToken);
 
             Assert.IsNotNull(col, "TagCollection should not be null.");
             Assert.AreEqual(100, col.Count, "Count should be one hundred.");
@@ -289,13 +296,12 @@ namespace FlickrNetTest
                 Assert.AreNotEqual(0, t.Count, "Count should be greater than zero.");
                 Assert.IsNotNull(t.TagName, "TagName should not be null.");
             }
-
         }
 
         [Test]
-        public void PlacesGetPlaceTypes()
+        public async Task PlacesGetPlaceTypes(CancellationToken cancellationToken = default)
         {
-            var pts = Instance.PlacesGetPlaceTypes();
+            var pts = await Instance.PlacesGetPlaceTypesAsync(cancellationToken);
             Assert.IsNotNull(pts);
             Assert.IsTrue(pts.Count > 1, "Count should be greater than one. Count = " + pts.Count + ".");
 
@@ -311,11 +317,11 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public void PlacesPlacesForBoundingBoxUsaTest()
+        public async Task PlacesPlacesForBoundingBoxUsaTest(CancellationToken cancellationToken = default)
         {
             Flickr f = Instance;
 
-            var places = f.PlacesPlacesForBoundingBox(PlaceType.County, null, null, BoundaryBox.UKNewcastle);
+            var places = await f.PlacesPlacesForBoundingBoxAsync(PlaceType.County, null, null, BoundaryBox.UKNewcastle, cancellationToken);
 
             Assert.IsNotNull(places);
             Assert.AreNotEqual(0, places.Count);
@@ -326,6 +332,5 @@ namespace FlickrNetTest
                 Assert.AreEqual(PlaceType.County, place.PlaceType);
             }
         }
-
     }
 }
