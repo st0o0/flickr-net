@@ -426,6 +426,38 @@ namespace FlickrNet
         }
 
         /// <summary>
+        /// Get a users popular photos
+        /// </summary>
+        /// <param name="userId">The user id - if null then it is the authenticated user.</param>
+        /// <param name="extras"></param>
+        /// <param name="sort"></param>
+        /// <param name="perPage"></param>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        public async Task<PhotoCollection> PhotosGetPopularAsync(string userId, PhotoSearchExtras extras = PhotoSearchExtras.None, string sort = "interesting", int perPage = 100, int page = 1, CancellationToken cancellationToken = default)
+        {
+            if (userId == null)
+            {
+                CheckRequiresAuthentication();
+            }
+
+            Dictionary<string, string> parameters = new()
+            {
+                { "method", "flickr.photos.getPopular" }
+            };
+            if (userId != null)
+            {
+                parameters.Add("user_id", userId);
+            }
+            parameters.Add("sort", sort);
+            parameters.Add("extras", UtilityMethods.ExtrasToString(extras));
+            parameters.Add("per_page", perPage.ToString("0"));
+            parameters.Add("page", page.ToString("0"));
+
+            return await GetResponseAsync<PhotoCollection>(parameters, cancellationToken);
+        }
+
+        /// <summary>
         /// Returns a list of the latest public photos uploaded to flickr.
         /// </summary>
         public async Task<PhotoCollection> PhotosGetRecentAsync(CancellationToken cancellationToken = default)

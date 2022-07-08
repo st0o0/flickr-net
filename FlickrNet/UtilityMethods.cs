@@ -29,23 +29,14 @@ namespace FlickrNet
         /// <returns></returns>
         public static string AuthLevelToString(AuthLevel level)
         {
-            switch (level)
+            return level switch
             {
-                case AuthLevel.Delete:
-                    return "delete";
-
-                case AuthLevel.Read:
-                    return "read";
-
-                case AuthLevel.Write:
-                    return "write";
-
-                case AuthLevel.None:
-                    return "none";
-
-                default:
-                    return string.Empty;
-            }
+                AuthLevel.Delete => "delete",
+                AuthLevel.Read => "read",
+                AuthLevel.Write => "write",
+                AuthLevel.None => "none",
+                _ => string.Empty,
+            };
         }
 
         /// <summary>
@@ -55,23 +46,14 @@ namespace FlickrNet
         /// <returns>The string to pass to Flickr.</returns>
         public static string TagModeToString(TagMode tagMode)
         {
-            switch (tagMode)
+            return tagMode switch
             {
-                case TagMode.None:
-                    return string.Empty;
-
-                case TagMode.AllTags:
-                    return "all";
-
-                case TagMode.AnyTag:
-                    return "any";
-
-                case TagMode.Boolean:
-                    return "bool";
-
-                default:
-                    return string.Empty;
-            }
+                TagMode.None => string.Empty,
+                TagMode.AllTags => "all",
+                TagMode.AnyTag => "any",
+                TagMode.Boolean => "bool",
+                _ => string.Empty,
+            };
         }
 
         /// <summary>
@@ -81,20 +63,13 @@ namespace FlickrNet
         /// <returns>The string to pass to Flickr.</returns>
         public static string MachineTagModeToString(MachineTagMode machineTagMode)
         {
-            switch (machineTagMode)
+            return machineTagMode switch
             {
-                case MachineTagMode.None:
-                    return string.Empty;
-
-                case MachineTagMode.AllTags:
-                    return "all";
-
-                case MachineTagMode.AnyTag:
-                    return "any";
-
-                default:
-                    return string.Empty;
-            }
+                MachineTagMode.None => string.Empty,
+                MachineTagMode.AllTags => "all",
+                MachineTagMode.AnyTag => "any",
+                _ => string.Empty,
+            };
         }
 
         /// <summary>
@@ -132,7 +107,7 @@ namespace FlickrNet
 
             try
             {
-                return UnixTimestampToDate(Int64.Parse(timestamp, System.Globalization.NumberStyles.Any, System.Globalization.NumberFormatInfo.InvariantInfo));
+                return UnixTimestampToDate(long.Parse(timestamp, System.Globalization.NumberStyles.Any, System.Globalization.NumberFormatInfo.InvariantInfo));
             }
             catch (FormatException)
             {
@@ -264,32 +239,17 @@ namespace FlickrNet
         /// <returns>The string representative for the sort order.</returns>
         public static string SortOrderToString(PhotoSearchSortOrder order)
         {
-            switch (order)
+            return order switch
             {
-                case PhotoSearchSortOrder.DatePostedAscending:
-                    return "date-posted-asc";
-
-                case PhotoSearchSortOrder.DatePostedDescending:
-                    return "date-posted-desc";
-
-                case PhotoSearchSortOrder.DateTakenAscending:
-                    return "date-taken-asc";
-
-                case PhotoSearchSortOrder.DateTakenDescending:
-                    return "date-taken-desc";
-
-                case PhotoSearchSortOrder.InterestingnessAscending:
-                    return "interestingness-asc";
-
-                case PhotoSearchSortOrder.InterestingnessDescending:
-                    return "interestingness-desc";
-
-                case PhotoSearchSortOrder.Relevance:
-                    return "relevance";
-
-                default:
-                    return string.Empty;
-            }
+                PhotoSearchSortOrder.DatePostedAscending => "date-posted-asc",
+                PhotoSearchSortOrder.DatePostedDescending => "date-posted-desc",
+                PhotoSearchSortOrder.DateTakenAscending => "date-taken-asc",
+                PhotoSearchSortOrder.DateTakenDescending => "date-taken-desc",
+                PhotoSearchSortOrder.InterestingnessAscending => "interestingness-asc",
+                PhotoSearchSortOrder.InterestingnessDescending => "interestingness-desc",
+                PhotoSearchSortOrder.Relevance => "relevance",
+                _ => string.Empty,
+            };
         }
 
         /// <summary>
@@ -299,20 +259,13 @@ namespace FlickrNet
         /// <returns></returns>
         public static string SortOrderToString(PopularitySort sortOrder)
         {
-            switch (sortOrder)
+            return sortOrder switch
             {
-                case PopularitySort.Comments:
-                    return "comments";
-
-                case PopularitySort.Favorites:
-                    return "favorites";
-
-                case PopularitySort.Views:
-                    return "views";
-
-                default:
-                    return string.Empty;
-            }
+                PopularitySort.Comments => "comments",
+                PopularitySort.Favorites => "favorites",
+                PopularitySort.Views => "views",
+                _ => string.Empty,
+            };
         }
 
         /// <summary>
@@ -464,38 +417,16 @@ namespace FlickrNet
 
         public static string UrlFormat(string farm, string server, string photoid, string secret, string size, string extension)
         {
-            string sizeAbbreviation;
-            switch (size)
+            string sizeAbbreviation = size switch
             {
-                case "square":
-                    sizeAbbreviation = "_s";
-                    break;
-
-                case "thumbnail":
-                    sizeAbbreviation = "_t";
-                    break;
-
-                case "small":
-                    sizeAbbreviation = "_m";
-                    break;
-
-                case "large":
-                    sizeAbbreviation = "_b";
-                    break;
-
-                case "original":
-                    sizeAbbreviation = "_o";
-                    break;
-
-                case "medium":
-                    sizeAbbreviation = string.Empty;
-                    break;
-
-                default:
-                    sizeAbbreviation = size;
-                    break;
-            }
-
+                "square" => "_s",
+                "thumbnail" => "_t",
+                "small" => "_m",
+                "large" => "_b",
+                "original" => "_o",
+                "medium" => string.Empty,
+                _ => size,
+            };
             return UrlFormat(PhotoUrlFormat, farm, server, photoid, secret, sizeAbbreviation, extension);
         }
 
@@ -518,20 +449,13 @@ namespace FlickrNet
 
         internal static MemberTypes ParseRoleToMemberType(string memberRole)
         {
-            switch (memberRole)
+            return memberRole switch
             {
-                case "admin":
-                    return MemberTypes.Admin;
-
-                case "moderator":
-                    return MemberTypes.Moderator;
-
-                case "member":
-                    return MemberTypes.Member;
-
-                default:
-                    return MemberTypes.None;
-            }
+                "admin" => MemberTypes.Admin,
+                "moderator" => MemberTypes.Moderator,
+                "member" => MemberTypes.Member,
+                _ => MemberTypes.None,
+            };
         }
 
         public static string MemberTypeToString(MemberTypes memberTypes)
@@ -654,20 +578,13 @@ namespace FlickrNet
         /// <returns></returns>
         public static string MediaTypeToString(MediaType mediaType)
         {
-            switch (mediaType)
+            return mediaType switch
             {
-                case MediaType.All:
-                    return "all";
-
-                case MediaType.Photos:
-                    return "photos";
-
-                case MediaType.Videos:
-                    return "videos";
-
-                default:
-                    return string.Empty;
-            }
+                MediaType.All => "all",
+                MediaType.Photos => "photos",
+                MediaType.Videos => "videos",
+                _ => string.Empty,
+            };
         }
 
         /// <summary>
@@ -766,7 +683,7 @@ namespace FlickrNet
         {
             return collectionId.IndexOf("-", StringComparison.Ordinal) < 0
                        ? collectionId
-                       : collectionId.Substring(collectionId.IndexOf("-", StringComparison.Ordinal) + 1);
+                       : collectionId[(collectionId.IndexOf("-", StringComparison.Ordinal) + 1)..];
         }
 
         internal static string EscapeDataString(string value)
@@ -783,7 +700,7 @@ namespace FlickrNet
                 }
                 else
                 {
-                    sb.Append(Uri.EscapeDataString(value.Substring(limit * i)));
+                    sb.Append(Uri.EscapeDataString(value[(limit * i)..]));
                 }
             }
 

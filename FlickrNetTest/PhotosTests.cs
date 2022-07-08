@@ -70,10 +70,9 @@ namespace FlickrNetTest
         [Test]
         public async Task PhotosGetPopular(CancellationToken cancellationToken = default)
         {
-            // TODO: LOST
-            //var photos = await Instance.PhotosGetPopular(TestData.TestUserId);
+            var photos = await Instance.PhotosGetPopularAsync(TestData.TestUserId, cancellationToken: cancellationToken);
 
-            //photos.ShouldNotBeEmpty();
+            photos.ShouldNotBeEmpty();
         }
 
         [Test]
