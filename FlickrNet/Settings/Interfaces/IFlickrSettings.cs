@@ -4,6 +4,6 @@
     {
         string ApiKey { get; set; }
 
-        string SharedKey { get; set; }
+        string SharedSecret { get; set; }
     }
 }

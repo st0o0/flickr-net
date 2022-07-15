@@ -1,4 +1,5 @@
-﻿using FlickrNet.Models.Favorites;
+﻿using FlickrNet.Common;
+using FlickrNet.Models.Favorites;
 using FlickrNet.Models.Interfaces;
 using System.Collections.ObjectModel;
 using System.Xml;

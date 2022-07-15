@@ -4,6 +4,7 @@ using FlickrNet.Exceptions;
 using FlickrNet.Exceptions.Handlers;
 using FlickrNet.HttpContents;
 using FlickrNet.Models.Interfaces;
+using FlickrNet.Settings.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -40,65 +41,59 @@ namespace FlickrNet
         /// </summary>
         public event EventHandler<UploadProgressEventArgs> OnUploadProgress;
 
-        private static SupportedService defaultService = SupportedService.Flickr;
+        private static SupportedService _defaultService = SupportedService.Flickr;
 
-        private SupportedService service = SupportedService.Flickr;
+        private SupportedService _service = SupportedService.Flickr;
 
         /// <summary>
         /// The base URL for all Flickr REST method calls.
         /// </summary>
-        public Uri BaseUri
-        {
-            get { return baseUri[(int)service]; }
-        }
+        public Uri BaseUri => _baseUris[(int)_service];
 
-        private readonly Uri[] baseUri = {
+        private readonly Uri[] _baseUris = {
             new Uri("https://api.flickr.com/services/rest/"),
             new Uri("http://beta.zooomr.com/bluenote/api/rest"),
             new Uri("http://www.23hq.com/services/rest/")
         };
 
-        private string UploadUrl
+        private string _uploadUrl
         {
-            get { return uploadUrl[(int)service]; }
+            get { return _uploadUrls[(int)_service]; }
         }
 
-        private static string[] uploadUrl = {
+        private static string[] _uploadUrls = {
             "https://up.flickr.com/services/upload/",
             "http://beta.zooomr.com/bluenote/api/upload",
             "http://www.23hq.com/services/upload/"
         };
 
-        private string ReplaceUrl
+        private string _replaceUrl
         {
-            get { return replaceUrl[(int)service]; }
+            get { return _replaceUrls[(int)_service]; }
         }
 
-        private static string[] replaceUrl = {
+        private static string[] _replaceUrls = {
             "https://up.flickr.com/services/replace/",
             "http://beta.zooomr.com/bluenote/api/replace",
             "http://www.23hq.com/services/replace/"
         };
 
-        private string AuthUrl
-        {
-            get { return authUrl[(int)service]; }
-        }
+        private string _authUrl => _authUrls[(int)_service];
 
-        private static string[] authUrl = {
+        private static string[] _authUrls = {
             "https://www.flickr.com/services/auth/",
             "http://beta.zooomr.com/auth/",
             "http://www.23hq.com/services/auth/"
         };
 
-        private string apiKey;
-        private string apiToken;
-        private string sharedSecret;
+        private string _apiKey;
+        private string _apiToken;
+        private string _sharedSecret;
 
-        private int timeout = 3600000;  // (Andrew Keil) Changed to 1 hour in milliseconds to avoid timeout issues when uploading picture & videos
+        private int _timeout = 3600000;  // (Andrew Keil) Changed to 1 hour in milliseconds to avoid timeout issues when uploading picture & videos
 
-        private string lastRequest;
-        private byte[] lastResponse;
+        private string _lastRequest;
+        private byte[] _lastResponse;
 
         /// <summary>
         /// Get or set the API Key to be used by all calls. API key is mandatory for all
@@ -106,10 +101,10 @@ namespace FlickrNet
         /// </summary>
         public string ApiKey
         {
-            get { return apiKey; }
+            get { return _apiKey; }
             set
             {
-                apiKey = value == null || value.Length == 0 ? null : value;
+                _apiKey = value == null || value.Length == 0 ? null : value;
             }
         }
 
@@ -119,10 +114,10 @@ namespace FlickrNet
         /// </summary>
         public string ApiSecret
         {
-            get { return sharedSecret; }
+            get { return _sharedSecret; }
             set
             {
-                sharedSecret = value == null || value.Length == 0 ? null : value;
+                _sharedSecret = value == null || value.Length == 0 ? null : value;
             }
         }
 
@@ -187,11 +182,11 @@ namespace FlickrNet
         {
             get
             {
-                return defaultService;
+                return _defaultService;
             }
             set
             {
-                defaultService = value;
+                _defaultService = value;
             }
         }
 
@@ -202,11 +197,11 @@ namespace FlickrNet
         {
             get
             {
-                return service;
+                return _service;
             }
             set
             {
-                service = value;
+                _service = value;
             }
         }
 
@@ -215,8 +210,8 @@ namespace FlickrNet
         /// </summary>
         public int HttpTimeout
         {
-            get { return timeout; }
-            set { timeout = value; }
+            get { return _timeout; }
+            set { _timeout = value; }
         }
 
         /// <summary>
@@ -227,7 +222,7 @@ namespace FlickrNet
         {
             get
             {
-                return sharedSecret != null && apiToken != null;
+                return _sharedSecret != null && _apiToken != null;
             }
         }
 
@@ -237,7 +232,7 @@ namespace FlickrNet
         /// </summary>
         public byte[] LastResponse
         {
-            get { return lastResponse; }
+            get { return _lastResponse; }
         }
 
         /// <summary>
@@ -245,7 +240,7 @@ namespace FlickrNet
         /// </summary>
         public string LastRequest
         {
-            get { return lastRequest; }
+            get { return _lastRequest; }
         }
 
         /// <summary>
@@ -297,10 +292,21 @@ namespace FlickrNet
         /// </summary>
         /// <param name="apiKey">Your Flickr API Key.</param>
         /// <param name="sharedSecret">Your Flickr Shared Secret.</param>
+        public Flickr(IFlickrSettings flickrSettings) : this(flickrSettings.ApiKey, flickrSettings.SharedSecret)
+        {
+        }
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="Flickr"/> class with an API key and a Shared Secret.
+        /// This is only useful really useful for calling the Auth functions as all other
+        /// authenticationed methods also require the API Token.
+        /// </summary>
+        /// <param name="apiKey">Your Flickr API Key.</param>
+        /// <param name="sharedSecret">Your Flickr Shared Secret.</param>
         public Flickr(string apiKey, string sharedSecret)
         {
-            this.apiKey = apiKey;
-            this.sharedSecret = sharedSecret;
+            this._apiKey = apiKey;
+            this._sharedSecret = sharedSecret;
         }
 
         public void CheckApiKey()
@@ -353,7 +359,7 @@ namespace FlickrNet
             }
 
             StringBuilder url = new();
-            url.Append("?");
+            url.Append('?');
             foreach (KeyValuePair<string, string> pair in parameters)
             {
                 string escapedValue = UtilityMethods.EscapeDataString(pair.Value ?? "");
@@ -377,20 +383,9 @@ namespace FlickrNet
             return UtilityMethods.MD5Hash(sb.ToString());
         }
 
-        private static Stream ConvertNonSeekableStreamToByteArray(Stream nonSeekableStream)
-        {
-            if (nonSeekableStream.CanSeek)
-            {
-                nonSeekableStream.Position = 0;
-                return nonSeekableStream;
-            }
-
-            return nonSeekableStream;
-        }
-
         private MultipartFormDataContent CreateUploadData(Stream imageStream, string fileName, IProgress<double> progress, Dictionary<string, string> parameters, string boundary, CancellationToken cancellationToken = default)
         {
-            bool oAuth = parameters.ContainsKey("oauth_consumer_key");
+            //bool oAuth = parameters.ContainsKey("oauth_consumer_key");
 
             MultipartFormDataContent content = new(boundary)
             {
@@ -457,6 +452,17 @@ namespace FlickrNet
 
             //StreamCollection collection = new(new[] { ms1, photoContents, ms2 });
         }
+
+        private static Stream ConvertNonSeekableStreamToByteArray(Stream nonSeekableStream)
+        {
+            if (nonSeekableStream.CanSeek)
+            {
+                nonSeekableStream.Position = 0;
+                return nonSeekableStream;
+            }
+
+            return nonSeekableStream;
+        }
     }
 
     internal static class FlickrExtensions
@@ -465,7 +471,8 @@ namespace FlickrNet
         {
             try
             {
-                using XmlReader reader = XmlReader.Create(new MemoryStream(bytes), new XmlReaderSettings
+                using MemoryStream ms = new(bytes);
+                using XmlReader reader = XmlReader.Create(ms, new XmlReaderSettings
                 {
                     IgnoreWhitespace = true
                 });

@@ -30,7 +30,7 @@ namespace FlickrNet
         {
             CheckRequiresAuthentication();
 
-            Uri uploadUri = new(UploadUrl);
+            Uri uploadUri = new(_uploadUrl);
 
             Dictionary<string, string> parameters = new();
 
@@ -64,7 +64,7 @@ namespace FlickrNet
                 parameters.Add("hidden", hiddenFromSearch.ToString("D"));
             }
 
-            parameters.Add("api_key", apiKey);
+            parameters.Add("api_key", _apiKey);
 
             if (!string.IsNullOrEmpty(OAuthAccessToken))
             {
@@ -76,7 +76,7 @@ namespace FlickrNet
             }
             else
             {
-                parameters.Add("auth_token", apiToken);
+                parameters.Add("auth_token", _apiToken);
             }
 
             return await UploadDataAsync(stream, fileName, progress, uploadUri, parameters, cancellationToken);
@@ -90,13 +90,13 @@ namespace FlickrNet
         /// <param name="photoId">The ID of the photo to replace.</param>
         public async Task<string> ReplacePictureAsync(Stream stream, string fileName, string photoId, IProgress<double> progress = default, CancellationToken cancellationToken = default)
         {
-            Uri replaceUri = new(ReplaceUrl);
+            Uri replaceUri = new(_replaceUrl);
 
             Dictionary<string, string> parameters = new()
             {
                 { "photo_id", photoId },
-                { "api_key", apiKey },
-                { "auth_token", apiToken }
+                { "api_key", _apiKey },
+                { "auth_token", _apiToken }
             };
 
             return await UploadDataAsync(stream, fileName, progress, replaceUri, parameters, cancellationToken);

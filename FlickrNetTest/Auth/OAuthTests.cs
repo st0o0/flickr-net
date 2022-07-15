@@ -1,5 +1,6 @@
 ﻿using FlickrNet;
 using FlickrNet.CollectionModels;
+using FlickrNet.Common;
 using FlickrNet.Enums;
 using FlickrNet.Exceptions;
 using FlickrNet.Models;
@@ -30,7 +31,7 @@ namespace FlickrNetTest
             Assert.IsNotNull(requestToken.Token, "Token should not be null.");
             Assert.IsNotNull(requestToken.TokenSecret, "TokenSecret should not be null.");
 
-            System.Diagnostics.Process.Start(f.OAuthCalculateAuthorizationUrl(requestToken.Token, AuthLevel.Delete));
+            System.Diagnostics.Process.Start(Flickr.OAuthCalculateAuthorizationUrl(requestToken.Token, AuthLevel.Delete));
 
             Console.WriteLine("token = " + requestToken.Token);
             Console.WriteLine("token secret = " + requestToken.TokenSecret);

@@ -1,4 +1,5 @@
-﻿using FlickrNet.Enums;
+﻿using FlickrNet.Common;
+using FlickrNet.Enums;
 using FlickrNet.Models;
 using System;
 using System.Collections.Generic;
@@ -26,7 +27,10 @@ namespace FlickrNet
             byte[] keyBytes = Encoding.UTF8.GetBytes(key);
 
             SortedList<string, string> sorted = new();
-            foreach (KeyValuePair<string, string> pair in parameters) { sorted.Add(pair.Key, pair.Value); }
+            foreach (KeyValuePair<string, string> pair in parameters)
+            {
+                sorted.Add(pair.Key, pair.Value);
+            }
 
             StringBuilder sb = new();
             foreach (KeyValuePair<string, string> pair in sorted)
@@ -45,9 +49,7 @@ namespace FlickrNet
 
             byte[] hashBytes = sha1.ComputeHash(Encoding.UTF8.GetBytes(baseString));
 
-            string hash = Convert.ToBase64String(hashBytes);
-
-            return hash;
+            return Convert.ToBase64String(hashBytes);
         }
 
         /// <summary>
@@ -56,7 +58,7 @@ namespace FlickrNet
         /// <param name="requestToken">The request token to include in the authorization url.</param>
         /// <param name="perms">The permissions being requested.</param>
         /// <returns></returns>
-        public string OAuthCalculateAuthorizationUrl(string requestToken, AuthLevel perms)
+        public static string OAuthCalculateAuthorizationUrl(string requestToken, AuthLevel perms)
         {
             return OAuthCalculateAuthorizationUrl(requestToken, perms, false);
         }
@@ -68,7 +70,7 @@ namespace FlickrNet
         /// <param name="perms">The permissions being requested.</param>
         /// <param name="mobile">Should the url be generated be the mobile one or not.</param>
         /// <returns></returns>
-        public string OAuthCalculateAuthorizationUrl(string requestToken, AuthLevel perms, bool mobile)
+        public static string OAuthCalculateAuthorizationUrl(string requestToken, AuthLevel perms, bool mobile)
         {
             string permsString = (perms == AuthLevel.None) ? "" : "&perms=" + UtilityMethods.AuthLevelToString(perms);
 

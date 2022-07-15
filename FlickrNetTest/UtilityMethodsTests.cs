@@ -1,4 +1,4 @@
-﻿using FlickrNet;
+﻿using FlickrNet.Common;
 using FlickrNet.Enums;
 using NUnit.Framework;
 using System;

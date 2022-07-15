@@ -1,4 +1,5 @@
-﻿using FlickrNet.Enums;
+﻿using FlickrNet.Common;
+using FlickrNet.Enums;
 using FlickrNet.Models.Interfaces;
 using System;
 using System.Xml;

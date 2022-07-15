@@ -1,4 +1,5 @@
-﻿using FlickrNet.Models;
+﻿using FlickrNet.Common;
+using FlickrNet.Models;
 using FlickrNet.Models.Interfaces;
 using System;
 

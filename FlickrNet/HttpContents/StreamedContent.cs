@@ -26,7 +26,7 @@ namespace FlickrNet.HttpContents
 
             public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
             {
-                var readBytes = await base.ReadAsync(buffer, offset, count, cancellationToken);
+                var readBytes = await base.ReadAsync(buffer.AsMemory(offset, count), cancellationToken);
                 _position += readBytes;
                 _progress?.Report(readBytes / count);
                 return readBytes;
@@ -142,7 +142,7 @@ namespace FlickrNet.HttpContents
 
         public override async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
-            return await InnerStream.ReadAsync(buffer, offset, count, cancellationToken);
+            return await InnerStream.ReadAsync(buffer.AsMemory(offset, count), cancellationToken);
         }
 
         public override async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)

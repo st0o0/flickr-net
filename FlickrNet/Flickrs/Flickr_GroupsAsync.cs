@@ -1,4 +1,5 @@
 ﻿using FlickrNet.CollectionModels;
+using FlickrNet.Common;
 using FlickrNet.Contexts.Bases;
 using FlickrNet.Enums;
 using FlickrNet.Models;
@@ -69,7 +70,7 @@ namespace FlickrNet
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.groups.search" },
-                { "api_key", apiKey },
+                { "api_key", _apiKey },
                 { "text", text }
             };
             if (page > 0)
@@ -94,7 +95,7 @@ namespace FlickrNet
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.groups.getInfo" },
-                { "api_key", apiKey },
+                { "api_key", _apiKey },
                 { "group_id", groupId }
             };
             return await GetResponseAsync<GroupFullInfo>(parameters, cancellationToken);
@@ -126,7 +127,7 @@ namespace FlickrNet
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.groups.members.getList" },
-                { "api_key", apiKey }
+                { "api_key", _apiKey }
             };
             if (page > 0)
             {

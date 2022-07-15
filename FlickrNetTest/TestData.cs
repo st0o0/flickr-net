@@ -91,10 +91,5 @@ namespace FlickrNetTest
                 OAuthAccessTokenSecret = AccessTokenSecret
             };
         }
-
-        public static Flickr GetOldSignedInstance()
-        {
-            return new Flickr("3dce465686fd9144c157cb5157bd0e78", "aea31b62c6714269") { InstanceCacheDisabled = true };
-        }
     }
 }

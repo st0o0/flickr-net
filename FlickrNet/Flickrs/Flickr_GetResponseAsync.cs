@@ -1,10 +1,10 @@
-﻿using FlickrNet.Models.Interfaces;
+﻿using FlickrNet.Common;
+using FlickrNet.Models.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-
-#pragma warning disable CS0618 // Type or member is obsolete
 
 namespace FlickrNet
 {
@@ -15,9 +15,6 @@ namespace FlickrNet
             CheckApiKey();
 
             parameters["api_key"] = ApiKey;
-
-            // If performing one of the old 'flickr.auth' methods then use old authentication details.
-            string method = parameters["method"];
 
             // If OAuth Token exists or no authentication required then use new OAuth
             if (!string.IsNullOrEmpty(OAuthAccessToken))
@@ -33,25 +30,52 @@ namespace FlickrNet
                 parameters["oauth_token"] = OAuthAccessToken;
             }
 
-            string url = CalculateUri(parameters, !string.IsNullOrEmpty(sharedSecret));
+            string url = CalculateUri(parameters, !string.IsNullOrEmpty(_sharedSecret));
 
-            lastRequest = url;
+            _lastRequest = url;
 
-            T result = new();
-            byte[] response = await FlickrResponder.GetDataResponseAsync(this, BaseUri.AbsoluteUri, parameters, cancellationToken);
+            byte[] result;
+
+            if (InstanceCacheDisabled)
+            {
+                result = await FlickrResponder.GetDataResponseAsync(this, BaseUri.AbsoluteUri, parameters, cancellationToken);
+            }
+            else
+            {
+                string urlComplete = url;
+
+                ResponseCacheItem cached = (ResponseCacheItem)Cache.Responses.Get(urlComplete, Cache.CacheTimeout, true);
+                if (cached != null)
+                {
+                    Debug.WriteLine("Cache hit.");
+                    result = cached.Response;
+                }
+                else
+                {
+                    Debug.WriteLine("Cache miss.");
+                    result = await FlickrResponder.GetDataResponseAsync(this, BaseUri.AbsoluteUri, parameters, cancellationToken);
+
+                    ResponseCacheItem resCache = new(new Uri(urlComplete), result, DateTime.UtcNow);
+
+                    Cache.Responses.Shrink(Math.Max(0, Cache.CacheSizeLimit - result.Length));
+                    Cache.Responses[urlComplete] = resCache;
+                }
+            }
+
+            T resultItem = new();
 
             try
             {
-                lastResponse = response;
+                _lastResponse = result;
 
                 T t = new();
-                ((IFlickrParsable)t).Load(response);
+                t.Load(result);
             }
             catch (Exception)
             {
                 throw;
             }
-            return result;
+            return resultItem;
         }
     }
 }

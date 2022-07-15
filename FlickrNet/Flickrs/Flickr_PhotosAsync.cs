@@ -1,4 +1,5 @@
 ﻿using FlickrNet.CollectionModels;
+using FlickrNet.Common;
 using FlickrNet.Contexts.Bases;
 using FlickrNet.Enums;
 using FlickrNet.Exceptions;
@@ -216,7 +217,7 @@ namespace FlickrNet
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.photos.getContactsPublicPhotos" },
-                { "api_key", apiKey },
+                { "api_key", _apiKey },
                 { "user_id", userId }
             };
             if (count > 0)
@@ -495,7 +496,7 @@ namespace FlickrNet
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.photos.getRecent" },
-                { "api_key", apiKey }
+                { "api_key", _apiKey }
             };
             if (perPage > 0)
             {
@@ -656,7 +657,7 @@ namespace FlickrNet
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.photos.licenses.getInfo" },
-                { "api_key", apiKey }
+                { "api_key", _apiKey }
             };
 
             return await GetResponseAsync<LicenseCollection>(parameters, cancellationToken);

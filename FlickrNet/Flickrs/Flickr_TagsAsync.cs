@@ -1,4 +1,5 @@
 ﻿using FlickrNet.CollectionModels;
+using FlickrNet.Common;
 using FlickrNet.Enums;
 using FlickrNet.Models;
 using System;
@@ -20,7 +21,7 @@ namespace FlickrNet
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.tags.getListPhoto" },
-                { "api_key", apiKey },
+                { "api_key", _apiKey },
                 { "photo_id", photoId }
             };
 
@@ -161,7 +162,7 @@ namespace FlickrNet
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.tags.getRelated" },
-                { "api_key", apiKey },
+                { "api_key", _apiKey },
                 { "tag", tag }
             };
 

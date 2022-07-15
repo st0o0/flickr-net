@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlickrNet.Common;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;

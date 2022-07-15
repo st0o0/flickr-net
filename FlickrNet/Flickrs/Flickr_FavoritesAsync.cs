@@ -1,4 +1,5 @@
 ﻿using FlickrNet.CollectionModels;
+using FlickrNet.Common;
 using FlickrNet.Contexts;
 using FlickrNet.Enums;
 using FlickrNet.Models;

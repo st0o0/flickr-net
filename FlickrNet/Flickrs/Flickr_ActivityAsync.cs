@@ -62,10 +62,7 @@ namespace FlickrNet
                 throw new ArgumentOutOfRangeException(nameof(timePeriod), "Time Period should be greater than 0");
             }
 
-            if (timeType == null)
-            {
-                throw new ArgumentNullException(nameof(timeType));
-            }
+            ArgumentNullException.ThrowIfNull(timeType, nameof(timeType));
 
             if (timeType != "d" && timeType != "h")
             {
@@ -83,6 +80,7 @@ namespace FlickrNet
             {
                 { "method", "flickr.activity.userPhotos" }
             };
+
             if (timeframe != null && timeframe.Length > 0)
             {
                 parameters.Add("timeframe", timeframe);
@@ -117,6 +115,7 @@ namespace FlickrNet
             {
                 { "method", "flickr.activity.userComments" }
             };
+
             if (page > 0)
             {
                 parameters.Add("page", page.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));

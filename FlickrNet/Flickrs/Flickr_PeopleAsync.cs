@@ -1,4 +1,5 @@
 ﻿using FlickrNet.CollectionModels;
+using FlickrNet.Common;
 using FlickrNet.Enums;
 using FlickrNet.Exceptions;
 using FlickrNet.Models;
@@ -21,7 +22,7 @@ namespace FlickrNet
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.people.findByEmail" },
-                { "api_key", apiKey },
+                { "api_key", _apiKey },
                 { "find_email", emailAddress }
             };
 
@@ -38,7 +39,7 @@ namespace FlickrNet
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.people.findByUsername" },
-                { "api_key", apiKey },
+                { "api_key", _apiKey },
                 { "username", userName }
             };
 
@@ -71,7 +72,7 @@ namespace FlickrNet
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.people.getInfo" },
-                { "api_key", apiKey },
+                { "api_key", _apiKey },
                 { "user_id", userId }
             };
 
@@ -116,7 +117,7 @@ namespace FlickrNet
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.people.getPublicGroups" },
-                { "api_key", apiKey },
+                { "api_key", _apiKey },
                 { "user_id", userId }
             };
 
@@ -162,7 +163,7 @@ namespace FlickrNet
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.people.getPublicPhotos" },
-                { "api_key", apiKey },
+                { "api_key", _apiKey },
                 { "user_id", userId }
             };
             if (perPage > 0)

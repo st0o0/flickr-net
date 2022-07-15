@@ -6,6 +6,6 @@ namespace FlickrNet.Settings
     {
         public string ApiKey { get; set; }
 
-        public string SharedKey { get; set; }
+        public string SharedSecret { get; set; }
     }
 }

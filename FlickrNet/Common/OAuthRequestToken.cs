@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 
-namespace FlickrNet
+namespace FlickrNet.Common
 {
     /// <summary>
     /// Class containing details of the OAUth request token returned by Flickr.

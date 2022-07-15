@@ -31,7 +31,7 @@ namespace FlickrNet
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.reflection.getMethodInfo" },
-                { "api_key", apiKey },
+                { "api_key", _apiKey },
                 { "method_name", methodName }
             };
 

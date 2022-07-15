@@ -56,9 +56,7 @@ namespace FlickrNet.Common
             using (lockFile.Acquire())
             {
                 Refresh();
-                string[] keys;
-                Array values;
-                InternalGetAll(valueType, out keys, out values);
+                InternalGetAll(valueType, out string[] keys, out Array values);
                 return (ICacheItem[])values;
             }
         }
@@ -156,9 +154,7 @@ namespace FlickrNet.Common
             {
                 Refresh();
 
-                string[] keys;
-                Array values;
-                InternalGetAll(typeof(ICacheItem), out keys, out values);
+                InternalGetAll(typeof(ICacheItem), out string[] keys, out Array values);
                 long totalSize = 0;
                 foreach (ICacheItem cacheItem in values)
                 {

@@ -1,6 +1,6 @@
 using System;
 
-namespace FlickrNet
+namespace FlickrNet.Common
 {
     /// <summary>
     /// Event arguments for a <see cref="Flickr.OnUploadProgress"/> event.

@@ -1,4 +1,5 @@
-﻿using FlickrNet.Exceptions;
+﻿using FlickrNet.Common;
+using FlickrNet.Exceptions;
 using FlickrNet.Models.Interfaces;
 using System;
 

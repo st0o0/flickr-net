@@ -93,7 +93,7 @@ namespace FlickrNet
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.urls.lookupGallery" },
-                { "api_key", apiKey },
+                { "api_key", _apiKey },
                 { "url", url }
             };
 
@@ -109,7 +109,7 @@ namespace FlickrNet
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.urls.lookupGroup" },
-                { "api_key", apiKey },
+                { "api_key", _apiKey },
                 { "url", urlToFind }
             };
 
@@ -126,7 +126,7 @@ namespace FlickrNet
             Dictionary<string, string> parameters = new()
             {
                 { "method", "flickr.urls.lookupUser" },
-                { "api_key", apiKey },
+                { "api_key", _apiKey },
                 { "url", urlToFind }
             };
 

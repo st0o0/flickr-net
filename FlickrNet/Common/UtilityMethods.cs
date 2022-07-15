@@ -13,7 +13,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 
-namespace FlickrNet
+namespace FlickrNet.Common
 {
     /// <summary>
     /// Internal class providing certain utility functions to other classes.
@@ -151,7 +151,7 @@ namespace FlickrNet
                     continue;
                 }
 
-                DescriptionAttribute att = (DescriptionAttribute)o[0];
+                DescriptionAttribute att = o[0];
                 extraList.Add(att.Description);
             }
 
@@ -275,24 +275,17 @@ namespace FlickrNet
         /// <param name="parameters">The <see cref="Hashtable"/> to add the option key value pairs to.</param>
         public static void PartialOptionsIntoArray(PartialSearchOptions options, Dictionary<string, string> parameters)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            if (parameters == null)
-            {
-                throw new ArgumentNullException(nameof(parameters));
-            }
+            ArgumentNullException.ThrowIfNull(options, nameof(options));
+            ArgumentNullException.ThrowIfNull(parameters, nameof(parameters));
 
             if (options.MinUploadDate != DateTime.MinValue)
             {
-                parameters.Add("min_uploaded_date", UtilityMethods.DateToUnixTimestamp(options.MinUploadDate).ToString());
+                parameters.Add("min_uploaded_date", DateToUnixTimestamp(options.MinUploadDate).ToString());
             }
 
             if (options.MaxUploadDate != DateTime.MinValue)
             {
-                parameters.Add("max_uploaded_date", UtilityMethods.DateToUnixTimestamp(options.MaxUploadDate).ToString());
+                parameters.Add("max_uploaded_date", DateToUnixTimestamp(options.MaxUploadDate).ToString());
             }
 
             if (options.MinTakenDate != DateTime.MinValue)
@@ -334,9 +327,9 @@ namespace FlickrNet
         internal static void WriteInt32(Stream s, int i)
         {
             s.WriteByte((byte)(i & 0xFF));
-            s.WriteByte((byte)((i >> 8) & 0xFF));
-            s.WriteByte((byte)((i >> 16) & 0xFF));
-            s.WriteByte((byte)((i >> 24) & 0xFF));
+            s.WriteByte((byte)(i >> 8 & 0xFF));
+            s.WriteByte((byte)(i >> 16 & 0xFF));
+            s.WriteByte((byte)(i >> 24 & 0xFF));
         }
 
         internal static void WriteString(Stream s, string str)
@@ -345,8 +338,13 @@ namespace FlickrNet
             foreach (char c in str)
             {
                 s.WriteByte((byte)(c & 0xFF));
-                s.WriteByte((byte)((c >> 8) & 0xFF));
+                s.WriteByte((byte)(c >> 8 & 0xFF));
             }
+        }
+
+        internal static void WriteByteArray(Stream stream, byte[] bytes)
+        {
+            WriteString(stream, Encoding.UTF8.GetString(bytes));
         }
 
         internal static int ReadInt32(Stream s)
@@ -360,7 +358,7 @@ namespace FlickrNet
                     throw new IOException("Unexpected EOF encountered");
                 }
 
-                i |= b << (j * 8);
+                i |= b << j * 8;
             }
             return i;
         }
@@ -379,9 +377,14 @@ namespace FlickrNet
                     throw new IOException("Unexpected EOF encountered");
                 }
 
-                chars[i] = (char)(lo | (hi << 8));
+                chars[i] = (char)(lo | hi << 8);
             }
             return new string(chars);
+        }
+
+        internal static byte[] ReadByteArray(Stream s)
+        {
+            return Encoding.UTF8.GetBytes(ReadString(s));
         }
 
         private const string PhotoUrlFormat = "https://farm{0}.staticflickr.com/{1}/{2}_{3}{4}.{5}";
@@ -496,7 +499,7 @@ namespace FlickrNet
 
             using (MD5 md5 = MD5.Create())
             {
-                byte[] bytes = System.Text.Encoding.UTF8.GetBytes(data);
+                byte[] bytes = Encoding.UTF8.GetBytes(data);
                 hashedBytes = md5.ComputeHash(bytes, 0, bytes.Length);
             }
             return BitConverter.ToString(hashedBytes).Replace("-", string.Empty).ToLower();
@@ -664,7 +667,7 @@ namespace FlickrNet
         {
             string value = text;
 
-            value = UtilityMethods.EscapeDataString(value).Replace("+", "%20");
+            value = EscapeDataString(value).Replace("+", "%20");
 
             // UrlEncode escapes with lowercase characters (e.g. %2f) but oAuth needs %2F
             value = Regex.Replace(value, "(%[0-9a-f][0-9a-f])", c => c.Value.ToUpper());

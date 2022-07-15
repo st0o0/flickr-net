@@ -1,6 +1,7 @@
 namespace FlickrNet.Models
 {
     using FlickrNet;
+    using FlickrNet.Common;
     using FlickrNet.Enums;
     using FlickrNet.Models.Interfaces;
     using System.Xml;

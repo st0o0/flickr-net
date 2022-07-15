@@ -11,6 +11,20 @@ namespace FlickrNet.Common
     {
         private static PersistentCache responses;
 
+        private static readonly object lockObject = new();
+
+        private enum Tristate
+        {
+            Null, True, False
+        }
+
+        private static Tristate cacheDisabled;
+
+        private static string cacheLocation;
+
+        // Default cache size is set to 50MB
+        private static long cacheSizeLimit = 52428800;
+
         /// <summary>
         /// A static object containing the list of cached responses from Flickr.
         /// </summary>
@@ -29,15 +43,6 @@ namespace FlickrNet.Common
                 }
             }
         }
-
-        private static object lockObject = new();
-
-        private enum Tristate
-        {
-            Null, True, False
-        }
-
-        private static Tristate cacheDisabled;
 
         /// <summary>
         /// Returns weither of not the cache is currently disabled.
@@ -58,8 +63,6 @@ namespace FlickrNet.Common
                 cacheDisabled = value ? Tristate.True : Tristate.False;
             }
         }
-
-        private static string cacheLocation;
 
         /// <summary>
         /// Returns the currently set location for the cache.
@@ -93,9 +96,6 @@ namespace FlickrNet.Common
                 cacheLocation = value;
             }
         }
-
-        // Default cache size is set to 50MB
-        private static long cacheSizeLimit = 52428800;
 
         internal static long CacheSizeLimit
         {
@@ -152,7 +152,7 @@ namespace FlickrNet.Common
         /// <summary>
         /// Gets or sets the XML response.
         /// </summary>
-        public string Response { get; set; }
+        public byte[] Response { get; set; }
 
         /// <summary>
         /// Gets or sets the time the cache item was created.
@@ -173,7 +173,7 @@ namespace FlickrNet.Common
         /// <param name="url"></param>
         /// <param name="response"></param>
         /// <param name="creationTime"></param>
-        public ResponseCacheItem(Uri url, string response, DateTime creationTime)
+        public ResponseCacheItem(Uri url, byte[] response, DateTime creationTime)
         {
             Url = url;
             Response = response;
@@ -190,7 +190,7 @@ namespace FlickrNet.Common
         public override ICacheItem Read(Stream inputStream)
         {
             string s = UtilityMethods.ReadString(inputStream);
-            string response = UtilityMethods.ReadString(inputStream);
+            byte[] response = UtilityMethods.ReadByteArray(inputStream);
 
             string[] chunks = s.Split('\n');
 
@@ -213,7 +213,7 @@ namespace FlickrNet.Common
             result.Append(item.Url.AbsoluteUri + "\n");
             result.Append(item.CreationTime.Ticks.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
             UtilityMethods.WriteString(outputStream, result.ToString());
-            UtilityMethods.WriteString(outputStream, item.Response);
+            UtilityMethods.WriteByteArray(outputStream, item.Response);
         }
     }
 
