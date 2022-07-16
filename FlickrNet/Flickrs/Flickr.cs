@@ -4,7 +4,6 @@ using FlickrNet.Exceptions;
 using FlickrNet.Exceptions.Handlers;
 using FlickrNet.HttpContents;
 using FlickrNet.Models.Interfaces;
-using FlickrNet.Settings.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -292,17 +291,6 @@ namespace FlickrNet
         /// </summary>
         /// <param name="apiKey">Your Flickr API Key.</param>
         /// <param name="sharedSecret">Your Flickr Shared Secret.</param>
-        public Flickr(IFlickrSettings flickrSettings) : this(flickrSettings.ApiKey, flickrSettings.SharedSecret)
-        {
-        }
-
-        /// <summary>
-        /// Creates a new instance of the <see cref="Flickr"/> class with an API key and a Shared Secret.
-        /// This is only useful really useful for calling the Auth functions as all other
-        /// authenticationed methods also require the API Token.
-        /// </summary>
-        /// <param name="apiKey">Your Flickr API Key.</param>
-        /// <param name="sharedSecret">Your Flickr Shared Secret.</param>
         public Flickr(string apiKey, string sharedSecret)
         {
             this._apiKey = apiKey;
@@ -372,7 +360,10 @@ namespace FlickrNet
         private string CalculateAuthSignature(Dictionary<string, string> parameters)
         {
             SortedList<string, string> sorted = new();
-            foreach (KeyValuePair<string, string> pair in parameters) { sorted.Add(pair.Key, pair.Value); }
+            foreach (KeyValuePair<string, string> pair in parameters)
+            {
+                sorted.Add(pair.Key, pair.Value);
+            }
 
             StringBuilder sb = new(ApiSecret);
             foreach (KeyValuePair<string, string> pair in sorted)

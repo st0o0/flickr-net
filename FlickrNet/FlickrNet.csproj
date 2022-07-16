@@ -1,11 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net6.0-windows</TargetFramework>
+		<TargetFramework>net6.0</TargetFramework>
 		<PackageId>FlickrNet.Core</PackageId>
 		<Description>.Net Core library for accessing Flickr.com Api functionality</Description>
 		<Copyright>Copyright © Sam Judson 2010</Copyright>
 		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+		<Nullable>disable</Nullable>
 	</PropertyGroup>
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">

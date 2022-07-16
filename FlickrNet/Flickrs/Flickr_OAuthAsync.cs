@@ -8,7 +8,6 @@ namespace FlickrNet
 {
     public partial class Flickr
     {
-        // TODO: not finished
         /// <summary>
         /// Get an <see cref="OAuthRequestToken"/> for the given callback URL.
         /// </summary>
