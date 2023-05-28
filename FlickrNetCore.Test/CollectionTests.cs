@@ -12,151 +12,172 @@ namespace FlickrNetTest
     [TestFixture]
     public class CollectionTests : BaseTest
     {
-        [Test]
+        [Test()]
         [Category("AccessTokenRequired")]
-        public async Task CollectionGetInfoBasicTest(CancellationToken cancellation = default)
+        public async Task CollectionGetInfoBasicTest()
         {
             string id = "78188-72157618817175751";
 
             Flickr f = AuthInstance;
 
-            CollectionInfo info = await f.CollectionsGetInfoAsync(id, cancellation);
+            CollectionInfo info = await f.CollectionsGetInfoAsync(id, default);
+            Assert.Multiple(() =>
+            {
+                Assert.That(info.CollectionId, Is.EqualTo(id), "CollectionId should be correct.");
+                Assert.Multiple(() =>
+            {
+                Assert.That(info.ChildCount, Is.EqualTo(1), "ChildCount should be 1.");
+                Assert.That(info.Title, Is.EqualTo("Global Collection"), "Title should be 'Global Collection'.");
+                Assert.That(info.Description, Is.EqualTo("My global collection."), "Description should be set correctly.");
+                Assert.That(info.Server, Is.EqualTo("3629"), "Server should be 3629.");
 
-            Assert.AreEqual(id, info.CollectionId, "CollectionId should be correct.");
-            Assert.AreEqual(1, info.ChildCount, "ChildCount should be 1.");
-            Assert.AreEqual("Global Collection", info.Title, "Title should be 'Global Collection'.");
-            Assert.AreEqual("My global collection.", info.Description, "Description should be set correctly.");
-            Assert.AreEqual("3629", info.Server, "Server should be 3629.");
-
-            Assert.AreEqual(12, info.IconPhotos.Count, "IconPhotos.Length should be 12.");
-
-            Assert.AreEqual("Tires", info.IconPhotos[0].Title, "The first IconPhoto Title should be 'Tires'.");
+                Assert.That(info.IconPhotos, Has.Count.EqualTo(12), "IconPhotos.Length should be 12.");
+            });
+                Assert.That(info.IconPhotos[0].Title, Is.EqualTo("Tires"), "The first IconPhoto Title should be 'Tires'.");
+            });
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task CollectionGetTreeRootTest(CancellationToken cancellation = default)
+        public async Task CollectionGetTreeRootTest()
         {
             Flickr f = AuthInstance;
-            CollectionCollection tree = await f.CollectionsGetTreeAsync(cancellation);
+            CollectionCollection tree = await f.CollectionsGetTreeAsync(default);
 
-            Assert.IsNotNull(tree, "CollectionList should not be null.");
-            Assert.AreNotEqual(0, tree.Count, "CollectionList.Count should not be zero.");
+            Assert.That(tree, Is.Not.Null, "CollectionList should not be null.");
+            Assert.That(tree, Is.Not.Empty, "CollectionList.Count should not be zero.");
 
             foreach (Collection coll in tree)
             {
-                Assert.IsNotNull(coll.CollectionId, "CollectionId should not be null.");
-                Assert.IsNotNull(coll.Title, "Title should not be null.");
-                Assert.IsNotNull(coll.Description, "Description should not be null.");
-                Assert.IsNotNull(coll.IconSmall, "IconSmall should not be null.");
-                Assert.IsNotNull(coll.IconLarge, "IconLarge should not be null.");
-
-                Assert.AreNotEqual(0, coll.Sets.Count + coll.Collections.Count, "Should be either some sets or some collections.");
-
-                foreach (CollectionSet set in coll.Sets)
+                Assert.Multiple(() =>
                 {
-                    Assert.IsNotNull(set.SetId, "SetId should not be null.");
-                }
+                    Assert.That(coll.CollectionId, Is.Not.Null, "CollectionId should not be null.");
+                    Assert.Multiple(() =>
+                {
+                    Assert.That(coll.Title, Is.Not.Null, "Title should not be null.");
+                    Assert.That(coll.Description, Is.Not.Null, "Description should not be null.");
+                    Assert.That(coll.IconSmall, Is.Not.Null, "IconSmall should not be null.");
+                    Assert.That(coll.IconLarge, Is.Not.Null, "IconLarge should not be null.");
+                });
+                    Assert.That(coll.Sets.Count + coll.Collections.Count, Is.Not.EqualTo(0), "Should be either some sets or some collections.");
+
+                    foreach (CollectionSet set in coll.Sets)
+                    {
+                        Assert.That(set.SetId, Is.Not.Null, "SetId should not be null.");
+                    }
+                });
             }
         }
 
         [Test]
-        public async Task CollectionGetTreeRootForSpecificUser(CancellationToken cancellationToken = default)
+        public async Task CollectionGetTreeRootForSpecificUser()
         {
             Flickr f = Instance;
-            CollectionCollection tree = await f.CollectionsGetTreeAsync(null, TestData.TestUserId, cancellationToken);
+            CollectionCollection tree = await f.CollectionsGetTreeAsync(null, TestData.TestUserId);
 
-            Assert.IsNotNull(tree, "CollectionList should not be null.");
-            Assert.AreNotEqual(0, tree.Count, "CollectionList.Count should not be zero.");
+            Assert.That(tree, Is.Not.Null, "CollectionList should not be null.");
+            Assert.That(tree, Is.Not.Empty, "CollectionList.Count should not be zero.");
 
             foreach (Collection coll in tree)
             {
-                Assert.IsNotNull(coll.CollectionId, "CollectionId should not be null.");
-                Assert.IsNotNull(coll.Title, "Title should not be null.");
-                Assert.IsNotNull(coll.Description, "Description should not be null.");
-                Assert.IsNotNull(coll.IconSmall, "IconSmall should not be null.");
-                Assert.IsNotNull(coll.IconLarge, "IconLarge should not be null.");
-
-                Assert.AreNotEqual(0, coll.Sets.Count + coll.Collections.Count, "Should be either some sets or some collections.");
-
-                foreach (CollectionSet set in coll.Sets)
+                Assert.Multiple(() =>
                 {
-                    Assert.IsNotNull(set.SetId, "SetId should not be null.");
-                }
+                    Assert.That(coll.CollectionId, Is.Not.Null, "CollectionId should not be null.");
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(coll.Title, Is.Not.Null, "Title should not be null.");
+                        Assert.That(coll.Description, Is.Not.Null, "Description should not be null.");
+                        Assert.That(coll.IconSmall, Is.Not.Null, "IconSmall should not be null.");
+                        Assert.That(coll.IconLarge, Is.Not.Null, "IconLarge should not be null.");
+                    });
+                    Assert.That(coll.Sets.Count + coll.Collections.Count, Is.Not.EqualTo(0), "Should be either some sets or some collections.");
+
+                    foreach (CollectionSet set in coll.Sets)
+                    {
+                        Assert.That(set.SetId, Is.Not.Null, "SetId should not be null.");
+                    }
+                });
             }
         }
 
         [Test]
-        public async Task CollectionGetSubTreeForSpecificUser(CancellationToken cancellationToken = default)
+        public async Task CollectionGetSubTreeForSpecificUser()
         {
             string id = "78188-72157618817175751";
             Flickr f = Instance;
-            CollectionCollection tree = await f.CollectionsGetTreeAsync(id, TestData.TestUserId, cancellationToken);
+            CollectionCollection tree = await f.CollectionsGetTreeAsync(id, TestData.TestUserId);
 
-            Assert.IsNotNull(tree, "CollectionList should not be null.");
-            Assert.AreNotEqual(0, tree.Count, "CollectionList.Count should not be zero.");
+            Assert.That(tree, Is.Not.Null, "CollectionList should not be null.");
+            Assert.That(tree, Is.Not.Empty, "CollectionList.Count should not be zero.");
 
             foreach (Collection coll in tree)
             {
-                Assert.IsNotNull(coll.CollectionId, "CollectionId should not be null.");
-                Assert.IsNotNull(coll.Title, "Title should not be null.");
-                Assert.IsNotNull(coll.Description, "Description should not be null.");
-                Assert.IsNotNull(coll.IconSmall, "IconSmall should not be null.");
-                Assert.IsNotNull(coll.IconLarge, "IconLarge should not be null.");
-
-                Assert.AreNotEqual(0, coll.Sets.Count + coll.Collections.Count, "Should be either some sets or some collections.");
-
-                foreach (CollectionSet set in coll.Sets)
+                Assert.Multiple(() =>
                 {
-                    Assert.IsNotNull(set.SetId, "SetId should not be null.");
-                }
+                    Assert.That(coll.CollectionId, Is.Not.Null, "CollectionId should not be null.");
+                    Assert.Multiple(() =>
+                {
+                    Assert.That(coll.Title, Is.Not.Null, "Title should not be null.");
+                    Assert.That(coll.Description, Is.Not.Null, "Description should not be null.");
+                    Assert.That(coll.IconSmall, Is.Not.Null, "IconSmall should not be null.");
+                    Assert.That(coll.IconLarge, Is.Not.Null, "IconLarge should not be null.");
+                });
+                    Assert.That(coll.Sets.Count + coll.Collections.Count, Is.Not.EqualTo(0), "Should be either some sets or some collections.");
+
+                    foreach (CollectionSet set in coll.Sets)
+                    {
+                        Assert.That(set.SetId, Is.Not.Null, "SetId should not be null.");
+                    }
+                });
             }
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task CollectionsEditMetaTest(CancellationToken cancellationToken = default)
+        public async Task CollectionsEditMetaTest()
         {
             string id = "78188-72157618817175751";
 
             Flickr.CacheDisabled = true;
             Flickr f = AuthInstance;
 
-            CollectionInfo info = await f.CollectionsGetInfoAsync(id, cancellationToken);
+            CollectionInfo info = await f.CollectionsGetInfoAsync(id);
 
-            await f.CollectionsEditMetaAsync(id, info.Title, info.Description + "TEST", cancellationToken);
+            await f.CollectionsEditMetaAsync(id, info.Title, info.Description + "TEST");
 
-            var info2 = await f.CollectionsGetInfoAsync(id, cancellationToken);
+            var info2 = await f.CollectionsGetInfoAsync(id);
 
-            Assert.AreNotEqual(info.Description, info2.Description);
+            Assert.That(info2.Description, Is.Not.EqualTo(info.Description));
 
             // Revert description
-            await f.CollectionsEditMetaAsync(id, info.Title, info.Description, cancellationToken);
+            await f.CollectionsEditMetaAsync(id, info.Title, info.Description);
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task CollectionsEmptyCollection(CancellationToken cancellationToken = default)
+        public async Task CollectionsEmptyCollection()
         {
             Flickr f = AuthInstance;
 
             // Get global collection
-            CollectionCollection collections = await f.CollectionsGetTreeAsync("78188-72157618817175751", null, cancellationToken);
+            CollectionCollection collections = await f.CollectionsGetTreeAsync("78188-72157618817175751", null);
 
-            Assert.IsNotNull(collections);
-            Assert.IsTrue(collections.Count > 0, "Global collection should be greater than zero.");
+            Assert.That(collections, Is.Not.Null);
+            Assert.That(collections.Count > 0, Is.True, "Global collection should be greater than zero.");
 
             var col = collections[0];
+            Assert.Multiple(() =>
+            {
+                Assert.That(col.Title, Is.EqualTo("Global Collection"), "Global Collection title should be correct.");
 
-            Assert.AreEqual("Global Collection", col.Title, "Global Collection title should be correct.");
-
-            Assert.IsNotNull(col.Collections, "Child collections property should not be null.");
-            Assert.IsTrue(col.Collections.Count > 0, "Global collection should have child collections.");
+                Assert.That(col.Collections, Is.Not.Null, "Child collections property should not be null.");
+            });
+            Assert.That(col.Collections.Count > 0, Is.True, "Global collection should have child collections.");
 
             var subsol = col.Collections[0];
 
-            Assert.IsNotNull(subsol.Collections, "Child collection Collections property should ne null.");
-            Assert.AreEqual(0, subsol.Collections.Count, "Child collection should not have and sub collections.");
+            Assert.That(subsol.Collections, Is.Not.Null, "Child collection Collections property should ne null.");
+            Assert.That(subsol.Collections.Count, Is.EqualTo(0), "Child collection should not have and sub collections.");
         }
     }
 }

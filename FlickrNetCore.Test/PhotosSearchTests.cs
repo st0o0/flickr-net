@@ -17,45 +17,54 @@ namespace FlickrNetTest
     public class PhotosSearchTests : BaseTest
     {
         [Test]
-        public async Task PhotosSearchBasicSearch(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchBasicSearch()
         {
             var o = new PhotoSearchOptions { Tags = "Test" };
-            var photos = await Instance.PhotosSearchAsync(o, cancellationToken);
-
-            Assert.IsTrue(photos.Total > 0, "Total Photos should be greater than zero.");
-            Assert.IsTrue(photos.Pages > 0, "Pages should be greaters than zero.");
-            Assert.AreEqual(100, photos.PerPage, "PhotosPerPage should be 100.");
-            Assert.AreEqual(1, photos.Page, "Page should be 1.");
-
-            Assert.IsTrue(photos.Count > 0, "Photos.Count should be greater than 0.");
-            Assert.AreEqual(photos.PerPage, photos.Count);
+            var photos = await Instance.PhotosSearchAsync(o);
+            Assert.Multiple(() =>
+            {
+                Assert.That(photos.Total > 0, Is.True, "Total Photos should be greater than zero.");
+                Assert.That(photos.Pages > 0, Is.True, "Pages should be greaters than zero.");
+            });
+            Assert.Multiple(() =>
+            {
+                Assert.That(photos.PerPage, Is.EqualTo(100), "PhotosPerPage should be 100.");
+                Assert.That(photos.Page, Is.EqualTo(1), "Page should be 1.");
+            });
+            Assert.Multiple(() =>
+            {
+                Assert.That(photos.Count > 0, Is.True, "Photos.Count should be greater than 0.");
+                Assert.That(photos, Has.Count.EqualTo(photos.PerPage));
+            });
         }
 
         [Test]
-        public async Task PhotosSearchSignedTest(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchSignedTest()
         {
             Flickr f = TestData.GetSignedInstance();
             var o = new PhotoSearchOptions { Tags = "Test", PerPage = 5 };
-            PhotoCollection photos = await f.PhotosSearchAsync(o, cancellationToken);
+            PhotoCollection photos = await f.PhotosSearchAsync(o);
 
-            Assert.AreEqual(5, photos.PerPage, "PerPage should equal 5.");
+            Assert.That(photos.PerPage, Is.EqualTo(5), "PerPage should equal 5.");
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task PhotosSearchFavorites(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchFavorites()
         {
             var o = new PhotoSearchOptions { UserId = "me", Faves = true, Tags = "cat" };
 
-            PhotoCollection p = await AuthInstance.PhotosSearchAsync(o, cancellationToken);
-
-            Assert.IsTrue(p.Count > 1, "Should have returned more than 1 result returned. Count = " + p.Count);
-            Assert.IsTrue(p.Count < 100, "Should be less than 100 results returned. Count = " + p.Count);
+            PhotoCollection p = await AuthInstance.PhotosSearchAsync(o);
+            Assert.Multiple(() =>
+            {
+                Assert.That(p.Count > 1, Is.True, "Should have returned more than 1 result returned. Count = " + p.Count);
+                Assert.That(p.Count < 100, Is.True, "Should be less than 100 results returned. Count = " + p.Count);
+            });
         }
 
         [Test, Ignore("Currently 'Camera' searches are not working.")]
         [Category("AccessTokenRequired")]
-        public async Task PhotosSearchCameraIphone(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchCameraIphone()
         {
             var o = new PhotoSearchOptions
             {
@@ -65,14 +74,14 @@ namespace FlickrNetTest
                 Extras = PhotoSearchExtras.Tags
             };
 
-            var ps = await AuthInstance.PhotosSearchAsync(o, cancellationToken);
+            var ps = await AuthInstance.PhotosSearchAsync(o);
 
-            Assert.IsNotNull(ps);
-            Assert.AreNotEqual(0, ps.Count);
+            Assert.That(ps, Is.Not.Null);
+            Assert.That(ps, Is.Not.Empty);
         }
 
         [Test]
-        public async Task PhotoSearchByPathAlias(CancellationToken cancellationToken = default)
+        public async Task PhotoSearchByPathAlias()
         {
             var o = new PhotoSearchOptions
             {
@@ -80,56 +89,64 @@ namespace FlickrNetTest
                 PerPage = 10
             };
 
-            var ps = await Instance.PhotosSearchAsync(o, cancellationToken);
+            var ps = await Instance.PhotosSearchAsync(o);
 
-            Assert.IsNotNull(ps);
-            Assert.AreNotEqual(0, ps.Count);
+            Assert.That(ps, Is.Not.Null);
+            Assert.That(ps, Is.Not.Empty);
         }
 
         [Test]
-        public async Task PhotosSearchPerPage(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchPerPage()
         {
             var o = new PhotoSearchOptions { PerPage = 10, Tags = "Test" };
-            var photos = await Instance.PhotosSearchAsync(o, cancellationToken);
-
-            Assert.IsTrue(photos.Total > 0, "TotalPhotos should be greater than 0.");
-            Assert.IsTrue(photos.Pages > 0, "TotalPages should be greater than 0.");
-            Assert.AreEqual(10, photos.PerPage, "PhotosPerPage should be 10.");
-            Assert.AreEqual(1, photos.Page, "PageNumber should be 1.");
-            Assert.AreEqual(10, photos.Count, "Count should be 10.");
-            Assert.AreEqual(photos.PerPage, photos.Count);
+            var photos = await Instance.PhotosSearchAsync(o);
+            Assert.Multiple(() =>
+            {
+                Assert.That(photos.Total > 0, Is.True, "TotalPhotos should be greater than 0.");
+                Assert.That(photos.Pages > 0, Is.True, "TotalPages should be greater than 0.");
+            });
+            Assert.Multiple(() =>
+            {
+                Assert.That(photos.PerPage, Is.EqualTo(10), "PhotosPerPage should be 10.");
+                Assert.Multiple(() =>
+            {
+                Assert.That(photos.Page, Is.EqualTo(1), "PageNumber should be 1.");
+                Assert.That(photos, Has.Count.EqualTo(10), "Count should be 10.");
+            });
+                Assert.That(photos, Has.Count.EqualTo(photos.PerPage));
+            });
         }
 
         [Test]
-        public async Task PhotosSearchUserIdTest(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchUserIdTest()
         {
             var o = new PhotoSearchOptions { UserId = TestData.TestUserId };
 
-            PhotoCollection photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            PhotoCollection photos = await Instance.PhotosSearchAsync(o);
 
             foreach (Photo photo in photos)
             {
-                Assert.AreEqual(TestData.TestUserId, photo.UserId);
+                Assert.That(photo.UserId, Is.EqualTo(TestData.TestUserId));
             }
         }
 
         [Test]
-        public void PhotosSearchNoApiKey(CancellationToken cancellationToken = default)
+        public void PhotosSearchNoApiKey()
         {
             Instance.ApiKey = "";
-            Should.Throw<ApiKeyRequiredException>(async () => await Instance.PhotosSearchAsync(new PhotoSearchOptions(), cancellationToken));
+            Should.Throw<ApiKeyRequiredException>(async () => await Instance.PhotosSearchAsync(new PhotoSearchOptions()));
         }
 
         [Test]
-        public void GetOauthRequestTokenNoApiKey(CancellationToken cancellationToken)
+        public void GetOauthRequestTokenNoApiKey()
         {
             Instance.ApiKey = "";
-            Should.Throw<ApiKeyRequiredException>(async () => await Instance.OAuthGetRequestTokenAsync("oob", cancellationToken));
+            Should.Throw<ApiKeyRequiredException>(async () => await Instance.OAuthGetRequestTokenAsync("oob"));
         }
 
         [Test]
         [Ignore("Flickr still doesn't seem to sort correctly by date posted.")]
-        public async Task PhotosSearchSortDateTakenAscending(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchSortDateTakenAscending()
         {
             var o = new PhotoSearchOptions
             {
@@ -138,18 +155,18 @@ namespace FlickrNetTest
                 Extras = PhotoSearchExtras.DateTaken
             };
 
-            var p = await Instance.PhotosSearchAsync(o, cancellationToken);
+            var p = await Instance.PhotosSearchAsync(o);
 
             for (var i = 1; i < p.Count; i++)
             {
-                Assert.AreNotEqual(default(DateTime), p[i].DateTaken);
-                Assert.IsTrue(p[i].DateTaken >= p[i - 1].DateTaken, "Date taken should increase");
+                Assert.That(p[i].DateTaken, Is.Not.EqualTo(default(DateTime)));
+                Assert.That(p[i].DateTaken >= p[i - 1].DateTaken, Is.True, "Date taken should increase");
             }
         }
 
         [Test]
         [Ignore("Flickr still doesn't seem to sort correctly by date posted.")]
-        public async Task PhotosSearchSortDateTakenDescending(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchSortDateTakenDescending()
         {
             var o = new PhotoSearchOptions
             {
@@ -158,18 +175,18 @@ namespace FlickrNetTest
                 Extras = PhotoSearchExtras.DateTaken
             };
 
-            var p = await Instance.PhotosSearchAsync(o, cancellationToken);
+            var p = await Instance.PhotosSearchAsync(o);
 
             for (var i = 1; i < p.Count; i++)
             {
-                Assert.AreNotEqual(default(DateTime), p[i].DateTaken);
-                Assert.IsTrue(p[i].DateTaken <= p[i - 1].DateTaken, "Date taken should decrease.");
+                Assert.That(p[i].DateTaken, Is.Not.EqualTo(default(DateTime)));
+                Assert.That(p[i].DateTaken <= p[i - 1].DateTaken, Is.True, "Date taken should decrease.");
             }
         }
 
         [Test]
         [Ignore("Flickr still doesn't seem to sort correctly by date posted.")]
-        public async Task PhotosSearchSortDatePostedAscending(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchSortDatePostedAscending()
         {
             var o = new PhotoSearchOptions
             {
@@ -178,18 +195,18 @@ namespace FlickrNetTest
                 Extras = PhotoSearchExtras.DateUploaded
             };
 
-            var p = await Instance.PhotosSearchAsync(o, cancellationToken);
+            var p = await Instance.PhotosSearchAsync(o);
 
             for (var i = 1; i < p.Count; i++)
             {
-                Assert.AreNotEqual(default(DateTime), p[i].DateUploaded);
-                Assert.IsTrue(p[i].DateUploaded >= p[i - 1].DateUploaded, "Date taken should increase.");
+                Assert.That(p[i].DateUploaded, Is.Not.EqualTo(default(DateTime)));
+                Assert.That(p[i].DateUploaded >= p[i - 1].DateUploaded, Is.True, "Date taken should increase.");
             }
         }
 
         [Test]
         [Ignore("Flickr still doesn't seem to sort correctly by date posted.")]
-        public async Task PhotosSearchSortDataPostedDescending(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchSortDataPostedDescending()
         {
             var o = new PhotoSearchOptions
             {
@@ -198,17 +215,17 @@ namespace FlickrNetTest
                 Extras = PhotoSearchExtras.DateUploaded
             };
 
-            var p = await Instance.PhotosSearchAsync(o, cancellationToken);
+            var p = await Instance.PhotosSearchAsync(o);
 
             for (int i = 1; i < p.Count; i++)
             {
-                Assert.AreNotEqual(default(DateTime), p[i].DateUploaded);
-                Assert.IsTrue(p[i].DateUploaded <= p[i - 1].DateUploaded, "Date taken should increase.");
+                Assert.That(p[i].DateUploaded, Is.Not.EqualTo(default(DateTime)));
+                Assert.That(p[i].DateUploaded <= p[i - 1].DateUploaded, Is.True, "Date taken should increase.");
             }
         }
 
         [Test]
-        public async Task PhotosSearchGetLicenseNotNull(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchGetLicenseNotNull()
         {
             var o = new PhotoSearchOptions
             {
@@ -217,16 +234,16 @@ namespace FlickrNetTest
                 Extras = PhotoSearchExtras.License
             };
 
-            PhotoCollection photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            PhotoCollection photos = await Instance.PhotosSearchAsync(o);
 
             foreach (Photo photo in photos)
             {
-                Assert.IsNotNull(photo.License);
+                Assert.That(photo, Is.Not.Null);
             }
         }
 
         [Test]
-        public async Task PhotosSearchGetLicenseAttributionNoDerivs(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchGetLicenseAttributionNoDerivs()
         {
             var o = new PhotoSearchOptions
             {
@@ -236,16 +253,16 @@ namespace FlickrNetTest
             o.Licenses.Add(LicenseType.AttributionNoDerivativesCC);
             o.Extras = PhotoSearchExtras.License;
 
-            PhotoCollection photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            PhotoCollection photos = await Instance.PhotosSearchAsync(o);
 
             foreach (Photo photo in photos)
             {
-                Assert.AreEqual(LicenseType.AttributionNoDerivativesCC, photo.License);
+                Assert.That(photo.License, Is.EqualTo(LicenseType.AttributionNoDerivativesCC));
             }
         }
 
         [Test]
-        public async Task PhotosSearchGetMultipleLicenses(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchGetMultipleLicenses()
         {
             var o = new PhotoSearchOptions
             {
@@ -257,7 +274,7 @@ namespace FlickrNetTest
             o.Licenses.Add(LicenseType.AttributionNoncommercialNoDerivativesCC);
             o.Extras = PhotoSearchExtras.License | PhotoSearchExtras.OwnerName;
 
-            PhotoCollection photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            PhotoCollection photos = await Instance.PhotosSearchAsync(o);
 
             foreach (Photo photo in photos)
             {
@@ -270,7 +287,7 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public async Task PhotosSearchGetLicenseNoKnownCopright(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchGetLicenseNoKnownCopright()
         {
             var o = new PhotoSearchOptions
             {
@@ -280,43 +297,43 @@ namespace FlickrNetTest
             o.Licenses.Add(LicenseType.NoKnownCopyrightRestrictions);
             o.Extras = PhotoSearchExtras.License;
 
-            PhotoCollection photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            PhotoCollection photos = await Instance.PhotosSearchAsync(o);
 
             foreach (Photo photo in photos)
             {
-                Assert.AreEqual(LicenseType.NoKnownCopyrightRestrictions, photo.License);
+                Assert.That(photo.License, Is.EqualTo(LicenseType.NoKnownCopyrightRestrictions));
             }
         }
 
         [Test]
-        public async Task PhotosSearchSearchTwice(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchSearchTwice()
         {
             var o = new PhotoSearchOptions { Tags = "microsoft", PerPage = 10 };
 
-            PhotoCollection photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            PhotoCollection photos = await Instance.PhotosSearchAsync(o);
 
-            Assert.AreEqual(10, photos.PerPage, "Per page is not 10");
+            Assert.That(photos.PerPage, Is.EqualTo(10), "Per page is not 10");
 
             o.PerPage = 50;
-            photos = await Instance.PhotosSearchAsync(o, cancellationToken);
-            Assert.AreEqual(50, photos.PerPage, "Per page has not changed?");
+            photos = await Instance.PhotosSearchAsync(o);
+            Assert.That(photos.PerPage, Is.EqualTo(50), "Per page has not changed?");
 
-            photos = await Instance.PhotosSearchAsync(o, cancellationToken);
-            Assert.AreEqual(50, photos.PerPage, "Per page has changed!");
+            photos = await Instance.PhotosSearchAsync(o);
+            Assert.That(photos.PerPage, Is.EqualTo(50), "Per page has changed!");
         }
 
         [Test]
-        public async Task PhotosSearchPageTest(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchPageTest()
         {
             var o = new PhotoSearchOptions { Tags = "colorful", PerPage = 10, Page = 3 };
 
-            PhotoCollection photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            PhotoCollection photos = await Instance.PhotosSearchAsync(o);
 
-            Assert.AreEqual(3, photos.Page);
+            Assert.That(photos.Page, Is.EqualTo(3));
         }
 
         [Test]
-        public async Task PhotosSearchByColorCode(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchByColorCode()
         {
             var o = new PhotoSearchOptions
             {
@@ -324,10 +341,10 @@ namespace FlickrNetTest
                 Tags = "colorful"
             };
 
-            var photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            var photos = await Instance.PhotosSearchAsync(o);
 
-            Assert.IsNotNull(photos);
-            Assert.AreNotEqual(0, photos.Count, "Count should not be zero.");
+            Assert.That(photos, Is.Not.Null);
+            Assert.That(photos, Is.Not.Empty, "Count should not be zero.");
 
             foreach (var photo in photos)
             {
@@ -339,7 +356,7 @@ namespace FlickrNetTest
         [TestCase(Style.DepthOfField)]
         [TestCase(Style.Minimalism)]
         [TestCase(Style.Pattern)]
-        public async Task PhotoSearchByStyles(Style style, CancellationToken cancellationToken = default)
+        public async Task PhotoSearchByStyles(Style style)
         {
             var o = new PhotoSearchOptions
             {
@@ -349,14 +366,14 @@ namespace FlickrNetTest
                 Styles = new[] { style }
             };
 
-            var photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            var photos = await Instance.PhotosSearchAsync(o);
 
-            Assert.IsNotNull(photos);
+            Assert.That(photos, Is.Not.Null);
             Assert.IsNotEmpty(photos);
         }
 
         [Test]
-        public async Task PhotosSearchIsCommons(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchIsCommons()
         {
             var o = new PhotoSearchOptions
             {
@@ -366,16 +383,16 @@ namespace FlickrNetTest
                 Extras = PhotoSearchExtras.License
             };
 
-            PhotoCollection photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            PhotoCollection photos = await Instance.PhotosSearchAsync(o);
 
             foreach (Photo photo in photos)
             {
-                Assert.AreEqual(LicenseType.NoKnownCopyrightRestrictions, photo.License);
+                Assert.That(photo.License, Is.EqualTo(LicenseType.NoKnownCopyrightRestrictions));
             }
         }
 
         [Test]
-        public async Task PhotosSearchDateTakenGranualityTest(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchDateTakenGranualityTest()
         {
             var o = new PhotoSearchOptions
             {
@@ -385,11 +402,11 @@ namespace FlickrNetTest
                 Extras = PhotoSearchExtras.DateTaken
             };
 
-            await Instance.PhotosSearchAsync(o, cancellationToken);
+            await Instance.PhotosSearchAsync(o);
         }
 
         [Test]
-        public async Task PhotosSearchDetailedTest(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchDetailedTest()
         {
             var o = new PhotoSearchOptions
             {
@@ -397,49 +414,63 @@ namespace FlickrNetTest
                 UserId = "41888973@N00",
                 Extras = PhotoSearchExtras.All
             };
-            PhotoCollection photos = await Instance.PhotosSearchAsync(o, cancellationToken);
-
-            Assert.AreEqual(100, photos.PerPage);
-            Assert.AreEqual(1, photos.Page);
-
-            Assert.AreNotEqual(0, photos.Count, "PhotoCollection.Count should not be zero.");
-
-            Assert.AreEqual("3547139066", photos[0].PhotoId);
-            Assert.AreEqual("41888973@N00", photos[0].UserId);
-            Assert.AreEqual("bf4e11b1cb", photos[0].Secret);
-            Assert.AreEqual("3311", photos[0].Server);
-            Assert.AreEqual("Apple Store!", photos[0].Title);
-            Assert.AreEqual("4", photos[0].Farm);
-            Assert.AreEqual(false, photos[0].IsFamily);
-            Assert.AreEqual(true, photos[0].IsPublic);
-            Assert.AreEqual(false, photos[0].IsFriend);
-
-            var dateTaken = new DateTime(2009, 5, 18, 4, 21, 46);
-            var dateUploaded = new DateTime(2009, 5, 19, 21, 21, 46);
-            Assert.IsTrue(photos[0].LastUpdated > dateTaken, "Last updated date was not correct.");
-            Assert.AreEqual(dateTaken, photos[0].DateTaken, "Date taken date was not correct.");
-            Assert.AreEqual(dateUploaded, photos[0].DateUploaded, "Date uploaded date was not correct.");
-
-            Assert.AreEqual("jpg", photos[0].OriginalFormat, "OriginalFormat should be JPG");
-            Assert.AreEqual("JjXZOYpUV7IbeGVOUQ", photos[0].PlaceId, "PlaceID not set correctly.");
-
-            Assert.IsNotNull(photos[0].Description, "Description should not be null.");
-
-            foreach (Photo photo in photos)
+            PhotoCollection photos = await Instance.PhotosSearchAsync(o);
+            Assert.Multiple(() =>
             {
-                Assert.IsNotNull(photo.PhotoId);
-                Assert.IsTrue(photo.IsPublic);
-                Assert.IsFalse(photo.IsFamily);
-                Assert.IsFalse(photo.IsFriend);
-            }
+                Assert.That(photos.PerPage, Is.EqualTo(100));
+                Assert.Multiple(() =>
+            {
+                Assert.That(photos.Page, Is.EqualTo(1));
+
+                Assert.That(photos, Is.Not.Empty, "PhotoCollection.Count should not be zero.");
+            });
+                Assert.That(photos[0].PhotoId, Is.EqualTo("3547139066"));
+                Assert.Multiple(() =>
+                {
+                    Assert.That(photos[0].UserId, Is.EqualTo("41888973@N00"));
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(photos[0].Secret, Is.EqualTo("bf4e11b1cb"));
+                        Assert.That(photos[0].Server, Is.EqualTo("3311"));
+                        Assert.That(photos[0].Title, Is.EqualTo("Apple Store!"));
+                        Assert.That(photos[0].Farm, Is.EqualTo("4"));
+                        Assert.That(photos[0].IsFamily, Is.EqualTo(false));
+                        Assert.That(photos[0].IsPublic, Is.EqualTo(true));
+                        Assert.That(photos[0].IsFriend, Is.EqualTo(false));
+                    });
+                    var dateTaken = new DateTime(2009, 5, 18, 4, 21, 46);
+                    var dateUploaded = new DateTime(2009, 5, 19, 21, 21, 46);
+                    Assert.That(photos[0].LastUpdated > dateTaken, Is.True, "Last updated date was not correct.");
+                    Assert.Multiple(() =>
+                        {
+                            Assert.That(photos[0].DateTaken, Is.EqualTo(dateTaken), "Date taken date was not correct.");
+                            Assert.Multiple(() =>
+                        {
+                            Assert.That(photos[0].DateUploaded, Is.EqualTo(dateUploaded), "Date uploaded date was not correct.");
+
+                            Assert.That(photos[0].OriginalFormat, Is.EqualTo("jpg"), "OriginalFormat should be JPG");
+                            Assert.That(photos[0].PlaceId, Is.EqualTo("JjXZOYpUV7IbeGVOUQ"), "PlaceID not set correctly.");
+
+                            Assert.That(photos[0].Description, Is.Not.Null, "Description should not be null.");
+                        });
+                            foreach (Photo photo in photos)
+                            {
+                                Assert.That(photo.PhotoId, Is.Not.Null);
+                                Assert.That(photo.IsPublic, Is.True);
+                                Assert.That(photo.IsFamily, Is.False);
+                                Assert.That(photo.IsFriend, Is.False);
+                            }
+                        });
+                });
+            });
         }
 
         [Test]
-        public async Task PhotosSearchTagsTest(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchTagsTest()
         {
             var o = new PhotoSearchOptions { PerPage = 10, Tags = "test", Extras = PhotoSearchExtras.Tags };
 
-            PhotoCollection photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            PhotoCollection photos = await Instance.PhotosSearchAsync(o);
 
             photos.Total.ShouldBeGreaterThan(0);
             photos.Pages.ShouldBeGreaterThan(0);
@@ -449,8 +480,8 @@ namespace FlickrNetTest
 
             foreach (Photo photo in photos)
             {
-                Assert.IsTrue(photo.Tags.Count > 0, "Should be some tags");
-                Assert.IsTrue(photo.Tags.Contains("test"), "At least one should be 'test'");
+                Assert.That(photo.Tags.Count > 0, Is.True, "Should be some tags");
+                Assert.That(photo.Tags.Contains("test"), Is.True, "At least one should be 'test'");
             }
         }
 
@@ -458,7 +489,7 @@ namespace FlickrNetTest
         // As I have no control over this, and I am correctly setting the properties as returned I am ignoring this test.
         [Test]
         [Ignore("Flickr often returns different totals than requested.")]
-        public async Task PhotosSearchPerPageMultipleTest(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchPerPageMultipleTest()
         {
             var o = new PhotoSearchOptions { Tags = "microsoft" };
             o.Licenses.Add(LicenseType.AttributionCC);
@@ -473,28 +504,30 @@ namespace FlickrNetTest
 
             o.PerPage = 1;
 
-            PhotoCollection photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            PhotoCollection photos = await Instance.PhotosSearchAsync(o);
 
             int totalPhotos1 = photos.Total;
 
             o.PerPage = 10;
 
-            photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            photos = await Instance.PhotosSearchAsync(o);
 
             int totalPhotos2 = photos.Total;
 
             o.PerPage = 100;
 
-            photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            photos = await Instance.PhotosSearchAsync(o);
 
             int totalPhotos3 = photos.Total;
-
-            Assert.AreEqual(totalPhotos1, totalPhotos2, "Total Photos 1 & 2 should be equal");
-            Assert.AreEqual(totalPhotos2, totalPhotos3, "Total Photos 2 & 3 should be equal");
+            Assert.Multiple(() =>
+            {
+                Assert.That(totalPhotos2, Is.EqualTo(totalPhotos1), "Total Photos 1 & 2 should be equal");
+                Assert.That(totalPhotos3, Is.EqualTo(totalPhotos2), "Total Photos 2 & 3 should be equal");
+            });
         }
 
         [Test]
-        public async Task PhotosSearchPhotoSearchBoundaryBox(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchPhotoSearchBoundaryBox()
         {
             var b = new BoundaryBox(103.675997, 1.339811, 103.689456, 1.357764, GeoAccuracy.World);
             var o = new PhotoSearchOptions
@@ -508,22 +541,22 @@ namespace FlickrNetTest
                 Tags = "colorful"
             };
 
-            var ps = await Instance.PhotosSearchAsync(o, cancellationToken);
+            var ps = await Instance.PhotosSearchAsync(o);
 
             foreach (var p in ps)
             {
                 // Annoying, but sometimes Flickr doesn't return the geo properties for a photo even for this type of search.
                 if (Math.Abs(p.Latitude - 0) < 1e-8 && Math.Abs(p.Longitude - 0) < 1e-8) continue;
 
-                Assert.IsTrue(p.Latitude > b.MinimumLatitude && b.MaximumLatitude > p.Latitude,
+                Assert.That(p.Latitude > b.MinimumLatitude && b.MaximumLatitude > p.Latitude, Is.True,
                               "Latitude is not within the boundary box. {0} outside {1} and {2} for photo {3}", p.Latitude, b.MinimumLatitude, b.MaximumLatitude, p.WebUrl);
-                Assert.IsTrue(p.Longitude > b.MinimumLongitude && b.MaximumLongitude > p.Longitude,
+                Assert.That(p.Longitude > b.MinimumLongitude && b.MaximumLongitude > p.Longitude, Is.True,
                               "Longitude is not within the boundary box. {0} outside {1} and {2} for photo {3}", p.Longitude, b.MinimumLongitude, b.MaximumLongitude, p.WebUrl);
             }
         }
 
         [Test]
-        public async Task PhotosSearchLatCultureTest(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchLatCultureTest()
         {
             System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("nb-NO");
 
@@ -533,11 +566,11 @@ namespace FlickrNetTest
             o.TagMode = TagMode.AllTags;
             o.PerPage = 10;
 
-            await Instance.PhotosSearchAsync(o, cancellationToken);
+            await Instance.PhotosSearchAsync(o);
         }
 
         [Test]
-        public async Task PhotosSearchTagCollectionTest(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchTagCollectionTest()
         {
             var o = new PhotoSearchOptions
             {
@@ -546,18 +579,18 @@ namespace FlickrNetTest
                 Extras = PhotoSearchExtras.Tags
             };
 
-            PhotoCollection photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            PhotoCollection photos = await Instance.PhotosSearchAsync(o);
 
             foreach (Photo p in photos)
             {
-                Assert.IsNotNull(p.Tags, "Tag Collection should not be null");
-                Assert.IsTrue(p.Tags.Count > 0, "Should be more than one tag for all photos");
-                Assert.IsNotNull(p.Tags[0]);
+                Assert.That(p.Tags, Is.Not.Null, "Tag Collection should not be null");
+                Assert.That(p.Tags.Count > 0, Is.True, "Should be more than one tag for all photos");
+                Assert.That(p.Tags[0], Is.Not.Null);
             }
         }
 
         [Test]
-        public async Task PhotosSearchMultipleTagsTest(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchMultipleTagsTest()
         {
             var o = new PhotoSearchOptions
             {
@@ -567,19 +600,19 @@ namespace FlickrNetTest
                 Extras = PhotoSearchExtras.Tags
             };
 
-            PhotoCollection photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            PhotoCollection photos = await Instance.PhotosSearchAsync(o);
 
             foreach (Photo p in photos)
             {
-                Assert.IsNotNull(p.Tags, "Tag Collection should not be null");
-                Assert.IsTrue(p.Tags.Count > 0, "Should be more than one tag for all photos");
-                Assert.IsTrue(p.Tags.Contains("art"), "Should contain 'art' tag.");
-                Assert.IsTrue(p.Tags.Contains("collection"), "Should contain 'collection' tag.");
+                Assert.That(p.Tags, Is.Not.Null, "Tag Collection should not be null");
+                Assert.That(p.Tags.Count > 0, Is.True, "Should be more than one tag for all photos");
+                Assert.That(p.Tags.Contains("art"), Is.True, "Should contain 'art' tag.");
+                Assert.That(p.Tags.Contains("collection"), Is.True, "Should contain 'collection' tag.");
             }
         }
 
         [Test]
-        public async Task PhotosSearchInterestingnessBasicTest(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchInterestingnessBasicTest()
         {
             var o = new PhotoSearchOptions
             {
@@ -588,34 +621,37 @@ namespace FlickrNetTest
                 PerPage = 500
             };
 
-            var ps = await Instance.PhotosSearchAsync(o, cancellationToken);
+            var ps = await Instance.PhotosSearchAsync(o);
 
-            Assert.IsNotNull(ps, "Photos should not be null");
-            Assert.AreEqual(500, ps.PerPage, "PhotosPerPage should be 500");
-            Assert.AreNotEqual(0, ps.Count, "Count should be greater than zero.");
+            Assert.That(ps, Is.Not.Null, "Photos should not be null");
+            Assert.Multiple(() =>
+            {
+                Assert.That(ps.PerPage, Is.EqualTo(500), "PhotosPerPage should be 500");
+                Assert.That(ps, Is.Not.Empty, "Count should be greater than zero.");
+            });
         }
 
         [Test]
-        public async Task PhotosSearchGroupIdTest(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchGroupIdTest()
         {
             var o = new PhotoSearchOptions();
             o.GroupId = TestData.GroupId;
             o.PerPage = 10;
 
-            var photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            var photos = await Instance.PhotosSearchAsync(o);
 
-            Assert.IsNotNull(photos);
-            Assert.AreNotEqual(0, photos.Count);
+            Assert.That(photos, Is.Not.Null);
+            Assert.That(photos, Is.Not.Empty);
 
             foreach (var photo in photos)
             {
-                Assert.IsNotNull(photo.PhotoId);
+                Assert.That(photo.PhotoId, Is.Not.Null);
             }
         }
 
         [Test]
         [Ignore("GeoContext filter doesn't appear to be working.")]
-        public async Task PhotosSearchGeoContext(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchGeoContext()
         {
             var o = new PhotoSearchOptions
             {
@@ -626,16 +662,16 @@ namespace FlickrNetTest
 
             o.Extras |= PhotoSearchExtras.Geo;
 
-            var col = await Instance.PhotosSearchAsync(o, cancellationToken);
+            var col = await Instance.PhotosSearchAsync(o);
 
             foreach (var p in col)
             {
-                Assert.AreEqual(GeoContext.Outdoors, p.GeoContext);
+                Assert.That(p.GeoContext, Is.EqualTo(GeoContext.Outdoors));
             }
         }
 
         [Test]
-        public async Task PhotosSearchLatLongGeoRadiusTest(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchLatLongGeoRadiusTest()
         {
             var o = new PhotoSearchOptions
             {
@@ -649,21 +685,27 @@ namespace FlickrNetTest
             };
             o.Extras |= PhotoSearchExtras.Geo;
 
-            var photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            var photos = await Instance.PhotosSearchAsync(o);
 
-            Assert.IsNotNull(photos);
-            Assert.AreNotEqual(0, photos.Count, "No photos returned by search.");
+            Assert.That(photos, Is.Not.Null);
+            Assert.That(photos, Is.Not.Empty, "No photos returned by search.");
 
             foreach (var photo in photos)
             {
-                Assert.IsNotNull(photo.PhotoId);
-                Assert.AreNotEqual(0, photo.Longitude, "Longitude should not be zero.");
-                Assert.AreNotEqual(0, photo.Latitude, "Latitude should not be zero.");
+                Assert.Multiple(() =>
+                {
+                    Assert.That(photo.PhotoId, Is.Not.Null);
+                    Assert.Multiple(() =>
+                {
+                    Assert.That(photo.Longitude, Is.Not.EqualTo(0), "Longitude should not be zero.");
+                    Assert.That(photo.Latitude, Is.Not.EqualTo(0), "Latitude should not be zero.");
+                });
+                });
             }
         }
 
         [Test]
-        public async Task PhotosSearchLargeRadiusTest(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchLargeRadiusTest()
         {
             const double lat = 61.600447;
             const double lon = 5.035064;
@@ -680,31 +722,36 @@ namespace FlickrNetTest
             };
             o.Extras |= PhotoSearchExtras.Geo;
 
-            var photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            var photos = await Instance.PhotosSearchAsync(o);
 
-            Assert.IsNotNull(photos);
-            Assert.AreNotEqual(0, photos.Count, "No photos returned by search.");
+            Assert.That(photos, Is.Not.Null);
+            Assert.That(photos, Is.Not.Empty, "No photos returned by search.");
 
             foreach (var photo in photos)
             {
-                Assert.IsNotNull(photo.PhotoId);
-                Assert.AreNotEqual(0, photo.Longitude, "Longitude should not be zero.");
-                Assert.AreNotEqual(0, photo.Latitude, "Latitude should not be zero.");
+                Assert.Multiple(() =>
+                {
+                    Assert.That(photo.PhotoId, Is.Not.Null);
+                    Assert.Multiple(() =>
+                {
+                    Assert.That(photo.Longitude, Is.Not.EqualTo(0), "Longitude should not be zero.");
+                    Assert.That(photo.Latitude, Is.Not.EqualTo(0), "Latitude should not be zero.");
+                });
+                    LogOnError("Photo ID " + photo.PhotoId,
+                   string.Format("Lat={0}, Long={1}", photo.Latitude, photo.Longitude));
 
-                LogOnError("Photo ID " + photo.PhotoId,
-                           string.Format("Lat={0}, Long={1}", photo.Latitude, photo.Longitude));
-
-                // Note: +/-1 is not an exact match to 5.4km, but anything outside of these bounds is definitely wrong.
-                Assert.IsTrue(photo.Latitude > lat - 1 && photo.Latitude < lat + 1,
-                              "Latitude not within acceptable range.");
-                Assert.IsTrue(photo.Longitude > lon - 1 && photo.Longitude < lon + 1,
-                              "Latitude not within acceptable range.");
+                    // Note: +/-1 is not an exact match to 5.4km, but anything outside of these bounds is definitely wrong.
+                    Assert.That(photo.Latitude > lat - 1 && photo.Latitude < lat + 1, Is.True,
+                      "Latitude not within acceptable range.");
+                    Assert.That(photo.Longitude > lon - 1 && photo.Longitude < lon + 1, Is.True,
+                      "Latitude not within acceptable range.");
+                });
             }
         }
 
         [Test]
         [Ignore("WOE ID searches don't appear to be working.")]
-        public async Task PhotosSearchFullParamTest(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchFullParamTest()
         {
             var o = new PhotoSearchOptions
             {
@@ -724,64 +771,64 @@ namespace FlickrNetTest
                 PlaceId = "X9sTR3BSUrqorQ"
             };
 
-            var photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            var photos = await Instance.PhotosSearchAsync(o);
 
-            Assert.IsNotNull(photos);
-            Assert.AreEqual(0, photos.Count);
+            Assert.That(photos, Is.Not.Null);
+            Assert.That(photos.Count, Is.EqualTo(0));
         }
 
         [Test, Ignore("Not currently working for some reason.")]
-        public async Task PhotosSearchGalleryPhotos(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchGalleryPhotos()
         {
             var o = new PhotoSearchOptions { UserId = TestData.TestUserId, InGallery = true, Tags = "art" };
-            var photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            var photos = await Instance.PhotosSearchAsync(o);
 
-            Assert.AreEqual(1, photos.Count, "Only one photo should have been returned.");
+            Assert.That(photos, Has.Count.EqualTo(1), "Only one photo should have been returned.");
         }
 
         [Test]
-        public async Task PhotosSearchUrlLimitTest(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchUrlLimitTest()
         {
             var o = new PhotoSearchOptions { Extras = PhotoSearchExtras.All, TagMode = TagMode.AnyTag };
             var sb = new StringBuilder();
             for (var i = 1; i < 200; i++) sb.Append("tagnumber" + i);
             o.Tags = sb.ToString();
 
-            await Instance.PhotosSearchAsync(o, cancellationToken);
+            await Instance.PhotosSearchAsync(o);
         }
 
         [Test]
-        public async Task PhotosSearchRussianCharacters(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchRussianCharacters()
         {
             var o = new PhotoSearchOptions
             {
                 Tags = "снег"
             };
 
-            var photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            var photos = await Instance.PhotosSearchAsync(o);
 
-            Assert.AreNotEqual(0, photos.Count, "Search should return some results.");
+            Assert.That(photos, Is.Not.Empty, "Search should return some results.");
         }
 
         [Test]
-        public async Task PhotosSearchRussianTagsReturned(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchRussianTagsReturned()
         {
             var o = new PhotoSearchOptions { PerPage = 200, Extras = PhotoSearchExtras.Tags, Tags = "фото" };
 
-            var photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            var photos = await Instance.PhotosSearchAsync(o);
 
             photos.Count.ShouldNotBe(0);
             photos.ShouldContain(p => p.Tags.Any(t => t == "фото"));
         }
 
         [Test]
-        public async Task PhotosSearchRussianTextReturned(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchRussianTextReturned()
         {
             const string russian = "фото";
 
             var o = new PhotoSearchOptions { PerPage = 200, Extras = PhotoSearchExtras.Tags | PhotoSearchExtras.Description, Text = russian };
 
-            var photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            var photos = await Instance.PhotosSearchAsync(o);
 
             photos.Count.ShouldNotBe(0);
             photos.ShouldContain(p => p.Tags.Any(t => t == russian) || p.Title.Contains(russian) || p.Description.Contains(russian));
@@ -789,20 +836,20 @@ namespace FlickrNetTest
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task PhotosSearchAuthRussianCharacters(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchAuthRussianCharacters()
         {
             var o = new PhotoSearchOptions
             {
                 Tags = "снег"
             };
 
-            var photos = await AuthInstance.PhotosSearchAsync(o, cancellationToken);
+            var photos = await AuthInstance.PhotosSearchAsync(o);
 
-            Assert.AreNotEqual(0, photos.Count, "Search should return some results.");
+            Assert.That(photos, Is.Not.Empty, "Search should return some results.");
         }
 
         [Test]
-        public async Task PhotosSearchRotation(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchRotation()
         {
             var o = new PhotoSearchOptions
             {
@@ -810,19 +857,19 @@ namespace FlickrNetTest
                 UserId = TestData.TestUserId,
                 PerPage = 100
             };
-            var photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            var photos = await Instance.PhotosSearchAsync(o);
             foreach (var photo in photos)
             {
-                Assert.IsTrue(photo.Rotation.HasValue, "Rotation should be set.");
+                Assert.That(photo.Rotation.HasValue, Is.True, "Rotation should be set.");
                 if (photo.PhotoId == "6861439677")
-                    Assert.AreEqual(90, photo.Rotation, "Rotation should be 90 for this photo.");
+                    Assert.That(photo.Rotation, Is.EqualTo(90), "Rotation should be 90 for this photo.");
                 if (photo.PhotoId == "6790104907")
-                    Assert.AreEqual(0, photo.Rotation, "Rotation should be 0 for this photo.");
+                    Assert.That(photo.Rotation, Is.EqualTo(0), "Rotation should be 0 for this photo.");
             }
         }
 
         [Test]
-        public async Task PhotosSearchLarge1600ImageSize(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchLarge1600ImageSize()
         {
             var o = new PhotoSearchOptions
             {
@@ -831,19 +878,19 @@ namespace FlickrNetTest
                 MinUploadDate = DateTime.UtcNow.AddDays(-1)
             };
 
-            var photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            var photos = await Instance.PhotosSearchAsync(o);
 
-            Assert.IsNotNull(photos, "PhotosSearch should not return a null instance.");
-            Assert.IsTrue(photos.Any(), "PhotoSearch should have returned some photos.");
-            Assert.IsTrue(
+            Assert.That(photos, Is.Not.Null, "PhotosSearch should not return a null instance.");
+            Assert.That(photos.Any(), Is.True, "PhotoSearch should have returned some photos.");
+            Assert.That(
                 photos.Any(
                     p =>
-                    !string.IsNullOrEmpty(p.Large1600Url) && p.Large1600Height.HasValue && p.Large1600Width.HasValue),
+                    !string.IsNullOrEmpty(p.Large1600Url) && p.Large1600Height.HasValue && p.Large1600Width.HasValue), Is.True,
                 "At least one photo should have a large1600 image url and height and width.");
         }
 
         [Test]
-        public async Task PhotosSearchLarge2048ImageSize(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchLarge2048ImageSize()
         {
             var o = new PhotoSearchOptions
             {
@@ -852,21 +899,21 @@ namespace FlickrNetTest
                 MinUploadDate = DateTime.UtcNow.AddDays(-1)
             };
 
-            var photos = await Instance.PhotosSearchAsync(o, cancellationToken);
+            var photos = await Instance.PhotosSearchAsync(o);
 
-            Assert.IsNotNull(photos, "PhotosSearch should not return a null instance.");
-            Assert.IsTrue(photos.Any(), "PhotoSearch should have returned some photos.");
-            Assert.IsTrue(
+            Assert.That(photos, Is.Not.Null, "PhotosSearch should not return a null instance.");
+            Assert.That(photos.Any(), Is.True, "PhotoSearch should have returned some photos.");
+            Assert.That(
                 photos.Any(
                     p =>
-                    !string.IsNullOrEmpty(p.Large2048Url) && p.Large2048Height.HasValue && p.Large2048Width.HasValue));
+                    !string.IsNullOrEmpty(p.Large2048Url) && p.Large2048Height.HasValue && p.Large2048Width.HasValue), Is.True);
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task PhotosSearchContactsPhotos(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchContactsPhotos()
         {
-            var contacts = (await AuthInstance.ContactsGetListAsync(1, 1000, cancellationToken)).Select(c => c.UserId).ToList();
+            var contacts = (await AuthInstance.ContactsGetListAsync(1, 1000)).Select(c => c.UserId).ToList();
 
             // Test with user id = "me"
             var o = new PhotoSearchOptions
@@ -876,35 +923,35 @@ namespace FlickrNetTest
                 PerPage = 50
             };
 
-            var photos = await AuthInstance.PhotosSearchAsync(o, cancellationToken);
+            var photos = await AuthInstance.PhotosSearchAsync(o);
 
-            Assert.IsNotNull(photos, "PhotosSearch should not return a null instance.");
-            Assert.IsTrue(photos.Any(), "PhotoSearch should have returned some photos.");
-            Assert.IsTrue(photos.All(p => p.UserId != TestData.TestUserId), "None of the photos should be mine.");
-            Assert.IsTrue(photos.All(p => contacts.Contains(p.UserId)), "UserID not found in list of contacts.");
+            Assert.That(photos, Is.Not.Null, "PhotosSearch should not return a null instance.");
+            Assert.That(photos.Any(), Is.True, "PhotoSearch should have returned some photos.");
+            Assert.That(photos.All(p => p.UserId != TestData.TestUserId), Is.True, "None of the photos should be mine.");
+            Assert.That(photos.All(p => contacts.Contains(p.UserId)), Is.True, "UserID not found in list of contacts.");
 
             // Retest with user id specified explicitly
             o.UserId = TestData.TestUserId;
-            photos = await AuthInstance.PhotosSearchAsync(o, cancellationToken);
+            photos = await AuthInstance.PhotosSearchAsync(o);
 
-            Assert.IsNotNull(photos, "PhotosSearch should not return a null instance.");
-            Assert.IsTrue(photos.Any(), "PhotoSearch should have returned some photos.");
-            Assert.IsTrue(photos.All(p => p.UserId != TestData.TestUserId), "None of the photos should be mine.");
-            Assert.IsTrue(photos.All(p => contacts.Contains(p.UserId)), "UserID not found in list of contacts.");
+            Assert.That(photos, Is.Not.Null, "PhotosSearch should not return a null instance.");
+            Assert.That(photos.Any(), Is.True, "PhotoSearch should have returned some photos.");
+            Assert.That(photos.All(p => p.UserId != TestData.TestUserId), Is.True, "None of the photos should be mine.");
+            Assert.That(photos.All(p => contacts.Contains(p.UserId)), Is.True, "UserID not found in list of contacts.");
         }
 
         [Test]
-        public async Task SearchByUsername(CancellationToken cancellationToken = default)
+        public async Task SearchByUsername()
         {
-            var user = await Instance.PeopleFindByUserNameAsync("Jesus Solana", cancellationToken);
+            var user = await Instance.PeopleFindByUserNameAsync("Jesus Solana");
 
-            var photos = await Instance.PhotosSearchAsync(new PhotoSearchOptions { Username = "Jesus Solana" }, cancellationToken);
+            var photos = await Instance.PhotosSearchAsync(new PhotoSearchOptions { Username = "Jesus Solana" });
 
-            Assert.AreEqual(user.UserId, photos.First().UserId);
+            Assert.That(photos.First().UserId, Is.EqualTo(user.UserId));
         }
 
         [Test]
-        public async Task SearchByExifExposure(CancellationToken cancellationToken = default)
+        public async Task SearchByExifExposure()
         {
             var options = new PhotoSearchOptions
             {
@@ -914,7 +961,7 @@ namespace FlickrNetTest
                 PerPage = 5
             };
 
-            var photos = await Instance.PhotosSearchAsync(options, cancellationToken);
+            var photos = await Instance.PhotosSearchAsync(options);
 
             foreach (var photo in photos)
             {
@@ -923,7 +970,7 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public async Task SearchByExifAperture(CancellationToken cancellationToken = default)
+        public async Task SearchByExifAperture()
         {
             var options = new PhotoSearchOptions
             {
@@ -933,7 +980,7 @@ namespace FlickrNetTest
                 PerPage = 5
             };
 
-            var photos = await Instance.PhotosSearchAsync(options, cancellationToken);
+            var photos = await Instance.PhotosSearchAsync(options);
 
             foreach (var photo in photos)
             {
@@ -942,7 +989,7 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public async Task SearchByExifFocalLength(CancellationToken cancellationToken = default)
+        public async Task SearchByExifFocalLength()
         {
             var options = new PhotoSearchOptions
             {
@@ -952,7 +999,7 @@ namespace FlickrNetTest
                 PerPage = 5
             };
 
-            var photos = await Instance.PhotosSearchAsync(options, cancellationToken);
+            var photos = await Instance.PhotosSearchAsync(options);
 
             foreach (var photo in photos)
             {
@@ -961,7 +1008,7 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public async Task ExcludeUserTest(CancellationToken cancellationToken = default)
+        public async Task ExcludeUserTest()
         {
             var options = new PhotoSearchOptions
             {
@@ -971,19 +1018,19 @@ namespace FlickrNetTest
                 PerPage = 10
             };
 
-            var photos = await Instance.PhotosSearchAsync(options, cancellationToken);
+            var photos = await Instance.PhotosSearchAsync(options);
 
             var firstUserId = photos.First().UserId;
 
             options.ExcludeUserID = firstUserId;
 
-            var nextPhotos = await Instance.PhotosSearchAsync(options, cancellationToken);
+            var nextPhotos = await Instance.PhotosSearchAsync(options);
 
-            Assert.IsFalse(nextPhotos.Any(p => p.UserId == firstUserId), "Should not be any photos for user {0}", firstUserId);
+            Assert.That(nextPhotos.Any(p => p.UserId == firstUserId), Is.False, "Should not be any photos for user {0}", firstUserId);
         }
 
         [Test]
-        public async Task GetPhotosByFoursquareVenueId(CancellationToken cancellationToken = default)
+        public async Task GetPhotosByFoursquareVenueId()
         {
             var venueid = "4ac518cef964a520f6a520e3";
 
@@ -992,14 +1039,14 @@ namespace FlickrNetTest
                 FoursquareVenueID = venueid
             };
 
-            var photos = await Instance.PhotosSearchAsync(options, cancellationToken);
+            var photos = await Instance.PhotosSearchAsync(options);
 
-            Assert.IsNotNull(photos);
-            Assert.AreNotEqual(0, photos.Count, "Should have returned some photos for 'Big Ben'");
+            Assert.That(photos, Is.Not.Null);
+            Assert.That(photos, Is.Not.Empty, "Should have returned some photos for 'Big Ben'");
         }
 
         [Test]
-        public async Task GetPhotosByFoursquareWoeId(CancellationToken cancellationToken = default)
+        public async Task GetPhotosByFoursquareWoeId()
         {
             // Seems to be the same as normal WOE IDs, so not sure what is different about the foursquare ones.
             var woeId = "44417";
@@ -1009,14 +1056,14 @@ namespace FlickrNetTest
                 FoursquareWoeID = woeId
             };
 
-            var photos = await Instance.PhotosSearchAsync(options, cancellationToken);
+            var photos = await Instance.PhotosSearchAsync(options);
 
-            Assert.IsNotNull(photos);
-            Assert.AreNotEqual(0, photos.Count, "Should have returned some photos for 'Big Ben'");
+            Assert.That(photos, Is.Not.Null);
+            Assert.That(photos, Is.Not.Empty, "Should have returned some photos for 'Big Ben'");
         }
 
         [Test]
-        public async Task CountFavesAndCountComments(CancellationToken cancellationToken = default)
+        public async Task CountFavesAndCountComments()
         {
             var options = new PhotoSearchOptions
             {
@@ -1024,14 +1071,14 @@ namespace FlickrNetTest
                 Tags = "colorful"
             };
 
-            var photos = await Instance.PhotosSearchAsync(options, cancellationToken);
+            var photos = await Instance.PhotosSearchAsync(options);
 
-            Assert.IsFalse(photos.Any(p => p.CountFaves == null), "Should not have any null CountFaves");
-            Assert.IsFalse(photos.Any(p => p.CountComments == null), "Should not have any null CountComments");
+            Assert.That(photos.Any(p => p.CountFaves == null), Is.False, "Should not have any null CountFaves");
+            Assert.That(photos.Any(p => p.CountComments == null), Is.False, "Should not have any null CountComments");
         }
 
         [Test]
-        public void ExcessiveTagsShouldNotThrowUriFormatException(CancellationToken cancellationToken = default)
+        public void ExcessiveTagsShouldNotThrowUriFormatException()
         {
             var list = Enumerable.Range(1, 9000).Select(i => "reallybigtag" + i).ToList();
             var options = new PhotoSearchOptions
@@ -1039,7 +1086,7 @@ namespace FlickrNetTest
                 Tags = string.Join(",", list)
             };
 
-            Should.Throw<FlickrApiException>(async () => await Instance.PhotosSearchAsync(options, cancellationToken));
+            Should.Throw<FlickrApiException>(async () => await Instance.PhotosSearchAsync(options));
         }
     }
 }

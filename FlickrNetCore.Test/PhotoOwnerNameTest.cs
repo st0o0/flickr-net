@@ -14,7 +14,7 @@ namespace FlickrNetTest
     public class PhotoOwnerNameTest : BaseTest
     {
         [Test]
-        public async Task PhotosSearchOwnerNameTest(CancellationToken cancellationToken = default)
+        public async Task PhotosSearchOwnerNameTest()
         {
             PhotoSearchOptions o = new()
             {
@@ -24,18 +24,18 @@ namespace FlickrNetTest
             };
 
             Flickr f = Instance;
-            PhotoCollection photos = await f.PhotosSearchAsync(o, cancellationToken);
+            PhotoCollection photos = await f.PhotosSearchAsync(o);
 
-            Assert.IsNotNull(photos[0].OwnerName);
+            Assert.That(photos[0].OwnerName, Is.Not.Null);
         }
 
         [Test]
-        public async Task PhotosGetContactsPublicPhotosOwnerNameTest(CancellationToken cancellationToken = default)
+        public async Task PhotosGetContactsPublicPhotosOwnerNameTest()
         {
             Flickr f = Instance;
-            PhotoCollection photos = await f.PhotosGetContactsPublicPhotosAsync(TestData.TestUserId, PhotoSearchExtras.OwnerName, cancellationToken);
+            PhotoCollection photos = await f.PhotosGetContactsPublicPhotosAsync(TestData.TestUserId, PhotoSearchExtras.OwnerName);
 
-            Assert.IsNotNull(photos[0].OwnerName);
+            Assert.That(photos[0].OwnerName, Is.Not.Null);
         }
     }
 }

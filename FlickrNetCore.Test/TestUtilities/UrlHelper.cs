@@ -24,10 +24,10 @@ namespace FlickrNetCore.Test.TestUtilities
         //    }
         //}
 
-        public static async Task<bool> Exists(string url, CancellationToken cancellationToken = default)
+        public static async Task<bool> Exists(string url)
         {
             using HttpClient client = new();
-            HttpResponseMessage result = await client.GetAsync(url, cancellationToken);
+            HttpResponseMessage result = await client.GetAsync(url);
             return result.StatusCode switch
             {
                 HttpStatusCode.Accepted => true,

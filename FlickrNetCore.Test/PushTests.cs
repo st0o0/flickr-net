@@ -8,25 +8,30 @@ namespace FlickrNetTest
     public class PushTests : BaseTest
     {
         [Test]
-        public async Task GetTopicsTest(CancellationToken cancellationToken = default)
+        public async Task GetTopicsTest()
         {
             var f = Instance;
 
-            var topics = await f.PushGetTopicsAsync(cancellationToken);
+            var topics = await f.PushGetTopicsAsync();
 
-            Assert.IsNotNull(topics);
-            Assert.AreNotEqual(0, topics.Length, "Should return greater than zero topics.");
-
-            Assert.IsTrue(topics.Contains("contacts_photos"), "Should include \"contacts_photos\".");
-            Assert.IsTrue(topics.Contains("contacts_faves"), "Should include \"contacts_faves\".");
-            Assert.IsTrue(topics.Contains("geotagged"), "Should include \"geotagged\".");
-            Assert.IsTrue(topics.Contains("airports"), "Should include \"airports\".");
+            Assert.That(topics, Is.Not.Null);
+            Assert.That(topics, Is.Not.Empty, "Should return greater than zero topics.");
+            Assert.Multiple(() =>
+            {
+                Assert.That(topics.Contains("contacts_photos"), Is.True, "Should include \"contacts_photos\".");
+                Assert.Multiple(() =>
+            {
+                Assert.That(topics.Contains("contacts_faves"), Is.True, "Should include \"contacts_faves\".");
+                Assert.That(topics.Contains("geotagged"), Is.True, "Should include \"geotagged\".");
+                Assert.That(topics.Contains("airports"), Is.True, "Should include \"airports\".");
+            });
+            });
         }
 
         [Test]
         [Category("AccessTokenRequired")]
         [Ignore("Wackylabs called is broken.")]
-        public async Task SubscribeUnsubscribeTest(CancellationToken cancellationToken = default)
+        public async Task SubscribeUnsubscribeTest()
         {
             var callback = "http://www.wackylabs.net/dev/push/test.php";
             var topic = "contacts_photos";
@@ -34,9 +39,9 @@ namespace FlickrNetTest
             var verify = "sync";
 
             var f = AuthInstance;
-            await f.PushSubscribeAsync(topic, callback, verify, null, lease, null, null, 0, 0, 0, RadiusUnit.None, GeoAccuracy.None, null, null, cancellationToken);
+            await f.PushSubscribeAsync(topic, callback, verify, null, lease, null, null, 0, 0, 0, RadiusUnit.None, GeoAccuracy.None, null, null);
 
-            var subscriptions = await f.PushGetSubscriptionsAsync(cancellationToken);
+            var subscriptions = await f.PushGetSubscriptionsAsync();
 
             bool found = false;
 
@@ -49,15 +54,15 @@ namespace FlickrNetTest
                 }
             }
 
-            Assert.IsTrue(found, "Should have found subscription.");
+            Assert.That(found, Is.True, "Should have found subscription.");
 
-            await f.PushUnsubscribeAsync(topic, callback, verify, null, cancellationToken);
+            await f.PushUnsubscribeAsync(topic, callback, verify, null);
         }
 
         [Test]
         [Category("AccessTokenRequired")]
         [Ignore("Wackylabs called is broken.")]
-        public async Task SubscribeTwiceUnsubscribeTest(CancellationToken cancellationToken = default)
+        public async Task SubscribeTwiceUnsubscribeTest()
         {
             var callback1 = "http://www.wackylabs.net/dev/push/test.php?id=4";
             var callback2 = "http://www.wackylabs.net/dev/push/test.php?id=5";
@@ -66,19 +71,19 @@ namespace FlickrNetTest
             var verify = "sync";
 
             var f = AuthInstance;
-            await f.PushSubscribeAsync(topic, callback1, verify, null, lease, null, null, 0, 0, 0, RadiusUnit.None, GeoAccuracy.None, null, null, cancellationToken);
-            await f.PushSubscribeAsync(topic, callback2, verify, null, lease, null, null, 0, 0, 0, RadiusUnit.None, GeoAccuracy.None, null, null, cancellationToken);
+            await f.PushSubscribeAsync(topic, callback1, verify, null, lease, null, null, 0, 0, 0, RadiusUnit.None, GeoAccuracy.None, null, null);
+            await f.PushSubscribeAsync(topic, callback2, verify, null, lease, null, null, 0, 0, 0, RadiusUnit.None, GeoAccuracy.None, null, null);
 
-            var subscriptions = await f.PushGetSubscriptionsAsync(cancellationToken);
+            var subscriptions = await f.PushGetSubscriptionsAsync();
 
             try
             {
-                Assert.IsTrue(subscriptions.Count > 1, "Should be more than one subscription.");
+                Assert.That(subscriptions.Count > 1, Is.True, "Should be more than one subscription.");
             }
             finally
             {
-                await f.PushUnsubscribeAsync(topic, callback1, verify, null, cancellationToken);
-                await f.PushUnsubscribeAsync(topic, callback2, verify, null, cancellationToken);
+                await f.PushUnsubscribeAsync(topic, callback1, verify, null);
+                await f.PushUnsubscribeAsync(topic, callback2, verify, null);
             }
         }
     }

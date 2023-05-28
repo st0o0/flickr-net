@@ -26,10 +26,10 @@ namespace FlickrNetCore.Test.Internals
             const string expected = "72157600072406095";
 
             var actual = UtilityMethods.CleanCollectionId(orig);
-            Assert.AreEqual(expected, actual);
+            Assert.That(actual, Is.EqualTo(expected));
 
             actual = UtilityMethods.CleanCollectionId(expected);
-            Assert.AreEqual(expected, actual);
+            Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
@@ -40,7 +40,7 @@ namespace FlickrNetCore.Test.Internals
                 var orig = pair.Key;
                 var expected = pair.Value;
                 var actual = UtilityMethods.DateToUnixTimestamp(orig);
-                Assert.AreEqual(expected, actual);
+                Assert.That(actual, Is.EqualTo(expected));
             }
         }
 
@@ -59,7 +59,7 @@ namespace FlickrNetCore.Test.Internals
                 var orig = pair.Key;
                 var expected = pair.Value;
                 var actual = UtilityMethods.DateToMySql(orig);
-                Assert.AreEqual(expected, actual, orig + " should have converted to " + expected);
+                Assert.That(actual, Is.EqualTo(expected), orig + " should have converted to " + expected);
             }
         }
 
@@ -72,7 +72,7 @@ namespace FlickrNetCore.Test.Internals
 
             var actual = UtilityMethods.ExtrasToString(extras);
 
-            Assert.AreEqual(expected, actual, "FlickrNet.Utils.ExtrasToString did not return the expected value.");
+            Assert.That(actual, Is.EqualTo(expected), "FlickrNet.Utils.ExtrasToString did not return the expected value.");
         }
 
         [Test]
@@ -84,7 +84,7 @@ namespace FlickrNetCore.Test.Internals
 
             var actual = UtilityMethods.ExtrasToString(extras);
 
-            Assert.AreEqual(expected, actual, "FlickrNet.Utils.ExtrasToString did not return the expected value.");
+            Assert.That(actual, Is.EqualTo(expected), "FlickrNet.Utils.ExtrasToString did not return the expected value.");
         }
 
         [Test]
@@ -96,7 +96,7 @@ namespace FlickrNetCore.Test.Internals
 
             var actual = UtilityMethods.ExtrasToString(extras);
 
-            Assert.AreEqual(expected, actual, "FlickrNet.Utils.ExtrasToString did not return the expected value.");
+            Assert.That(actual, Is.EqualTo(expected), "FlickrNet.Utils.ExtrasToString did not return the expected value.");
         }
 
         [Test]
@@ -111,7 +111,7 @@ namespace FlickrNetCore.Test.Internals
 
             var actual = UtilityMethods.ExtrasToString(extras);
 
-            Assert.AreEqual(expected, actual, "FlickrNet.Utils.ExtrasToString did not return the expected value.");
+            Assert.That(actual, Is.EqualTo(expected), "FlickrNet.Utils.ExtrasToString did not return the expected value.");
         }
 
         [Test]
@@ -132,7 +132,7 @@ namespace FlickrNetCore.Test.Internals
 
                 var actual = UtilityMethods.MachineTagModeToString(orig);
 
-                Assert.AreEqual(expected, actual);
+                Assert.That(actual, Is.EqualTo(expected));
             }
         }
 
@@ -153,7 +153,7 @@ namespace FlickrNetCore.Test.Internals
 
                 var actual = UtilityMethods.MySqlToDate(orig);
 
-                Assert.AreEqual(expected, actual);
+                Assert.That(actual, Is.EqualTo(expected));
             }
         }
 
@@ -162,13 +162,18 @@ namespace FlickrNetCore.Test.Internals
         {
             const string d = "2010-01-17 12:43:23";
             var d2 = UtilityMethods.ParseDateWithGranularity(d);
-
-            Assert.AreEqual(2010, d2.Year);
-            Assert.AreEqual(1, d2.Month);
-            Assert.AreEqual(17, d2.Day);
-            Assert.AreEqual(12, d2.Hour);
-            Assert.AreEqual(43, d2.Minute);
-            Assert.AreEqual(23, d2.Second);
+            Assert.Multiple(() =>
+            {
+                Assert.That(d2.Year, Is.EqualTo(2010));
+                Assert.Multiple(() =>
+            {
+                Assert.That(d2.Month, Is.EqualTo(1));
+                Assert.That(d2.Day, Is.EqualTo(17));
+                Assert.That(d2.Hour, Is.EqualTo(12));
+                Assert.That(d2.Minute, Is.EqualTo(43));
+                Assert.That(d2.Second, Is.EqualTo(23));
+            });
+            });
         }
 
         [Test]
@@ -176,13 +181,18 @@ namespace FlickrNetCore.Test.Internals
         {
             const string d = "2010-00-01 00:00:00";
             DateTime d2 = UtilityMethods.ParseDateWithGranularity(d);
-
-            Assert.AreEqual(2010, d2.Year);
-            Assert.AreEqual(1, d2.Month);
-            Assert.AreEqual(1, d2.Day);
-            Assert.AreEqual(0, d2.Hour);
-            Assert.AreEqual(0, d2.Minute);
-            Assert.AreEqual(0, d2.Second);
+            Assert.Multiple(() =>
+            {
+                Assert.That(d2.Year, Is.EqualTo(2010));
+                Assert.Multiple(() =>
+            {
+                Assert.That(d2.Month, Is.EqualTo(1));
+                Assert.That(d2.Day, Is.EqualTo(1));
+                Assert.That(d2.Hour, Is.EqualTo(0));
+                Assert.That(d2.Minute, Is.EqualTo(0));
+                Assert.That(d2.Second, Is.EqualTo(0));
+            });
+            });
         }
 
         [Test]
@@ -204,7 +214,7 @@ namespace FlickrNetCore.Test.Internals
 
                 var actual = UtilityMethods.ParseIdToMemberType(orig);
 
-                Assert.AreEqual(expected, actual);
+                Assert.That(actual, Is.EqualTo(expected));
             }
         }
 
@@ -226,7 +236,7 @@ namespace FlickrNetCore.Test.Internals
 
                 var actual = UtilityMethods.MemberTypeToString(orig);
 
-                Assert.AreEqual(expected, actual);
+                Assert.That(actual, Is.EqualTo(expected));
             }
         }
 
@@ -253,7 +263,7 @@ namespace FlickrNetCore.Test.Internals
 
                 var actual = UtilityMethods.SortOrderToString(orig);
 
-                Assert.AreEqual(expected, actual);
+                Assert.That(actual, Is.EqualTo(expected));
             }
         }
 
@@ -276,7 +286,7 @@ namespace FlickrNetCore.Test.Internals
 
                 var actual = UtilityMethods.SortOrderToString(orig);
 
-                Assert.AreEqual(expected, actual);
+                Assert.That(actual, Is.EqualTo(expected));
             }
         }
 
@@ -299,7 +309,7 @@ namespace FlickrNetCore.Test.Internals
 
                 var actual = UtilityMethods.TagModeToString(orig);
 
-                Assert.AreEqual(expected, actual);
+                Assert.That(actual, Is.EqualTo(expected));
             }
         }
 
@@ -311,7 +321,7 @@ namespace FlickrNetCore.Test.Internals
                 var expected = pair.Key;
                 var orig = pair.Value;
                 var actual = UtilityMethods.UnixTimestampToDate(orig);
-                Assert.AreEqual(expected, actual);
+                Assert.That(actual, Is.EqualTo(expected));
             }
         }
 
@@ -322,7 +332,7 @@ namespace FlickrNetCore.Test.Internals
             DateTime expectedResult = DateTime.MinValue;
             DateTime actualResult = UtilityMethods.UnixTimestampToDate(invalidTimestamp);
 
-            Assert.AreEqual(expectedResult, actualResult);
+            Assert.That(actualResult, Is.EqualTo(expectedResult));
         }
 
         [Test]
@@ -335,7 +345,7 @@ namespace FlickrNetCore.Test.Internals
 
             actual = UtilityMethods.UrlEncode(data);
 
-            Assert.AreEqual(expected, actual, "FlickrNet.Utils.UrlEncode did not return the expected value.");
+            Assert.That(actual, Is.EqualTo(expected), "FlickrNet.Utils.UrlEncode did not return the expected value.");
         }
 
         [Test]
@@ -348,7 +358,7 @@ namespace FlickrNetCore.Test.Internals
 
             actual = UtilityMethods.UrlEncode(data);
 
-            Assert.AreEqual(expected, actual, "FlickrNet.Utils.UrlEncode did not return the expected value.");
+            Assert.That(actual, Is.EqualTo(expected), "FlickrNet.Utils.UrlEncode did not return the expected value.");
         }
 
         [Test]
@@ -361,7 +371,7 @@ namespace FlickrNetCore.Test.Internals
 
             actual = UtilityMethods.UrlEncode(data);
 
-            Assert.AreEqual(expected, actual, "FlickrNet.Utils.UrlEncode did not return the expected value.");
+            Assert.That(actual, Is.EqualTo(expected), "FlickrNet.Utils.UrlEncode did not return the expected value.");
         }
 
         [Test]
@@ -374,7 +384,7 @@ namespace FlickrNetCore.Test.Internals
 
             actual = UtilityMethods.UrlEncode(data);
 
-            Assert.AreEqual(expected, actual, "FlickrNet.Utils.UrlEncode did not return the expected value.");
+            Assert.That(actual, Is.EqualTo(expected), "FlickrNet.Utils.UrlEncode did not return the expected value.");
         }
 
         [Test]
@@ -401,24 +411,24 @@ namespace FlickrNetCore.Test.Internals
                 var size = pair.Key;
                 var expected = pair.Value;
                 var actual = UtilityMethods.UrlFormat(farm, server, photoid, secret, size, extension);
-                Assert.AreEqual(expected, actual);
+                Assert.That(actual, Is.EqualTo(expected));
             }
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task UrlFormatPhotoInfoTest(CancellationToken cancellationToken = default)
+        public async Task UrlFormatPhotoInfoTest()
         {
             var photoId = "7176125763"; // Rainbow rose
             var size = "medium";
             var extension = "jpg";
             var expected = "https://farm9.staticflickr.com/8162/7176125763_7eac68f450.jpg";
 
-            var photoInfo = await AuthInstance.PhotosGetInfoAsync(photoId, cancellationToken);
+            var photoInfo = await AuthInstance.PhotosGetInfoAsync(photoId);
 
             var actual = UtilityMethods.UrlFormat(photoInfo, size, extension);
 
-            Assert.AreEqual(expected, actual);
+            Assert.That(actual, Is.EqualTo(expected));
         }
 
         [Test]
@@ -436,24 +446,24 @@ namespace FlickrNetCore.Test.Internals
         {
             AuthLevel a = AuthLevel.Delete;
             var b = UtilityMethods.AuthLevelToString(a);
-            Assert.AreEqual("delete", b);
+            Assert.That(b, Is.EqualTo("delete"));
 
             a = AuthLevel.Read;
             b = UtilityMethods.AuthLevelToString(a);
-            Assert.AreEqual("read", b);
+            Assert.That(b, Is.EqualTo("read"));
 
             a = AuthLevel.Write;
             b = UtilityMethods.AuthLevelToString(a);
-            Assert.AreEqual("write", b);
+            Assert.That(b, Is.EqualTo("write"));
 
             a = AuthLevel.None;
             b = UtilityMethods.AuthLevelToString(a);
-            Assert.AreEqual("none", b);
+            Assert.That(b, Is.EqualTo("none"));
 
             // Invalid auth level
             a = (AuthLevel)99;
             b = UtilityMethods.AuthLevelToString(a);
-            Assert.AreEqual(string.Empty, b);
+            Assert.That(b, Is.EqualTo(string.Empty));
         }
 
         [Test]
@@ -465,7 +475,7 @@ namespace FlickrNetCore.Test.Internals
         [Test]
         public void StyleToString_ParameterIsEmpty_ReturnsEmptyString()
         {
-            Assert.AreEqual(UtilityMethods.StylesToString(new List<Style>()), string.Empty);
+            Assert.That(string.Empty, Is.EqualTo(UtilityMethods.StylesToString(new List<Style>())));
         }
 
         [TestCase(Style.BlackAndWhite, "blackandwhite")]
@@ -474,7 +484,7 @@ namespace FlickrNetCore.Test.Internals
         [TestCase(Style.Pattern, "pattern")]
         public void StylesToString_ConvertsSingletonCollectionIntoString(Style style, string excepted)
         {
-            Assert.AreEqual(UtilityMethods.StylesToString(new[] { style }), excepted);
+            Assert.That(excepted, Is.EqualTo(UtilityMethods.StylesToString(new[] { style })));
         }
 
         [TestCase("blackandwhite,depthoffield", Style.BlackAndWhite, Style.DepthOfField)]
@@ -482,7 +492,7 @@ namespace FlickrNetCore.Test.Internals
         [TestCase("minimalism,pattern,depthoffield,blackandwhite", Style.Minimalism, Style.Pattern, Style.DepthOfField, Style.BlackAndWhite)]
         public void StylesToString_SeparatesValuesByComma(string expected, params Style[] styles)
         {
-            Assert.AreEqual(UtilityMethods.StylesToString(styles), expected);
+            Assert.That(expected, Is.EqualTo(UtilityMethods.StylesToString(styles)));
         }
 
         [TestCase("blackandwhite", Style.BlackAndWhite, Style.BlackAndWhite)]
@@ -490,7 +500,7 @@ namespace FlickrNetCore.Test.Internals
         [TestCase("blackandwhite,pattern,minimalism", Style.BlackAndWhite, Style.BlackAndWhite, Style.Pattern, Style.Minimalism, Style.Minimalism)]
         public void StylesToString_FiltersOutRecurrences(string expected, params Style[] styles)
         {
-            Assert.AreEqual(UtilityMethods.StylesToString(styles), expected);
+            Assert.That(expected, Is.EqualTo(UtilityMethods.StylesToString(styles)));
         }
     }
 }

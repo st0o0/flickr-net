@@ -103,7 +103,7 @@ namespace FlickrNetCore
             return await UploadDataAsync(stream, fileName, progress, replaceUri, parameters, cancellationToken);
         }
 
-        private async Task<string> UploadDataAsync(Stream imageStream, string fileName, IProgress<double> progress, Uri uploadUri, Dictionary<string, string> parameters, CancellationToken cancellationToken = default)
+        private static async Task<string> UploadDataAsync(Stream imageStream, string fileName, IProgress<double> progress, Uri uploadUri, Dictionary<string, string> parameters, CancellationToken cancellationToken = default)
         {
             string authHeader = FlickrResponder.OAuthCalculateAuthHeader(parameters);
 

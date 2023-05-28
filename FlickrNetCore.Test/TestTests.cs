@@ -12,7 +12,7 @@ namespace FlickrNetTest
     public class TestTests : BaseTest
     {
         [Test]
-        public async Task TestGenericGroupSearch(CancellationToken cancellationToken = default)
+        public async Task TestGenericGroupSearch()
         {
             Flickr f = Instance;
 
@@ -21,26 +21,26 @@ namespace FlickrNetTest
                 { "text", "Flowers" }
             };
 
-            UnknownResponse response = await f.TestGenericAsync("flickr.groups.search", parameters, cancellationToken);
+            UnknownResponse response = await f.TestGenericAsync("flickr.groups.search", parameters);
 
-            Assert.IsNotNull(response, "UnknownResponse should not be null.");
-            Assert.IsNotNull(response.ResponseXml, "ResponseXml should not be null.");
+            Assert.That(response, Is.Not.Null, "UnknownResponse should not be null.");
+            Assert.That(response.ResponseXml, Is.Not.Null, "ResponseXml should not be null.");
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task TestGenericTestNull(CancellationToken cancellationToken = default)
+        public async Task TestGenericTestNull()
         {
             Flickr f = AuthInstance;
 
-            UnknownResponse response = await f.TestGenericAsync("flickr.test.null", null, cancellationToken);
+            UnknownResponse response = await f.TestGenericAsync("flickr.test.null", null);
 
-            Assert.IsNotNull(response, "UnknownResponse should not be null.");
-            Assert.IsNotNull(response.ResponseXml, "ResponseXml should not be null.");
+            Assert.That(response, Is.Not.Null, "UnknownResponse should not be null.");
+            Assert.That(response.ResponseXml, Is.Not.Null, "ResponseXml should not be null.");
         }
 
         [Test]
-        public async Task TestEcho(CancellationToken cancellationToken = default)
+        public async Task TestEcho()
         {
             Flickr f = Instance;
             var parameters = new Dictionary<string, string>
@@ -48,15 +48,17 @@ namespace FlickrNetTest
                 { "test1", "testvalue" }
             };
 
-            Dictionary<string, string> returns = await f.TestEchoAsync(parameters, cancellationToken);
+            Dictionary<string, string> returns = await f.TestEchoAsync(parameters);
 
-            Assert.IsNotNull(returns);
+            Assert.That(returns, Is.Not.Null);
 
             // Was 3, now 11 because of extra oauth parameter used by default.
-            Assert.AreEqual(11, returns.Count);
-
-            Assert.AreEqual("flickr.test.echo", returns["method"]);
-            Assert.AreEqual("testvalue", returns["test1"]);
+            Assert.That(returns, Has.Count.EqualTo(11));
+            Assert.Multiple(() =>
+            {
+                Assert.That(returns["method"], Is.EqualTo("flickr.test.echo"));
+                Assert.That(returns["test1"], Is.EqualTo("testvalue"));
+            });
         }
     }
 }

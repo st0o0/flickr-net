@@ -37,7 +37,7 @@ namespace FlickrNetCore.Extensions
             {
                 await destination.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
                 totalBytesRead += bytesRead;
-                progress.Report(totalBytesRead);
+                progress?.Report(totalBytesRead);
             }
         }
     }

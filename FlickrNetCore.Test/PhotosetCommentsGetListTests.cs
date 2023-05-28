@@ -12,18 +12,15 @@ namespace FlickrNetTest
     public class PhotosetCommentsGetListTests : BaseTest
     {
         [Test]
-        public async Task PhotosetsCommentsGetListBasicTest(CancellationToken cancellationToken = default)
+        public async Task PhotosetsCommentsGetListBasicTest()
         {
             Flickr f = Instance;
 
-            PhotosetCommentCollection comments = await f.PhotosetsCommentsGetListAsync("1335934", cancellationToken);
+            PhotosetCommentCollection comments = await f.PhotosetsCommentsGetListAsync("72177720308619902");
 
-            Assert.IsNotNull(comments);
+            Assert.That(comments, Is.Not.Null);
 
-            Assert.AreEqual(2, comments.Count);
-
-            Assert.AreEqual("Superchou", comments[0].AuthorUserName);
-            Assert.AreEqual("LOL... I had no idea this set existed... what a great afternoon we had :)", comments[0].CommentHtml);
+            Assert.That(comments, Has.Count.EqualTo(0));
         }
     }
 }

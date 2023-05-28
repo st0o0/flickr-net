@@ -17,14 +17,16 @@ namespace FlickrNetTest
         {
             Flickr f = Instance;
 
-            PhotoCommentCollection comments = await f.PhotosCommentsGetListAsync("3546335765", cancellationToken);
+            PhotoCommentCollection comments = await f.PhotosCommentsGetListAsync("3546335765");
 
-            Assert.IsNotNull(comments, "PhotoCommentCollection should not be null.");
+            Assert.That(comments, Is.Not.Null, "PhotoCommentCollection should not be null.");
 
-            Assert.AreEqual(1, comments.Count, "Count should be one.");
-
-            Assert.AreEqual("ian1001", comments[0].AuthorUserName);
-            Assert.AreEqual("Sam lucky you NYCis so cool can't wait to go again it's my fav city along with San fran", comments[0].CommentHtml);
+            Assert.That(comments, Has.Count.EqualTo(1), "Count should be one.");
+            Assert.Multiple(() =>
+            {
+                Assert.That(comments[0].AuthorUserName, Is.EqualTo("ian1001"));
+                Assert.That(comments[0].CommentHtml, Is.EqualTo("Sam lucky you NYCis so cool can't wait to go again it's my fav city along with San fran"));
+            });
         }
 
         [Test]
@@ -34,7 +36,7 @@ namespace FlickrNetTest
             Flickr f = AuthInstance;
 
             var photos = await f.PhotosCommentsGetRecentForContactsAsync(cancellationToken);
-            Assert.IsNotNull(photos, "PhotoCollection should not be null.");
+            Assert.That(photos, Is.Not.Null, "PhotoCollection should not be null.");
         }
 
         [Test]
@@ -43,9 +45,9 @@ namespace FlickrNetTest
         {
             Flickr f = AuthInstance;
 
-            var photos = await f.PhotosCommentsGetRecentForContactsAsync(DateTime.Now.AddHours(-1), PhotoSearchExtras.All, 1, 20, cancellationToken);
-            Assert.IsNotNull(photos, "PhotoCollection should not be null.");
-            Assert.AreEqual(20, photos.PerPage);
+            var photos = await f.PhotosCommentsGetRecentForContactsAsync(DateTime.Now.AddHours(-1), PhotoSearchExtras.All, 1, 20);
+            Assert.That(photos, Is.Not.Null, "PhotoCollection should not be null.");
+            Assert.That(photos.PerPage, Is.EqualTo(20));
         }
     }
 }

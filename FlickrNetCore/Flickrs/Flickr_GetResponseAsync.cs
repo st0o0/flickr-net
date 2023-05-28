@@ -26,10 +26,6 @@ namespace FlickrNetCore
                     parameters["oauth_token"] = OAuthAccessToken;
                 }
             }
-            else
-            {
-                parameters["oauth_token"] = OAuthAccessToken;
-            }
 
             string url = CalculateUri(parameters, !string.IsNullOrEmpty(sharedSecret));
 
@@ -69,13 +65,13 @@ namespace FlickrNetCore
             {
                 LastResponse = result;
 
-                T t = new();
-                t.Load(result);
+                resultItem.Load(result);
             }
             catch (Exception)
             {
                 throw;
             }
+
             return resultItem;
         }
     }

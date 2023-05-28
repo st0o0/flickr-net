@@ -8,19 +8,19 @@ namespace FlickrNetTest
     public class PhotosetsOrderSets : BaseTest
     {
         [Test]
-        public async Task PhotosetsOrderSetsStringTest(CancellationToken cancellationToken = default)
+        public async Task PhotosetsOrderSetsStringTest()
         {
-            var mySets = await AuthInstance.PhotosetsGetListAsync(cancellationToken);
+            var mySets = await AuthInstance.PhotosetsGetListAsync();
 
-            await AuthInstance.PhotosetsOrderSetsAsync(string.Join(",", mySets.Select(myset => myset.PhotosetId).ToArray()), cancellationToken);
+            await AuthInstance.PhotosetsOrderSetsAsync(string.Join(",", mySets.Select(myset => myset.PhotosetId).ToArray()));
         }
 
         [Test]
-        public async Task PhotosetsOrderSetsArrayTest(CancellationToken cancellationToken = default)
+        public async Task PhotosetsOrderSetsArrayTest()
         {
-            var mySets = await AuthInstance.PhotosetsGetListAsync(cancellationToken);
+            var mySets = await AuthInstance.PhotosetsGetListAsync();
 
-            await AuthInstance.PhotosetsOrderSetsAsync(mySets.Select(myset => myset.PhotosetId).ToArray(), cancellationToken);
+            await AuthInstance.PhotosetsOrderSetsAsync(mySets.Select(myset => myset.PhotosetId).ToArray());
         }
     }
 }

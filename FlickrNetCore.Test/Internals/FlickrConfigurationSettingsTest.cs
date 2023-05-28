@@ -29,14 +29,19 @@ namespace FlickrNetTest.Internals
 
             var configNode = doc.SelectSingleNode("flickrNet");
             var target = new FlickrConfigurationSettings(configNode);
-
-            Assert.That(target.ApiKey, Is.EqualTo("apikey"));
-            Assert.That(target.SharedSecret, Is.EqualTo("secret"));
-            Assert.That(target.ApiToken, Is.EqualTo("thetoken"));
-            Assert.That(target.CacheDisabled, Is.True);
-            Assert.That(target.CacheSize, Is.EqualTo(1024));
-            Assert.That(target.CacheTimeout, Is.EqualTo(new TimeSpan(1, 0, 0)));
-            Assert.That(target.CacheLocation, Is.EqualTo("testlocation"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(target.ApiKey, Is.EqualTo("apikey"));
+                Assert.Multiple(() =>
+                  {
+                      Assert.That(target.SharedSecret, Is.EqualTo("secret"));
+                      Assert.That(target.ApiToken, Is.EqualTo("thetoken"));
+                      Assert.That(target.CacheDisabled, Is.True);
+                      Assert.That(target.CacheSize, Is.EqualTo(1024));
+                      Assert.That(target.CacheTimeout, Is.EqualTo(new TimeSpan(1, 0, 0)));
+                      Assert.That(target.CacheLocation, Is.EqualTo("testlocation"));
+                  });
+            });
         }
     }
 }

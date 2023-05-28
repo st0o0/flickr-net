@@ -15,10 +15,10 @@ namespace FlickrNetTest
 
             string userId = TestData.TestUserId;
             PhotoSearchExtras extras = PhotoSearchExtras.All;
-            var photos = await f.PhotosGetContactsPublicPhotosAsync(userId, extras, cancellationToken);
+            var photos = await f.PhotosGetContactsPublicPhotosAsync(userId, extras);
 
-            Assert.IsNotNull(photos);
-            Assert.AreNotEqual(0, photos.Count, "Should have returned more than 0 photos");
+            Assert.That(photos, Is.Not.Null);
+            Assert.That(photos, Is.Not.Empty, "Should have returned more than 0 photos");
         }
 
         [Test]
@@ -34,10 +34,10 @@ namespace FlickrNetTest
             bool includeSelf = false; // TODO: Initialize to an appropriate value
             PhotoSearchExtras extras = PhotoSearchExtras.None;
 
-            var photos = await f.PhotosGetContactsPublicPhotosAsync(userId, count, justFriends, singlePhoto, includeSelf, extras, cancellationToken);
+            var photos = await f.PhotosGetContactsPublicPhotosAsync(userId, count, justFriends, singlePhoto, includeSelf, extras);
 
-            Assert.IsNotNull(photos);
-            Assert.AreNotEqual(0, photos.Count, "Should have returned more than 0 photos");
+            Assert.That(photos, Is.Not.Null);
+            Assert.That(photos, Is.Not.Empty, "Should have returned more than 0 photos");
         }
 
         [Test]
@@ -52,10 +52,10 @@ namespace FlickrNetTest
             bool singlePhoto = true;
             bool includeSelf = false;
 
-            var photos = await f.PhotosGetContactsPublicPhotosAsync(userId, count, justFriends, singlePhoto, includeSelf, cancellationToken);
+            var photos = await f.PhotosGetContactsPublicPhotosAsync(userId, count, justFriends, singlePhoto, includeSelf);
 
-            Assert.IsNotNull(photos);
-            Assert.AreNotEqual(0, photos.Count, "Should have returned more than 0 photos");
+            Assert.That(photos, Is.Not.Null);
+            Assert.That(photos, Is.Not.Empty, "Should have returned more than 0 photos");
         }
 
         [Test]
@@ -65,10 +65,10 @@ namespace FlickrNetTest
 
             string userId = TestData.TestUserId;
 
-            var photos = await f.PhotosGetContactsPublicPhotosAsync(userId, cancellationToken);
+            var photos = await f.PhotosGetContactsPublicPhotosAsync(userId);
 
-            Assert.IsNotNull(photos);
-            Assert.AreNotEqual(0, photos.Count, "Should have returned more than 0 photos");
+            Assert.That(photos, Is.Not.Null);
+            Assert.That(photos, Is.Not.Empty, "Should have returned more than 0 photos");
         }
 
         [Test]
@@ -81,10 +81,10 @@ namespace FlickrNetTest
             int count = 5;
             PhotoSearchExtras extras = PhotoSearchExtras.None;
 
-            var photos = await f.PhotosGetContactsPublicPhotosAsync(userId, count, extras, cancellationToken);
+            var photos = await f.PhotosGetContactsPublicPhotosAsync(userId, count, extras);
 
-            Assert.IsNotNull(photos);
-            Assert.AreNotEqual(0, photos.Count, "Should have returned more than 0 photos");
+            Assert.That(photos, Is.Not.Null);
+            Assert.That(photos, Is.Not.Empty, "Should have returned more than 0 photos");
         }
 
         [Test]
@@ -96,10 +96,10 @@ namespace FlickrNetTest
 
             int count = 5;
 
-            var photos = await f.PhotosGetContactsPublicPhotosAsync(userId, count, cancellationToken);
+            var photos = await f.PhotosGetContactsPublicPhotosAsync(userId, count);
 
-            Assert.IsNotNull(photos);
-            Assert.AreNotEqual(0, photos.Count, "Should have returned more than 0 photos");
+            Assert.That(photos, Is.Not.Null);
+            Assert.That(photos, Is.Not.Empty, "Should have returned more than 0 photos");
         }
     }
 }

@@ -16,7 +16,7 @@ namespace FlickrNetTest
 
             var e = b.DiagonalDistanceInMiles();
 
-            Assert.AreNotEqual(0, e);
+            Assert.That(e, Is.Not.EqualTo(0));
         }
 
         [Test]
@@ -35,7 +35,7 @@ namespace FlickrNetTest
             var b = new BoundaryBox(8.68194, 50.11222, 13.29750, 52.52222);
 
             var e = b.DiagonalDistanceInMiles();
-            Assert.IsTrue(259.9 < e && e < 260.0);
+            Assert.That(259.9 < e && e < 260.0, Is.True);
         }
 
         [Test]
@@ -60,11 +60,16 @@ namespace FlickrNetTest
         public void BoundaryBoxWithValidPointStringSetCorrectly()
         {
             var b = new BoundaryBox("1,2,3,4");
-
-            Assert.That(b.MinimumLongitude, Is.EqualTo(1M));
-            Assert.That(b.MinimumLatitude, Is.EqualTo(2M));
-            Assert.That(b.MaximumLongitude, Is.EqualTo(3M));
-            Assert.That(b.MaximumLatitude, Is.EqualTo(4M));
+            Assert.Multiple(() =>
+            {
+                Assert.That(b.MinimumLongitude, Is.EqualTo(1M));
+                Assert.Multiple(() =>
+            {
+                Assert.That(b.MinimumLatitude, Is.EqualTo(2M));
+                Assert.That(b.MaximumLongitude, Is.EqualTo(3M));
+                Assert.That(b.MaximumLatitude, Is.EqualTo(4M));
+            });
+            });
         }
     }
 }

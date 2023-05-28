@@ -16,246 +16,281 @@ namespace FlickrNetTest
     public class PeopleTests : BaseTest
     {
         [Test]
-        public async Task PeopleGetPhotosOfBasicTest(CancellationToken cancellationToken = default)
+        public async Task PeopleGetPhotosOfBasicTest()
         {
-            PeoplePhotoCollection p = await Instance.PeopleGetPhotosOfAsync(TestData.TestUserId, cancellationToken);
+            PeoplePhotoCollection p = await Instance.PeopleGetPhotosOfAsync(TestData.TestUserId);
 
-            Assert.IsNotNull(p, "PeoplePhotos should not be null.");
-            Assert.AreNotEqual(0, p.Count, "PeoplePhotos.Count should be greater than zero.");
-            Assert.IsTrue(p.PerPage >= p.Count, "PerPage should be the same or greater than the number of photos returned.");
+            Assert.That(p, Is.Not.Null, "PeoplePhotos should not be null.");
+            Assert.That(p, Is.Not.Empty, "PeoplePhotos.Count should be greater than zero.");
+            Assert.That(p.PerPage >= p.Count, Is.True, "PerPage should be the same or greater than the number of photos returned.");
         }
 
         [Test]
-        public void PeopleGetPhotosOfAuthRequired(CancellationToken cancellationToken = default)
+        public void PeopleGetPhotosOfAuthRequired()
         {
-            Should.Throw<SignatureRequiredException>(async () => await Instance.PeopleGetPhotosOfAsync(cancellationToken));
-        }
-
-        [Test]
-        [Category("AccessTokenRequired")]
-        public async Task PeopleGetPhotosOfMe(CancellationToken cancellationToken = default)
-        {
-            PeoplePhotoCollection p = await AuthInstance.PeopleGetPhotosOfAsync(cancellationToken);
-
-            Assert.IsNotNull(p, "PeoplePhotos should not be null.");
-            Assert.AreNotEqual(0, p.Count, "PeoplePhotos.Count should be greater than zero.");
-            Assert.IsTrue(p.PerPage >= p.Count, "PerPage should be the same or greater than the number of photos returned.");
+            Should.Throw<SignatureRequiredException>(async () => await Instance.PeopleGetPhotosOfAsync());
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task PeopleGetPhotosBasicTest(CancellationToken cancellationToken = default)
+        public async Task PeopleGetPhotosOfMe()
         {
-            PhotoCollection photos = await AuthInstance.PeopleGetPhotosAsync(cancellationToken);
+            PeoplePhotoCollection p = await AuthInstance.PeopleGetPhotosOfAsync();
 
-            Assert.IsNotNull(photos);
-            Assert.AreNotEqual(0, photos.Count, "Count should not be zero.");
-            Assert.IsTrue(photos.Total > 1000, "Total should be greater than 1000.");
+            Assert.That(p, Is.Not.Null, "PeoplePhotos should not be null.");
+            Assert.That(p, Is.Not.Empty, "PeoplePhotos.Count should be greater than zero.");
+            Assert.That(p.PerPage >= p.Count, Is.True, "PerPage should be the same or greater than the number of photos returned.");
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task PeopleGetPhotosFullParamTest(CancellationToken cancellationToken = default)
+        public async Task PeopleGetPhotosBasicTest()
+        {
+            PhotoCollection photos = await AuthInstance.PeopleGetPhotosAsync();
+
+            Assert.That(photos, Is.Not.Null);
+            Assert.That(photos, Is.Not.Empty, "Count should not be zero.");
+            Assert.That(photos.Total > 1000, Is.True, "Total should be greater than 1000.");
+        }
+
+        [Test]
+        [Category("AccessTokenRequired")]
+        public async Task PeopleGetPhotosFullParamTest()
         {
             PhotoCollection photos = await AuthInstance.PeopleGetPhotosAsync(TestData.TestUserId, SafetyLevel.Safe, new DateTime(2010, 1, 1),
                                                        new DateTime(2012, 1, 1), new DateTime(2010, 1, 1),
                                                        new DateTime(2012, 1, 1), ContentTypeSearch.All,
-                                                       PrivacyFilter.PublicPhotos, PhotoSearchExtras.All, 1, 20, cancellationToken);
+                                                       PrivacyFilter.PublicPhotos, PhotoSearchExtras.All, 1, 20);
 
-            Assert.IsNotNull(photos);
-            Assert.AreEqual(20, photos.Count, "Count should be twenty.");
+            Assert.That(photos, Is.Not.Null);
+            Assert.That(photos, Has.Count.EqualTo(20), "Count should be twenty.");
         }
 
         [Test]
-        public async Task PeopleGetInfoBasicTestUnauth(CancellationToken cancellationToken = default)
+        public async Task PeopleGetInfoBasicTestUnauth()
         {
             Flickr f = Instance;
-            Person p = await f.PeopleGetInfoAsync(TestData.TestUserId, cancellationToken);
-
-            Assert.AreEqual("Sam Judson", p.UserName);
-            Assert.AreEqual("Sam Judson", p.RealName);
-            Assert.AreEqual("samjudson", p.PathAlias);
-            Assert.IsFalse(p.IsPro, "IsPro should be true.");
-            Assert.AreEqual("Newcastle, UK", p.Location);
-            Assert.AreEqual("+00:00", p.TimeZoneOffset);
-            Assert.AreEqual("GMT: Dublin, Edinburgh, Lisbon, London", p.TimeZoneLabel);
-            Assert.IsNotNull(p.Description, "Description should not be null.");
-            Assert.IsTrue(p.Description.Length > 0, "Description should not be empty");
+            Person p = await f.PeopleGetInfoAsync(TestData.TestUserId);
+            Assert.Multiple(() =>
+            {
+                Assert.That(p.UserName, Is.EqualTo("Sam Judson"));
+                Assert.Multiple(() =>
+            {
+                Assert.That(p.RealName, Is.EqualTo("Sam Judson"));
+                Assert.That(p.PathAlias, Is.EqualTo("samjudson"));
+            });
+                Assert.That(p.IsPro, Is.False, "IsPro should be true.");
+                Assert.Multiple(() =>
+                {
+                    Assert.That(p.Location, Is.EqualTo("Newcastle, UK"));
+                    Assert.Multiple(() =>
+                {
+                    Assert.That(p.TimeZoneOffset, Is.EqualTo("+00:00"));
+                    Assert.That(p.TimeZoneLabel, Is.EqualTo("GMT: Dublin, Edinburgh, Lisbon, London"));
+                    Assert.That(p.Description, Is.Not.Null, "Description should not be null.");
+                });
+                    Assert.That(p.Description.Length > 0, Is.True, "Description should not be empty");
+                });
+            });
         }
 
         [Test]
-        public async Task PeopleGetInfoGenderNoAuthTest(CancellationToken cancellationToken = default)
+        public async Task PeopleGetInfoGenderNoAuthTest()
         {
             Flickr f = Instance;
-            Person p = await f.PeopleGetInfoAsync("10973297@N00", cancellationToken);
+            Person p = await f.PeopleGetInfoAsync("10973297@N00");
 
-            Assert.IsNotNull(p, "Person object should be returned");
-            Assert.IsNull(p.Gender, "Gender should be null as not authenticated.");
+            Assert.That(p, Is.Not.Null, "Person object should be returned");
+            Assert.That(p.Gender, Is.Null, "Gender should be null as not authenticated.");
 
-            Assert.IsNull(p.IsReverseContact, "IsReverseContact should not be null.");
-            Assert.IsNull(p.IsContact, "IsContact should be null.");
-            Assert.IsNull(p.IsIgnored, "IsIgnored should be null.");
-            Assert.IsNull(p.IsFriend, "IsFriend should be null.");
+            Assert.That(p.IsReverseContact, Is.Null, "IsReverseContact should not be null.");
+            Assert.That(p.IsContact, Is.Null, "IsContact should be null.");
+            Assert.That(p.IsIgnored, Is.Null, "IsIgnored should be null.");
+            Assert.That(p.IsFriend, Is.Null, "IsFriend should be null.");
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task PeopleGetInfoGenderTest(CancellationToken cancellationToken = default)
+        public async Task PeopleGetInfoGenderTest()
         {
             Flickr f = AuthInstance;
-            Person p = await f.PeopleGetInfoAsync("10973297@N00", cancellationToken);
+            Person p = await f.PeopleGetInfoAsync("10973297@N00");
 
-            Assert.IsNotNull(p, "Person object should be returned");
-            Assert.AreEqual("F", p.Gender, "Gender of M should be returned");
+            Assert.That(p, Is.Not.Null, "Person object should be returned");
+            Assert.That(p.Gender, Is.EqualTo("F"), "Gender of M should be returned");
+            Assert.Multiple(() =>
+            {
+                Assert.That(p.IsReverseContact, Is.Not.Null, "IsReverseContact should not be null.");
+                Assert.Multiple(() =>
+            {
+                Assert.That(p.IsContact, Is.Not.Null, "IsContact should not be null.");
+                Assert.That(p.IsIgnored, Is.Not.Null, "IsIgnored should not be null.");
+                Assert.That(p.IsFriend, Is.Not.Null, "IsFriend should not be null.");
 
-            Assert.IsNotNull(p.IsReverseContact, "IsReverseContact should not be null.");
-            Assert.IsNotNull(p.IsContact, "IsContact should not be null.");
-            Assert.IsNotNull(p.IsIgnored, "IsIgnored should not be null.");
-            Assert.IsNotNull(p.IsFriend, "IsFriend should not be null.");
-
-            Assert.IsNotNull(p.PhotosSummary, "PhotosSummary should not be null.");
+                Assert.That(p.PhotosSummary, Is.Not.Null, "PhotosSummary should not be null.");
+            });
+            });
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task PeopleGetInfoBuddyIconTest(CancellationToken cancellationToken = default)
+        public async Task PeopleGetInfoBuddyIconTest()
         {
             Flickr f = AuthInstance;
-            Person p = await f.PeopleGetInfoAsync(TestData.TestUserId, cancellationToken);
-            Assert.IsTrue(p.BuddyIconUrl.Contains(".staticflickr.com/"), "Buddy icon doesn't contain correct details.");
+            Person p = await f.PeopleGetInfoAsync(TestData.TestUserId);
+            Assert.That(p.BuddyIconUrl.Contains(".staticflickr.com/"), Is.True, "Buddy icon doesn't contain correct details.");
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task PeopleGetInfoSelfTest(CancellationToken cancellationToken = default)
-        {
-            Flickr f = AuthInstance;
-
-            Person p = await f.PeopleGetInfoAsync(TestData.TestUserId, cancellationToken);
-
-            Assert.IsNotNull(p.MailboxSha1Hash, "MailboxSha1Hash should not be null.");
-            Assert.IsNotNull(p.PhotosSummary, "PhotosSummary should not be null.");
-            Assert.AreNotEqual(0, p.PhotosSummary.Views, "PhotosSummary.Views should not be zero.");
-        }
-
-        [Test]
-        [Category("AccessTokenRequired")]
-        public async Task PeopleGetGroupsTest(CancellationToken cancellationToken = default)
+        public async Task PeopleGetInfoSelfTest()
         {
             Flickr f = AuthInstance;
 
-            var groups = await f.PeopleGetGroupsAsync(TestData.TestUserId, cancellationToken);
-
-            Assert.IsNotNull(groups);
-            Assert.AreNotEqual(0, groups.Count);
+            Person p = await f.PeopleGetInfoAsync(TestData.TestUserId);
+            Assert.Multiple(() =>
+            {
+                Assert.That(p.MailboxSha1Hash, Is.Not.Null, "MailboxSha1Hash should not be null.");
+                Assert.That(p.PhotosSummary, Is.Not.Null, "PhotosSummary should not be null.");
+            });
+            Assert.That(p.PhotosSummary.Views, Is.Not.EqualTo(0), "PhotosSummary.Views should not be zero.");
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task PeopleGetLimitsTest(CancellationToken cancellationToken = default)
+        public async Task PeopleGetGroupsTest()
+        {
+            Flickr f = AuthInstance;
+
+            var groups = await f.PeopleGetGroupsAsync(TestData.TestUserId);
+
+            Assert.That(groups, Is.Not.Null);
+            Assert.That(groups, Is.Not.Empty);
+        }
+
+        [Test]
+        [Category("AccessTokenRequired")]
+        public async Task PeopleGetLimitsTest()
         {
             var f = AuthInstance;
 
-            var limits = await f.PeopleGetLimitsAsync(cancellationToken);
+            var limits = await f.PeopleGetLimitsAsync();
 
-            Assert.IsNotNull(limits);
-
-            Assert.AreEqual(0, limits.MaximumDisplayPixels);
-            Assert.AreEqual(209715200, limits.MaximumPhotoUpload);
-            Assert.AreEqual(1073741824, limits.MaximumVideoUpload);
-            Assert.AreEqual(180, limits.MaximumVideoDuration);
+            Assert.That(limits, Is.Not.Null);
+            Assert.Multiple(() =>
+            {
+                Assert.That(limits.MaximumDisplayPixels, Is.EqualTo(0));
+                Assert.That(limits.MaximumPhotoUpload, Is.EqualTo(209715200));
+                Assert.That(limits.MaximumVideoUpload, Is.EqualTo(1073741824));
+                Assert.That(limits.MaximumVideoDuration, Is.EqualTo(180));
+            });
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task PeopleFindByUsername(CancellationToken cancellationToken = default)
+        public async Task PeopleFindByUsername()
         {
             Flickr f = AuthInstance;
 
-            FoundUser user = await f.PeopleFindByUserNameAsync("Sam Judson", cancellationToken);
-
-            Assert.AreEqual("41888973@N00", user.UserId);
-            Assert.AreEqual("Sam Judson", user.UserName);
+            FoundUser user = await f.PeopleFindByUserNameAsync("Sam Judson");
+            Assert.Multiple(() =>
+            {
+                Assert.That(user.UserId, Is.EqualTo("41888973@N00"));
+                Assert.That(user.UserName, Is.EqualTo("Sam Judson"));
+            });
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task PeopleFindByEmail(CancellationToken cancellationToken = default)
+        public async Task PeopleFindByEmail()
         {
             Flickr f = AuthInstance;
 
-            FoundUser user = await f.PeopleFindByEmailAsync("samjudson@gmail.com", cancellationToken);
-
-            Assert.AreEqual("41888973@N00", user.UserId);
-            Assert.AreEqual("Sam Judson", user.UserName);
+            FoundUser user = await f.PeopleFindByEmailAsync("samjudson@gmail.com");
+            Assert.Multiple(() =>
+            {
+                Assert.That(user.UserId, Is.EqualTo("41888973@N00"));
+                Assert.That(user.UserName, Is.EqualTo("Sam Judson"));
+            });
         }
 
         [Test]
-        public async Task PeopleGetPublicPhotosBasicTest(CancellationToken cancellationToken = default)
+        public async Task PeopleGetPublicPhotosBasicTest()
         {
             var f = Instance;
-            var photos = await f.PeopleGetPublicPhotosAsync(TestData.TestUserId, 1, 100, SafetyLevel.None, PhotoSearchExtras.OriginalDimensions, cancellationToken);
+            var photos = await f.PeopleGetPublicPhotosAsync(TestData.TestUserId, 1, 100, SafetyLevel.None, PhotoSearchExtras.OriginalDimensions);
 
-            Assert.IsNotNull(photos);
-            Assert.AreNotEqual(0, photos.Count);
+            Assert.That(photos, Is.Not.Null);
+            Assert.That(photos, Is.Not.Empty);
 
             foreach (var photo in photos)
             {
-                Assert.IsNotNull(photo.PhotoId, "PhotoId should not be null.");
-                Assert.AreEqual(TestData.TestUserId, photo.UserId);
-                Assert.AreNotEqual(0, photo.OriginalWidth, "OriginalWidth should not be zero.");
-                Assert.AreNotEqual(0, photo.OriginalHeight, "OriginalHeight should not be zero.");
+                Assert.Multiple(() =>
+                {
+                    Assert.That(photo.PhotoId, Is.Not.Null, "PhotoId should not be null.");
+                    Assert.That(photo.UserId, Is.EqualTo(TestData.TestUserId));
+                    Assert.That(photo.OriginalWidth, Is.Not.EqualTo(0), "OriginalWidth should not be zero.");
+                    Assert.That(photo.OriginalHeight, Is.Not.EqualTo(0), "OriginalHeight should not be zero.");
+                });
             }
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task PeopleGetPublicGroupsBasicTest(CancellationToken cancellationToken = default)
+        public async Task PeopleGetPublicGroupsBasicTest()
         {
             Flickr f = AuthInstance;
 
-            GroupInfoCollection groups = await f.PeopleGetPublicGroupsAsync(TestData.TestUserId, cancellationToken);
+            GroupInfoCollection groups = await f.PeopleGetPublicGroupsAsync(TestData.TestUserId);
 
-            Assert.AreNotEqual(0, groups.Count, "PublicGroupInfoCollection.Count should not be zero.");
+            Assert.That(groups, Is.Not.Empty, "PublicGroupInfoCollection.Count should not be zero.");
 
             foreach (GroupInfo group in groups)
             {
-                Assert.IsNotNull(group.GroupId, "GroupId should not be null.");
-                Assert.IsNotNull(group.GroupName, "GroupName should not be null.");
+                Assert.Multiple(() =>
+                {
+                    Assert.That(group.GroupId, Is.Not.Null, "GroupId should not be null.");
+                    Assert.That(group.GroupName, Is.Not.Null, "GroupName should not be null.");
+                });
             }
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task PeopleGetUploadStatusBasicTest(CancellationToken cancellationToken = default)
+        public async Task PeopleGetUploadStatusBasicTest()
         {
-            var u = await AuthInstance.PeopleGetUploadStatusAsync(cancellationToken);
+            var u = await AuthInstance.PeopleGetUploadStatusAsync();
 
-            Assert.IsNotNull(u);
-            Assert.IsNotNull(u.UserId);
-            Assert.IsNotNull(u.UserName);
-            Assert.AreNotEqual(0, u.FileSizeMax);
+            Assert.That(u, Is.Not.Null);
+            Assert.Multiple(() =>
+            {
+                Assert.That(u.UserId, Is.Not.Null);
+                Assert.That(u.UserName, Is.Not.Null);
+            });
+            Assert.That(u.FileSizeMax, Is.Not.EqualTo(0));
         }
 
         [Test]
-        public async Task PeopleGetInfoBlankDate(CancellationToken cancellationToken = default)
+        public async Task PeopleGetInfoBlankDate()
         {
-            var p = await Instance.PeopleGetInfoAsync("18387778@N00", cancellationToken);
+            var p = await Instance.PeopleGetInfoAsync("18387778@N00");
         }
 
         [Test]
-        public async Task PeopleGetInfoZeroDate(CancellationToken cancellationToken = default)
+        public async Task PeopleGetInfoZeroDate()
         {
-            var p = await Instance.PeopleGetInfoAsync("47963952@N03", cancellationToken);
+            var p = await Instance.PeopleGetInfoAsync("47963952@N03");
         }
 
         [Test]
-        public async Task PeopleGetInfoInternationalCharacters(CancellationToken cancellationToken = default)
+        public async Task PeopleGetInfoInternationalCharacters()
         {
-            var p = await Instance.PeopleGetInfoAsync("24754141@N08", cancellationToken);
-
-            Assert.AreEqual("24754141@N08", p.UserId, "UserId should match.");
-            Assert.AreEqual("Pierre Hsiu 脩丕政", p.RealName, "RealName should match");
+            var p = await Instance.PeopleGetInfoAsync("24754141@N08");
+            Assert.Multiple(() =>
+            {
+                Assert.That(p.UserId, Is.EqualTo("24754141@N08"), "UserId should match.");
+                Assert.That(p.RealName, Is.EqualTo("Pierre Hsiu 脩丕政"), "RealName should match");
+            });
         }
     }
 }

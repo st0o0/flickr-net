@@ -14,27 +14,27 @@ namespace FlickrNetTest
     public class ReflectionMethodTests : BaseTest
     {
         [Test]
-        public async Task ReflectionMethodsBasic(CancellationToken cancellationToken = default)
+        public async Task ReflectionMethodsBasic()
         {
             Flickr f = Instance;
 
-            MethodCollection methodNames = await f.ReflectionGetMethodsAsync(cancellationToken);
+            MethodCollection methodNames = await f.ReflectionGetMethodsAsync();
 
-            Assert.IsNotNull(methodNames, "Should not be null");
-            Assert.AreNotEqual(0, methodNames.Count, "Should return some method names.");
-            Assert.IsNotNull(methodNames[0], "First item should not be null");
+            Assert.That(methodNames, Is.Not.Null, "Should not be null");
+            Assert.That(methodNames, Is.Not.Empty, "Should return some method names.");
+            Assert.That(methodNames[0], Is.Not.Null, "First item should not be null");
         }
 
         [Test]
-        public async Task ReflectionMethodsCheckWeSupport(CancellationToken cancellationToken = default)
+        public async Task ReflectionMethodsCheckWeSupport()
         {
             Flickr f = Instance;
 
-            MethodCollection methodNames = await f.ReflectionGetMethodsAsync(cancellationToken);
+            MethodCollection methodNames = await f.ReflectionGetMethodsAsync();
 
-            Assert.IsNotNull(methodNames, "Should not be null");
-            Assert.AreNotEqual(0, methodNames.Count, "Should return some method names.");
-            Assert.IsNotNull(methodNames[0], "First item should not be null");
+            Assert.That(methodNames, Is.Not.Null, "Should not be null");
+            Assert.That(methodNames, Is.Not.Empty, "Should return some method names.");
+            Assert.That(methodNames[0], Is.Not.Null, "First item should not be null");
 
             Type type = typeof(Flickr);
             MethodInfo[] methods = type.GetMethods();
@@ -67,15 +67,15 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public async Task ReflectionMethodsCheckWeSupportAsync(CancellationToken cancellationToken = default)
+        public async Task ReflectionMethodsCheckWeSupportAsync()
         {
             Flickr f = Instance;
 
-            MethodCollection methodNames = await f.ReflectionGetMethodsAsync(cancellationToken);
+            MethodCollection methodNames = await f.ReflectionGetMethodsAsync();
 
-            Assert.IsNotNull(methodNames, "Should not be null");
-            Assert.AreNotEqual(0, methodNames.Count, "Should return some method names.");
-            Assert.IsNotNull(methodNames[0], "First item should not be null");
+            Assert.That(methodNames, Is.Not.Null, "Should not be null");
+            Assert.That(methodNames, Is.Not.Empty, "Should return some method names.");
+            Assert.That(methodNames[0], Is.Not.Null, "First item should not be null");
 
             Type type = typeof(Flickr);
             MethodInfo[] methods = type.GetMethods();
@@ -108,11 +108,11 @@ namespace FlickrNetTest
         }
 
         [Test]
-        public async Task ReflectionGetMethodInfoSearchArgCheck(CancellationToken cancellationToken = default)
+        public async Task ReflectionGetMethodInfoSearchArgCheck()
         {
             PropertyInfo[] properties = typeof(PhotoSearchOptions).GetProperties();
 
-            Method flickrMethod = await Instance.ReflectionGetMethodInfoAsync("flickr.photos.search", cancellationToken);
+            Method flickrMethod = await Instance.ReflectionGetMethodInfoAsync("flickr.photos.search");
 
             // These arguments are covered, but are named slightly differently from Flickr.
             Dictionary<string, string> exceptions = new()
@@ -157,12 +157,12 @@ namespace FlickrNetTest
                 }
             }
 
-            Assert.AreEqual(0, numMissing, "Number of missing arguments should be zero.");
+            Assert.That(numMissing, Is.EqualTo(0), "Number of missing arguments should be zero.");
         }
 
         [Test]
         [Ignore("Test takes a long time")]
-        public async Task ReflectionMethodsCheckWeSupportAndParametersMatch(CancellationToken cancellationToken = default)
+        public async Task ReflectionMethodsCheckWeSupportAndParametersMatch()
         {
             List<string> exceptions = new()
             {
@@ -175,11 +175,11 @@ namespace FlickrNetTest
 
             Flickr f = Instance;
 
-            MethodCollection methodNames = await f.ReflectionGetMethodsAsync(cancellationToken);
+            MethodCollection methodNames = await f.ReflectionGetMethodsAsync();
 
-            Assert.IsNotNull(methodNames, "Should not be null");
-            Assert.AreNotEqual(0, methodNames.Count, "Should return some method names.");
-            Assert.IsNotNull(methodNames[0], "First item should not be null");
+            Assert.That(methodNames, Is.Not.Null, "Should not be null");
+            Assert.That(methodNames, Is.Not.Empty, "Should return some method names.");
+            Assert.That(methodNames[0], Is.Not.Null, "First item should not be null");
 
             Type type = typeof(Flickr);
             MethodInfo[] methods = type.GetMethods();
@@ -202,7 +202,7 @@ namespace FlickrNetTest
                 // Check the number of arguments to see if we have a matching method.
                 if (found && !exceptions.Contains(methodName))
                 {
-                    Method method = await f.ReflectionGetMethodInfoAsync(methodName, cancellationToken);
+                    Method method = await f.ReflectionGetMethodInfoAsync(methodName);
                     foreach (MethodInfo info in methods)
                     {
                         if (method.Arguments.Count - 1 == info.GetParameters().Length)
@@ -223,52 +223,63 @@ namespace FlickrNetTest
                 }
             }
 
-            Assert.AreEqual(0, failCount, "FailCount should be zero. Currently " + failCount + " unsupported methods found.");
+            Assert.That(failCount, Is.EqualTo(0), "FailCount should be zero. Currently " + failCount + " unsupported methods found.");
         }
 
         [Test]
-        public async Task ReflectionGetMethodInfoTest(CancellationToken cancellationToken = default)
+        public async Task ReflectionGetMethodInfoTest()
         {
             Flickr f = Instance;
-            Method method = await f.ReflectionGetMethodInfoAsync("flickr.reflection.getMethodInfo", cancellationToken);
+            Method method = await f.ReflectionGetMethodInfoAsync("flickr.reflection.getMethodInfo");
 
-            Assert.IsNotNull(method, "Method should not be null");
-            Assert.AreEqual("flickr.reflection.getMethodInfo", method.Name, "Method name not set correctly");
+            Assert.That(method, Is.Not.Null, "Method should not be null");
+            Assert.Multiple(() =>
+            {
+                Assert.That(method.Name, Is.EqualTo("flickr.reflection.getMethodInfo"), "Method name not set correctly");
+                Assert.Multiple(() =>
+                    {
+                        Assert.That(method.RequiredPermissions, Is.EqualTo(MethodPermission.None));
 
-            Assert.AreEqual(MethodPermission.None, method.RequiredPermissions);
+                        Assert.That(method.Arguments, Has.Count.EqualTo(2), "There should be two arguments");
+                    });
+                Assert.That(method.Arguments[0].Name, Is.EqualTo("api_key"), "First argument should be api_key.");
+                Assert.That(method.Arguments[0].IsOptional, Is.False, "First argument should not be optional.");
 
-            Assert.AreEqual(2, method.Arguments.Count, "There should be two arguments");
-            Assert.AreEqual("api_key", method.Arguments[0].Name, "First argument should be api_key.");
-            Assert.IsFalse(method.Arguments[0].IsOptional, "First argument should not be optional.");
-
-            Assert.AreEqual(9, method.Errors.Count, "There should be 8 errors.");
-            Assert.AreEqual(1, method.Errors[0].Code, "First error should have code of 1");
-            Assert.AreEqual("Method not found", method.Errors[0].Message, "First error should have code of 1");
-            Assert.AreEqual("The requested method was not found.", method.Errors[0].Description, "First error should have code of 1");
+                Assert.That(method.Errors, Has.Count.EqualTo(9), "There should be 8 errors.");
+                Assert.Multiple(() =>
+                {
+                    Assert.That(method.Errors[0].Code, Is.EqualTo(1), "First error should have code of 1");
+                    Assert.Multiple(() =>
+                {
+                    Assert.That(method.Errors[0].Message, Is.EqualTo("Method not found"), "First error should have code of 1");
+                    Assert.That(method.Errors[0].Description, Is.EqualTo("The requested method was not found."), "First error should have code of 1");
+                });
+                });
+            });
         }
 
         [Test]
-        public async Task ReflectionGetMethodInfoFavContextArguments(CancellationToken cancellationToken = default)
+        public async Task ReflectionGetMethodInfoFavContextArguments()
         {
             var methodName = "flickr.favorites.getContext";
-            var method = await Instance.ReflectionGetMethodInfoAsync(methodName, cancellationToken);
+            var method = await Instance.ReflectionGetMethodInfoAsync(methodName);
 
-            Assert.AreEqual(3, method.Arguments.Count);
-            Assert.AreEqual("The id of the photo to fetch the context for.", method.Arguments[1].Description);
+            Assert.That(method.Arguments, Has.Count.EqualTo(3));
+            Assert.That(method.Arguments[1].Description, Is.EqualTo("The id of the photo to fetch the context for."));
             //Assert.IsNull(method.Arguments[4].Description);
         }
 
-        private async Task GetExceptionList(CancellationToken cancellationToken = default)
+        private async Task GetExceptionList()
         {
             var errors = new Dictionary<int, List<string>>();
             Flickr.CacheDisabled = true;
 
             Flickr f = Instance;
-            var list = await f.ReflectionGetMethodsAsync(cancellationToken);
+            var list = await f.ReflectionGetMethodsAsync();
             foreach (var methodName in list)
             {
                 Console.WriteLine("Method = " + methodName);
-                var method = await f.ReflectionGetMethodInfoAsync(methodName, cancellationToken);
+                var method = await f.ReflectionGetMethodInfoAsync(methodName);
 
                 foreach (var exception in method.Errors)
                 {

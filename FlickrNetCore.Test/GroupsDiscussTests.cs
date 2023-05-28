@@ -10,7 +10,7 @@ namespace FlickrNetTest
     {
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task GroupsDiscussRepliesAddTest(CancellationToken cancellationToken = default)
+        public async Task GroupsDiscussRepliesAddTest()
         {
             var topicId = "72157630982877126";
             var message = "Test message reply\n" + DateTime.Now.ToString("o");
@@ -20,160 +20,181 @@ namespace FlickrNetTest
             TopicReplyCollection topicReplies;
             try
             {
-                await AuthInstance.GroupsDiscussRepliesAddAsync(topicId, message, cancellationToken);
+                await AuthInstance.GroupsDiscussRepliesAddAsync(topicId, message, default);
 
                 Thread.Sleep(1000);
 
-                topicReplies = await AuthInstance.GroupsDiscussRepliesGetListAsync(topicId, 1, 100, cancellationToken);
+                topicReplies = await AuthInstance.GroupsDiscussRepliesGetListAsync(topicId, 1, 100, default);
 
                 reply = topicReplies.FirstOrDefault(r => r.Message == message);
 
-                Assert.IsNotNull(reply, "Cannot find matching message.");
+                Assert.That(reply, Is.Not.Null, "Cannot find matching message.");
 
-                await AuthInstance.GroupsDiscussRepliesEditAsync(topicId, reply.ReplyId, newMessage, cancellationToken);
+                await AuthInstance.GroupsDiscussRepliesEditAsync(topicId, reply.ReplyId, newMessage, default);
 
-                var reply2 = await AuthInstance.GroupsDiscussRepliesGetInfoAsync(topicId, reply.ReplyId, cancellationToken);
+                var reply2 = await AuthInstance.GroupsDiscussRepliesGetInfoAsync(topicId, reply.ReplyId, default);
 
-                Assert.AreEqual(newMessage, reply2.Message, "Message should have been updated.");
+                Assert.That(reply2.Message, Is.EqualTo(newMessage), "Message should have been updated.");
             }
             finally
             {
                 if (reply != null)
                 {
-                    await AuthInstance.GroupsDiscussRepliesDeleteAsync(topicId, reply.ReplyId, cancellationToken);
-                    topicReplies = await AuthInstance.GroupsDiscussRepliesGetListAsync(topicId, 1, 100, cancellationToken);
+                    await AuthInstance.GroupsDiscussRepliesDeleteAsync(topicId, reply.ReplyId, default);
+                    topicReplies = await AuthInstance.GroupsDiscussRepliesGetListAsync(topicId, 1, 100, default);
                     var reply3 = topicReplies.FirstOrDefault(r => r.ReplyId == reply.ReplyId);
-                    Assert.IsNull(reply3, "Reply should not exist anymore.");
+                    Assert.That(reply3, Is.Null, "Reply should not exist anymore.");
                 }
             }
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task GroupsDiscussRepliesGetListTest(CancellationToken cancellationToken = default)
+        public async Task GroupsDiscussRepliesGetListTest()
         {
-            var topics = await AuthInstance.GroupsDiscussTopicsGetListAsync(TestData.GroupId, 1, 100, cancellationToken);
+            var topics = await AuthInstance.GroupsDiscussTopicsGetListAsync(TestData.GroupId, 1, 100, default);
 
-            Assert.IsNotNull(topics, "Topics should not be null.");
+            Assert.That(topics, Is.Not.Null, "Topics should not be null.");
 
-            Assert.AreNotEqual(0, topics.Count, "Should be more than one topics return.");
+            Assert.That(topics, Is.Not.Empty, "Should be more than one topics return.");
 
             var firstTopic = topics.First(t => t.RepliesCount > 0);
 
-            var replies = await AuthInstance.GroupsDiscussRepliesGetListAsync(firstTopic.TopicId, 1, 10, cancellationToken);
-            Assert.AreEqual(firstTopic.TopicId, replies.TopicId, "TopicId's should be the same.");
-            Assert.AreEqual(firstTopic.Subject, replies.Subject, "Subject's should be the same.");
-            Assert.AreEqual(firstTopic.Message, replies.Message, "Message's should be the same.");
-            Assert.AreEqual(firstTopic.DateCreated, replies.DateCreated, "DateCreated's should be the same.");
-            Assert.AreEqual(firstTopic.DateLastPost, replies.DateLastPost, "DateLastPost's should be the same.");
+            var replies = await AuthInstance.GroupsDiscussRepliesGetListAsync(firstTopic.TopicId, 1, 10, default);
+            Assert.Multiple(async () =>
+            {
+                Assert.That(replies.TopicId, Is.EqualTo(firstTopic.TopicId), "TopicId's should be the same.");
+                Assert.Multiple(() =>
+                {
+                    Assert.That(replies.Subject, Is.EqualTo(firstTopic.Subject), "Subject's should be the same.");
+                    Assert.That(replies.Message, Is.EqualTo(firstTopic.Message), "Message's should be the same.");
+                    Assert.That(replies.DateCreated, Is.EqualTo(firstTopic.DateCreated), "DateCreated's should be the same.");
+                    Assert.That(replies.DateLastPost, Is.EqualTo(firstTopic.DateLastPost), "DateLastPost's should be the same.");
 
-            Assert.IsNotNull(replies, "Replies should not be null.");
+                    Assert.That(replies, Is.Not.Null, "Replies should not be null.");
+                });
+                var firstReply = replies.First();
 
-            var firstReply = replies.First();
+                Assert.That(firstReply.ReplyId, Is.Not.Null, "ReplyId should not be null.");
 
-            Assert.IsNotNull(firstReply.ReplyId, "ReplyId should not be null.");
-
-            var reply = await AuthInstance.GroupsDiscussRepliesGetInfoAsync(firstTopic.TopicId, firstReply.ReplyId, cancellationToken);
-            Assert.IsNotNull(reply, "Reply should not be null.");
-            Assert.AreEqual(firstReply.Message, reply.Message, "TopicReply.Message should be the same.");
+                var reply = await AuthInstance.GroupsDiscussRepliesGetInfoAsync(firstTopic.TopicId, firstReply.ReplyId, default);
+                Assert.That(reply, Is.Not.Null, "Reply should not be null.");
+                Assert.That(reply.Message, Is.EqualTo(firstReply.Message), "TopicReply.Message should be the same.");
+            });
         }
 
         [Test]
         [Ignore("Got this working, now ignore as there is no way to delete topics!")]
         [Category("AccessTokenRequired")]
-        public async Task GroupsDiscussTopicsAddTest(CancellationToken cancellationToken = default)
+        public async Task GroupsDiscussTopicsAddTest()
         {
             var groupId = TestData.FlickrNetTestGroupId;
 
             var subject = "Test subject line: " + DateTime.Now.ToString("o");
             var message = "Subject message line.";
 
-            await AuthInstance.GroupsDiscussTopicsAddAsync(groupId, subject, message, cancellationToken);
+            await AuthInstance.GroupsDiscussTopicsAddAsync(groupId, subject, message, default);
 
-            var topics = await AuthInstance.GroupsDiscussTopicsGetListAsync(groupId, 1, 5, cancellationToken);
+            var topics = await AuthInstance.GroupsDiscussTopicsGetListAsync(groupId, 1, 5, default);
 
             var topic = topics.SingleOrDefault(t => t.Subject == subject);
 
-            Assert.IsNotNull(topic, "Unable to find topic with matching subject line.");
+            Assert.That(topic, Is.Not.Null, "Unable to find topic with matching subject line.");
 
-            Assert.AreEqual(message, topic.Message, "Message should be the same.");
+            Assert.That(topic.Message, Is.EqualTo(message), "Message should be the same.");
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task GroupsDiscussTopicsGetListTest(CancellationToken cancellationToken = default)
+        public async Task GroupsDiscussTopicsGetListTest()
         {
-            var topics = await AuthInstance.GroupsDiscussTopicsGetListAsync(TestData.GroupId, 1, 10, cancellationToken);
+            var topics = await AuthInstance.GroupsDiscussTopicsGetListAsync(TestData.GroupId, 1, 10, default);
 
-            Assert.IsNotNull(topics, "Topics should not be null.");
-
-            Assert.AreEqual(TestData.GroupId, topics.GroupId, "GroupId should be the same.");
-            Assert.AreNotEqual(0, topics.Count, "Should be more than one topics return.");
-            Assert.AreEqual(10, topics.Count, "Count should be 10.");
+            Assert.That(topics, Is.Not.Null, "Topics should not be null.");
+            Assert.Multiple(() =>
+            {
+                Assert.That(topics.GroupId, Is.EqualTo(TestData.GroupId), "GroupId should be the same.");
+                Assert.That(topics, Is.Not.Empty, "Should be more than one topics return.");
+            });
+            Assert.That(topics, Has.Count.EqualTo(10), "Count should be 10.");
 
             foreach (var topic in topics)
             {
-                Assert.IsNotNull(topic.TopicId, "TopicId should not be null.");
-                Assert.IsNotNull(topic.Subject, "Subject should not be null.");
-                Assert.IsNotNull(topic.Message, "Message should not be null.");
+                Assert.Multiple(() =>
+                {
+                    Assert.That(topic.TopicId, Is.Not.Null, "TopicId should not be null.");
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(topic.Subject, Is.Not.Null, "Subject should not be null.");
+                        Assert.That(topic.Message, Is.Not.Null, "Message should not be null.");
+                    });
+                });
             }
 
             var firstTopic = topics.First();
 
-            var secondTopic = await AuthInstance.GroupsDiscussTopicsGetInfoAsync(firstTopic.TopicId, cancellationToken);
-            Assert.AreEqual(firstTopic.TopicId, secondTopic.TopicId, "TopicId's should be the same.");
-            Assert.AreEqual(firstTopic.Subject, secondTopic.Subject, "Subject's should be the same.");
-            Assert.AreEqual(firstTopic.Message, secondTopic.Message, "Message's should be the same.");
-            Assert.AreEqual(firstTopic.DateCreated, secondTopic.DateCreated, "DateCreated's should be the same.");
-            Assert.AreEqual(firstTopic.DateLastPost, secondTopic.DateLastPost, "DateLastPost's should be the same.");
+            var secondTopic = await AuthInstance.GroupsDiscussTopicsGetInfoAsync(firstTopic.TopicId, default);
+            Assert.Multiple(() =>
+            {
+                Assert.That(secondTopic.TopicId, Is.EqualTo(firstTopic.TopicId), "TopicId's should be the same.");
+                Assert.Multiple(() =>
+                {
+                    Assert.That(secondTopic.Subject, Is.EqualTo(firstTopic.Subject), "Subject's should be the same.");
+                    Assert.That(secondTopic.Message, Is.EqualTo(firstTopic.Message), "Message's should be the same.");
+                    Assert.That(secondTopic.DateCreated, Is.EqualTo(firstTopic.DateCreated), "DateCreated's should be the same.");
+                    Assert.That(secondTopic.DateLastPost, Is.EqualTo(firstTopic.DateLastPost), "DateLastPost's should be the same.");
+                });
+            });
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task GroupsDiscussTopicsGetListEditableTest(CancellationToken cancellationToken = default)
+        public async Task GroupsDiscussTopicsGetListEditableTest()
         {
             var groupId = "51035612836@N01"; // Flickr API group
 
-            var topics = await AuthInstance.GroupsDiscussTopicsGetListAsync(groupId, 1, 20, cancellationToken);
+            var topics = await AuthInstance.GroupsDiscussTopicsGetListAsync(groupId, 1, 20, default);
 
-            Assert.AreNotEqual(0, topics.Count);
+            Assert.That(topics, Is.Not.Empty);
 
             foreach (var topic in topics)
             {
-                Assert.IsTrue(topic.CanEdit, "CanEdit should be true.");
+                Assert.That(topic.CanEdit, Is.True, "CanEdit should be true.");
                 if (!topic.IsLocked)
                 {
-                    Assert.IsTrue(topic.CanReply, "CanReply should be true.");
+                    Assert.That(topic.CanReply, Is.True, "CanReply should be true.");
                 }
-                Assert.IsTrue(topic.CanDelete, "CanDelete should be true.");
+                Assert.That(topic.CanDelete, Is.True, "CanDelete should be true.");
             }
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task GroupsDiscussTopicsGetInfoStickyTest(CancellationToken cancellationToken = default)
+        public async Task GroupsDiscussTopicsGetInfoStickyTest()
         {
             const string topicId = "72157630982967152";
-            var topic = await AuthInstance.GroupsDiscussTopicsGetInfoAsync(topicId, cancellationToken);
-
-            Assert.IsTrue(topic.IsSticky, "This topic should be marked as sticky.");
-            Assert.IsFalse(topic.IsLocked, "This topic should not be marked as locked.");
-
-            // topic.CanReply should be true, but for some reason isn't, so we cannot test it.
+            var topic = await AuthInstance.GroupsDiscussTopicsGetInfoAsync(topicId, default);
+            Assert.Multiple(() =>
+            {
+                Assert.That(topic.IsSticky, Is.True, "This topic should be marked as sticky.");
+                Assert.That(topic.IsLocked, Is.False, "This topic should not be marked as locked.");
+            });
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task GroupsDiscussTopicsGetInfoLockedTest(CancellationToken cancellationToken = default)
+        public async Task GroupsDiscussTopicsGetInfoLockedTest()
         {
             const string topicId = "72157630982969782";
 
-            var topic = await AuthInstance.GroupsDiscussTopicsGetInfoAsync(topicId, cancellationToken);
+            var topic = await AuthInstance.GroupsDiscussTopicsGetInfoAsync(topicId, default);
+            Assert.Multiple(() =>
+            {
+                Assert.That(topic.IsLocked, Is.True, "This topic should be marked as locked.");
+                Assert.That(topic.IsSticky, Is.False, "This topic should not be marked as sticky.");
 
-            Assert.IsTrue(topic.IsLocked, "This topic should be marked as locked.");
-            Assert.IsFalse(topic.IsSticky, "This topic should not be marked as sticky.");
-
-            Assert.IsFalse(topic.CanReply, "CanReply should be false as the topic is locked.");
+                Assert.That(topic.CanReply, Is.False, "CanReply should be false as the topic is locked.");
+            });
         }
     }
 }

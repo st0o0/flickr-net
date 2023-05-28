@@ -13,104 +13,126 @@ namespace FlickrNetTest
     {
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task ContactsGetListTestBasicTest(CancellationToken cancellationToken = default)
+        public async Task ContactsGetListTestBasicTest()
         {
             Flickr f = AuthInstance;
-            ContactCollection contacts = await f.ContactsGetListAsync(cancellationToken);
+            ContactCollection contacts = await f.ContactsGetListAsync(default);
 
-            Assert.IsNotNull(contacts);
+            Assert.That(contacts, Is.Not.Null);
 
             foreach (var contact in contacts)
             {
-                Assert.IsNotNull(contact.UserId, "UserId should not be null.");
-                Assert.IsNotNull(contact.UserName, "UserName should not be null.");
-                Assert.IsNotNull(contact.BuddyIconUrl, "BuddyIconUrl should not be null.");
+                Assert.Multiple(() =>
+                {
+                    Assert.That(contact.UserId, Is.Not.Null, "UserId should not be null.");
+                    Assert.Multiple(() =>
+                {
+                    Assert.That(contact.UserName, Is.Not.Null, "UserName should not be null.");
+                    Assert.That(contact.BuddyIconUrl, Is.Not.Null, "BuddyIconUrl should not be null.");
+                });
+                });
             }
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task ContactsGetListFullParamTest(CancellationToken cancellationToken = default)
+        public async Task ContactsGetListFullParamTest()
         {
             Flickr f = AuthInstance;
 
-            ContactCollection contacts = await f.ContactsGetListAsync(null, 0, 0, cancellationToken);
+            ContactCollection contacts = await f.ContactsGetListAsync(null, 0, 0, default);
 
-            Assert.IsNotNull(contacts, "Contacts should not be null.");
+            Assert.That(contacts, Is.Not.Null, "Contacts should not be null.");
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task ContactsGetListFilteredTest(CancellationToken cancellationToken = default)
+        public async Task ContactsGetListFilteredTest()
         {
             Flickr f = AuthInstance;
-            ContactCollection contacts = await f.ContactsGetListAsync("friends", cancellationToken);
+            ContactCollection contacts = await f.ContactsGetListAsync("friends", default);
 
-            Assert.IsNotNull(contacts);
+            Assert.That(contacts, Is.Not.Null);
 
             foreach (var contact in contacts)
             {
-                Assert.IsNotNull(contact.UserId, "UserId should not be null.");
-                Assert.IsNotNull(contact.UserName, "UserName should not be null.");
-                Assert.IsNotNull(contact.BuddyIconUrl, "BuddyIconUrl should not be null.");
-                Assert.IsNotNull(contact.IsFriend, "IsFriend should not be null.");
-                Assert.IsTrue(contact.IsFriend.Value);
+                Assert.Multiple(() =>
+                {
+                    Assert.That(contact.UserId, Is.Not.Null, "UserId should not be null.");
+                    Assert.That(contact.IsFriend.Value, Is.True);
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(contact.UserName, Is.Not.Null, "UserName should not be null.");
+                        Assert.That(contact.BuddyIconUrl, Is.Not.Null, "BuddyIconUrl should not be null.");
+                        Assert.That(contact.IsFriend, Is.Not.Null, "IsFriend should not be null.");
+                    });
+                });
             }
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task ContactsGetListPagedTest(CancellationToken cancellationToken = default)
+        public async Task ContactsGetListPagedTest()
         {
             Flickr f = AuthInstance;
-            ContactCollection contacts = await f.ContactsGetListAsync(2, 20, cancellationToken);
+            ContactCollection contacts = await f.ContactsGetListAsync(2, 20, default);
 
-            Assert.IsNotNull(contacts);
-            Assert.AreEqual(2, contacts.Page);
-            Assert.AreEqual(20, contacts.PerPage);
-            Assert.AreEqual(20, contacts.Count);
-
+            Assert.That(contacts, Is.Not.Null);
+            Assert.Multiple(() =>
+            {
+                Assert.That(contacts.Page, Is.EqualTo(2));
+                Assert.That(contacts.PerPage, Is.EqualTo(20));
+                Assert.That(contacts, Has.Count.EqualTo(20));
+            });
             foreach (var contact in contacts)
             {
-                Assert.IsNotNull(contact.UserId, "UserId should not be null.");
-                Assert.IsNotNull(contact.UserName, "UserName should not be null.");
-                Assert.IsNotNull(contact.BuddyIconUrl, "BuddyIconUrl should not be null.");
+                Assert.Multiple(() =>
+                {
+                    Assert.That(contact.UserId, Is.Not.Null, "UserId should not be null.");
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(contact.UserName, Is.Not.Null, "UserName should not be null.");
+                        Assert.That(contact.BuddyIconUrl, Is.Not.Null, "BuddyIconUrl should not be null.");
+                    });
+                });
             }
         }
 
         [Test]
-        public async Task ContactsGetPublicListTest(CancellationToken cancellationToken = default)
+        public async Task ContactsGetPublicListTest()
         {
             Flickr f = Instance;
 
-            ContactCollection contacts = await f.ContactsGetPublicListAsync(TestData.TestUserId, cancellationToken);
+            ContactCollection contacts = await f.ContactsGetPublicListAsync(TestData.TestUserId, default);
 
-            Assert.IsNotNull(contacts, "Contacts should not be null.");
-
-            Assert.AreNotEqual(0, contacts.Total, "Total should not be zero.");
-            Assert.AreNotEqual(0, contacts.PerPage, "PerPage should not be zero.");
+            Assert.That(contacts, Is.Not.Null, "Contacts should not be null.");
+            Assert.Multiple(() =>
+            {
+                Assert.That(contacts.Total, Is.Not.EqualTo(0), "Total should not be zero.");
+                Assert.That(contacts.PerPage, Is.Not.EqualTo(0), "PerPage should not be zero.");
+            });
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task ContactsGetRecentlyUpdatedTest(CancellationToken cancellationToken = default)
+        public async Task ContactsGetRecentlyUpdatedTest()
         {
             Flickr f = AuthInstance;
 
-            ContactCollection contacts = await f.ContactsGetListRecentlyUploadedAsync(DateTime.Now.AddDays(-1), null, cancellationToken);
+            ContactCollection contacts = await f.ContactsGetListRecentlyUploadedAsync(DateTime.Now.AddDays(-1), null, default);
 
-            Assert.IsNotNull(contacts, "Contacts should not be null.");
+            Assert.That(contacts, Is.Not.Null, "Contacts should not be null.");
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task ContactsGetTaggingSuggestions(CancellationToken cancellationToken = default)
+        public async Task ContactsGetTaggingSuggestions()
         {
             Flickr f = AuthInstance;
 
-            var contacts = await f.ContactsGetTaggingSuggestionsAsync(cancellationToken);
+            var contacts = await f.ContactsGetTaggingSuggestionsAsync(default);
 
-            Assert.IsNotNull(contacts);
+            Assert.That(contacts, Is.Not.Null);
         }
     }
 }

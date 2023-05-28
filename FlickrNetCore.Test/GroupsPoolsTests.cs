@@ -17,87 +17,93 @@ namespace FlickrNetTest
     {
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task GroupsPoolsAddBasicTest(CancellationToken cancellationToken = default)
+        public async Task GroupsPoolsAddBasicTest()
         {
             Flickr f = AuthInstance;
 
             byte[] imageBytes = TestData.TestImageBytes;
-            var s = new MemoryStream(imageBytes);
-            s.Position = 0;
+            var s = new MemoryStream(imageBytes)
+            {
+                Position = 0
+            };
 
             string title = "Test Title";
             string desc = "Test Description\nSecond Line";
             string tags = "testtag1,testtag2";
-            string photoId = await f.UploadPictureAsync(s, "Test.jpg", title, desc, tags, false, false, false, ContentType.Other, SafetyLevel.Safe, HiddenFromSearch.Visible, cancellationToken: cancellationToken);
+            string photoId = await f.UploadPictureAsync(s, "Test.jpg", title, desc, tags, false, false, false, ContentType.Other, SafetyLevel.Safe, HiddenFromSearch.Visible, default);
 
             try
             {
-                await f.GroupsPoolsAddAsync(photoId, TestData.FlickrNetTestGroupId, cancellationToken);
+                await f.GroupsPoolsAddAsync(photoId, TestData.FlickrNetTestGroupId);
             }
             finally
             {
-                await f.PhotoDeleteAsync(photoId, cancellationToken);
+                await f.PhotoDeleteAsync(photoId);
             }
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public void GroupsPoolsAddNotAuthTestTest(CancellationToken cancellationToken = default)
+        public void GroupsPoolsAddNotAuthTestTest()
         {
             string photoId = "12345";
 
-            Should.Throw<SignatureRequiredException>(async () => await Instance.GroupsPoolsAddAsync(photoId, TestData.FlickrNetTestGroupId, cancellationToken));
+            Should.Throw<SignatureRequiredException>(async () => await Instance.GroupsPoolsAddAsync(photoId, TestData.FlickrNetTestGroupId));
         }
 
         [Test]
-        public async Task GroupsPoolGetPhotosFullParamTest(CancellationToken cancellationToken = default)
+        public async Task GroupsPoolGetPhotosFullParamTest()
         {
             Flickr f = Instance;
 
-            PhotoCollection photos = await f.GroupsPoolsGetPhotosAsync(TestData.GroupId, null, TestData.TestUserId, PhotoSearchExtras.All, 1, 20, cancellationToken);
+            PhotoCollection photos = await f.GroupsPoolsGetPhotosAsync(TestData.GroupId, null, TestData.TestUserId, PhotoSearchExtras.All, 1, 20);
 
-            Assert.IsNotNull(photos, "Photos should not be null");
-            Assert.IsTrue(photos.Count > 0, "Should be more than 0 photos returned");
-            Assert.AreEqual(20, photos.PerPage);
-            Assert.AreEqual(1, photos.Page);
-
+            Assert.That(photos, Is.Not.Null, "Photos should not be null");
+            Assert.That(photos, Is.Not.Empty, "Should be more than 0 photos returned");
+            Assert.Multiple(() =>
+            {
+                Assert.That(photos.PerPage, Is.EqualTo(20));
+                Assert.That(photos.Page, Is.EqualTo(1));
+            });
             foreach (Photo p in photos)
             {
-                Assert.AreNotEqual(default(DateTime), p.DateAddedToGroup, "DateAddedToGroup should not be default value");
-                Assert.IsTrue(p.DateAddedToGroup < DateTime.Now, "DateAddedToGroup should be in the past");
+                Assert.That(p.DateAddedToGroup, Is.Not.EqualTo(default(DateTime)), "DateAddedToGroup should not be default value");
+                Assert.That(p.DateAddedToGroup, Is.LessThan(DateTime.Now), "DateAddedToGroup should be in the past");
             }
         }
 
         [Test]
-        public async Task GroupsPoolGetPhotosDateAddedTest(CancellationToken cancellationToken = default)
+        public async Task GroupsPoolGetPhotosDateAddedTest()
         {
             Flickr f = Instance;
 
-            PhotoCollection photos = await f.GroupsPoolsGetPhotosAsync(TestData.GroupId, cancellationToken);
+            PhotoCollection photos = await f.GroupsPoolsGetPhotosAsync(TestData.GroupId);
 
-            Assert.IsNotNull(photos, "Photos should not be null");
-            Assert.IsTrue(photos.Count > 0, "Should be more than 0 photos returned");
+            Assert.That(photos, Is.Not.Null, "Photos should not be null");
+            Assert.That(photos, Is.Not.Empty, "Should be more than 0 photos returned");
 
             foreach (Photo p in photos)
             {
-                Assert.AreNotEqual(default(DateTime), p.DateAddedToGroup, "DateAddedToGroup should not be default value");
-                Assert.IsTrue(p.DateAddedToGroup < DateTime.Now, "DateAddedToGroup should be in the past");
+                Assert.That(p.DateAddedToGroup, Is.Not.EqualTo(default(DateTime)), "DateAddedToGroup should not be default value");
+                Assert.That(p.DateAddedToGroup, Is.LessThan(DateTime.Now), "DateAddedToGroup should be in the past");
             }
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task GroupsPoolsGetGroupsBasicTest(CancellationToken cancellationToken = default)
+        public async Task GroupsPoolsGetGroupsBasicTest()
         {
-            MemberGroupInfoCollection groups = await AuthInstance.GroupsPoolsGetGroupsAsync(cancellationToken);
+            MemberGroupInfoCollection groups = await AuthInstance.GroupsPoolsGetGroupsAsync();
 
-            Assert.IsNotNull(groups, "MemberGroupInfoCollection should not be null.");
-            Assert.AreNotEqual(0, groups.Count, "MemberGroupInfoCollection.Count should not be zero.");
-            Assert.IsTrue(groups.Count > 1, "Count should be greater than one.");
-
-            Assert.AreEqual(400, groups.PerPage, "PerPage should be 400.");
-            Assert.AreEqual(1, groups.Page, "Page should be 1.");
-            Assert.IsTrue(groups.Total > 1, "Total chould be greater than one");
+            Assert.That(groups, Is.Not.Null, "MemberGroupInfoCollection should not be null.");
+            Assert.That(groups, Is.Not.Empty, "MemberGroupInfoCollection.Count should not be zero.");
+            Assert.That(groups, Has.Count.GreaterThan(1), "Count should be greater than one.");
+            Assert.Multiple(() =>
+            {
+                Assert.That(groups.PerPage, Is.EqualTo(400), "PerPage should be 400.");
+                Assert.That(groups.Page, Is.EqualTo(1), "Page should be 1.");
+            });
+            Assert.That(groups.Total, Is.GreaterThan(1), "Total chould be greater than one");
         }
     }
 }

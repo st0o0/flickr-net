@@ -10,7 +10,7 @@ namespace FlickrNetTest
         [Test]
         public async Task GetDefaultProfile(CancellationToken cancellationToken = default)
         {
-            var profile = await Instance.ProfileGetProfileAsync(TestData.TestUserId, cancellationToken);
+            var profile = await Instance.ProfileGetProfileAsync(TestData.TestUserId);
 
             profile.UserId.ShouldBe(TestData.TestUserId);
         }

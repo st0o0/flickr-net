@@ -12,71 +12,85 @@ namespace FlickrNetTest
     public class StatsGetPopularPhotosTests : BaseTest
     {
         [Test]
-        public async Task StatsGetPopularPhotosBasic(CancellationToken cancellationToken = default)
+        public async Task StatsGetPopularPhotosBasic()
         {
-            PopularPhotoCollection photos = await AuthInstance.StatsGetPopularPhotosAsync(DateTime.MinValue, PopularitySort.None, 0, 0, cancellationToken);
+            PopularPhotoCollection photos = await AuthInstance.StatsGetPopularPhotosAsync(DateTime.MinValue, PopularitySort.None, 0, 0);
 
-            Assert.IsNotNull(photos, "PopularPhotos should not be null.");
-
-            Assert.AreNotEqual(0, photos.Total, "PopularPhotos.Total should not be zero.");
-            Assert.AreNotEqual(0, photos.Count, "PopularPhotos.Count should not be zero.");
-            Assert.AreEqual(photos.Count, Math.Min(photos.Total, photos.PerPage), "PopularPhotos.Count should equal either PopularPhotos.Total or PopularPhotos.PerPage.");
-
-            foreach (Photo p in photos)
+            Assert.That(photos, Is.Not.Null, "PopularPhotos should not be null.");
+            Assert.Multiple(() =>
             {
-                Assert.IsNotNull(p.PhotoId, "Photo.PhotoId should not be null.");
-            }
-
-            foreach (PopularPhoto p in photos)
+                Assert.That(photos.Total, Is.Not.EqualTo(0), "PopularPhotos.Total should not be zero.");
+                Assert.Multiple(() =>
             {
-                Assert.IsNotNull(p.PhotoId, "PopularPhoto.PhotoId should not be null.");
-                Assert.AreNotEqual(0, p.StatViews, "PopularPhoto.StatViews should not be zero.");
-            }
+                Assert.That(photos, Is.Not.Empty, "PopularPhotos.Count should not be zero.");
+                Assert.That(Math.Min(photos.Total, photos.PerPage), Is.EqualTo(photos.Count), "PopularPhotos.Count should equal either PopularPhotos.Total or PopularPhotos.PerPage.");
+            });
+                foreach (Photo p in photos)
+                {
+                    Assert.That(p.PhotoId, Is.Not.Null, "Photo.PhotoId should not be null.");
+                }
+
+                foreach (PopularPhoto p in photos)
+                {
+                    Assert.Multiple(() =>
+                    {
+                        Assert.That(p.PhotoId, Is.Not.Null, "PopularPhoto.PhotoId should not be null.");
+                        Assert.That(p.StatViews, Is.Not.EqualTo(0), "PopularPhoto.StatViews should not be zero.");
+                    });
+                }
+            });
         }
 
         [Test]
-        public async Task StatsGetPopularPhotosNoParamsTest(CancellationToken cancellationToken = default)
+        public async Task StatsGetPopularPhotosNoParamsTest()
         {
             Flickr f = AuthInstance;
 
-            PopularPhotoCollection photos = await f.StatsGetPopularPhotosAsync(cancellationToken);
+            PopularPhotoCollection photos = await f.StatsGetPopularPhotosAsync();
 
-            Assert.IsNotNull(photos, "PopularPhotos should not be null.");
-
-            Assert.AreNotEqual(0, photos.Total, "PopularPhotos.Total should not be zero.");
-            Assert.AreNotEqual(0, photos.Count, "PopularPhotos.Count should not be zero.");
-            Assert.AreEqual(photos.Count, Math.Min(photos.Total, photos.PerPage), "PopularPhotos.Count should equal either PopularPhotos.Total or PopularPhotos.PerPage.");
-
-            foreach (Photo p in photos)
+            Assert.That(photos, Is.Not.Null, "PopularPhotos should not be null.");
+            Assert.Multiple(() =>
             {
-                Assert.IsNotNull(p.PhotoId, "Photo.PhotoId should not be null.");
-            }
-
-            foreach (PopularPhoto p in photos)
+                Assert.That(photos.Total, Is.Not.EqualTo(0), "PopularPhotos.Total should not be zero.");
+                Assert.Multiple(() =>
             {
-                Assert.IsNotNull(p.PhotoId, "PopularPhoto.PhotoId should not be null.");
-                Assert.AreNotEqual(0, p.StatViews, "PopularPhoto.StatViews should not be zero.");
-            }
+                Assert.That(photos, Is.Not.Empty, "PopularPhotos.Count should not be zero.");
+                Assert.That(Math.Min(photos.Total, photos.PerPage), Is.EqualTo(photos.Count), "PopularPhotos.Count should equal either PopularPhotos.Total or PopularPhotos.PerPage.");
+            });
+                foreach (Photo p in photos)
+                {
+                    Assert.That(p.PhotoId, Is.Not.Null, "Photo.PhotoId should not be null.");
+                }
+
+                foreach (PopularPhoto p in photos)
+                {
+                    Assert.Multiple(() =>
+                {
+                    Assert.That(p.PhotoId, Is.Not.Null, "PopularPhoto.PhotoId should not be null.");
+                    Assert.That(p.StatViews, Is.Not.EqualTo(0), "PopularPhoto.StatViews should not be zero.");
+                });
+                }
+            });
         }
 
         [Test]
-        public async Task StatsGetPopularPhotosOtherTest(CancellationToken cancellationToken = default)
+        public async Task StatsGetPopularPhotosOtherTest()
         {
             var lastWeek = DateTime.Today.AddDays(-7);
 
-            var photos = await AuthInstance.StatsGetPopularPhotosAsync(lastWeek, cancellationToken);
-            Assert.IsNotNull(photos, "PopularPhotos should not be null.");
+            var photos = await AuthInstance.StatsGetPopularPhotosAsync(lastWeek);
+            Assert.That(photos, Is.Not.Null, "PopularPhotos should not be null.");
 
-            photos = await AuthInstance.StatsGetPopularPhotosAsync(PopularitySort.Favorites, cancellationToken);
-            Assert.IsNotNull(photos, "PopularPhotos should not be null.");
+            photos = await AuthInstance.StatsGetPopularPhotosAsync(PopularitySort.Favorites);
+            Assert.That(photos, Is.Not.Null, "PopularPhotos should not be null.");
 
-            photos = await AuthInstance.StatsGetPopularPhotosAsync(lastWeek, 1, 10, cancellationToken);
-            Assert.IsNotNull(photos, "PopularPhotos should not be null.");
-            Assert.AreEqual(10, photos.Count, "Date search popular photos should return 10 photos.");
+            photos = await AuthInstance.StatsGetPopularPhotosAsync(lastWeek, 1, 10);
+            Assert.That(photos, Is.Not.Null, "PopularPhotos should not be null.");
+            Assert.That(photos, Has.Count.EqualTo(10), "Date search popular photos should return 10 photos.");
 
-            photos = await AuthInstance.StatsGetPopularPhotosAsync(PopularitySort.Favorites, 1, 10, cancellationToken);
-            Assert.IsNotNull(photos, "PopularPhotos should not be null.");
-            Assert.AreEqual(10, photos.Count, "Favorite search popular photos should return 10 photos.");
+            photos = await AuthInstance.StatsGetPopularPhotosAsync(PopularitySort.Favorites, 1, 10);
+            Assert.That(photos, Is.Not.Null, "PopularPhotos should not be null.");
+            Assert.That(photos, Has.Count.EqualTo(10), "Favorite search popular photos should return 10 photos.");
         }
     }
 }

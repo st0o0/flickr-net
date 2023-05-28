@@ -11,10 +11,10 @@ namespace FlickrNetCore
         /// Gets a list of camera brands.
         /// </summary>
         /// <returns></returns>
-        public async Task<CameraCollection> CamerasGetBrandsAsync(CancellationToken cancellationToken = default)
+        public async Task<BrandCollection> CamerasGetBrandsAsync(CancellationToken cancellationToken = default)
         {
             Dictionary<string, string> parameters = new() { { "method", "flickr.cameras.getBrands" } };
-            return await GetResponseAsync<CameraCollection>(parameters, cancellationToken);
+            return await GetResponseAsync<BrandCollection>(parameters, cancellationToken);
         }
 
         /// <summary>

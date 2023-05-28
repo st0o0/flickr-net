@@ -7,27 +7,31 @@ namespace FlickrNetTest
     public class CameraTests : BaseTest
     {
         [Test]
-        public async Task ShouldReturnListOfCameraBrands(CancellationToken cancellationToken = default)
+        public async Task ShouldReturnListOfCameraBrands()
         {
-            var brands = await Instance.CamerasGetBrandsAsync(cancellationToken);
+            var brands = await Instance.CamerasGetBrandsAsync(default);
 
-            Assert.IsNotNull((brands));
-            Assert.AreNotEqual(0, brands.Count);
-
-            Assert.IsTrue(brands.Any(b => b.CameraId == "canon" && b.CameraName == "Canon"));
-            Assert.IsTrue(brands.Any(b => b.CameraId == "nikon" && b.CameraName == "Nikon"));
+            Assert.That(brands, Is.Not.Null);
+            Assert.That(brands, Is.Not.Empty);
+            Assert.Multiple(() =>
+            {
+                Assert.That(brands.Any(b => b.BrandId == "canon" && b.BrandName == "Canon"), Is.True);
+                Assert.That(brands.Any(b => b.BrandId == "nikon" && b.BrandName == "Nikon"), Is.True);
+            });
         }
 
         [Test]
-        public async Task ShouldReturnListOfCanonCameraModels(CancellationToken cancellationToken = default)
+        public async Task ShouldReturnListOfCanonCameraModels()
         {
-            var models = await Instance.CamerasGetBrandModelsAsync("canon", cancellationToken);
+            var models = await Instance.CamerasGetBrandModelsAsync("canon", default);
 
-            Assert.IsNotNull((models));
-            Assert.AreNotEqual(0, models.Count);
-
-            Assert.IsTrue(models.Any(c => c.CameraId == "eos_5d_mark_ii" && c.CameraName == "Canon EOS 5D Mark II"));
-            Assert.IsTrue(models.Any(c => c.CameraId == "powershot_a620" && c.CameraName == "Canon PowerShot A620"));
+            Assert.That(models, Is.Not.Null);
+            Assert.That(models, Is.Not.Empty);
+            Assert.Multiple(() =>
+            {
+                Assert.That(models.Any(c => c.CameraId == "eos_5d_mark_ii" && c.CameraName == "Canon EOS 5D Mark II"), Is.True);
+                Assert.That(models.Any(c => c.CameraId == "powershot_a620" && c.CameraName == "Canon PowerShot A620"), Is.True);
+            });
         }
     }
 }

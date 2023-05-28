@@ -31,42 +31,42 @@ namespace FlickrNetCore.Test.TestUtilities
 
         public static string AuthToken
         {
-            get { return GetEnvironmentVariable("AuthToken"); }
-            set { SetEnvironmentVariable("AuthToken", value); }
+            get { return GetRegistryKey("AuthToken"); }
+            set { SetRegistryKey("AuthToken", value); }
         }
 
         public static string RequestToken
         {
-            get { return GetEnvironmentVariable("RequestToken"); }
-            set { SetEnvironmentVariable("RequestToken", value); }
+            get { return GetRegistryKey("RequestToken"); }
+            set { SetRegistryKey("RequestToken", value); }
         }
 
         public static string RequestTokenSecret
         {
-            get { return GetEnvironmentVariable("RequestTokenSecret"); }
-            set { SetEnvironmentVariable("RequestTokenSecret", value); }
+            get { return GetRegistryKey("RequestTokenSecret"); }
+            set { SetRegistryKey("RequestTokenSecret", value); }
         }
 
         public static string AccessToken
         {
-            get { return GetEnvironmentVariable("AccessToken"); }
-            set { SetEnvironmentVariable("AccessToken", value); }
+            get { return GetRegistryKey("AccessToken"); }
+            set { SetRegistryKey("AccessToken", value); }
         }
 
         public static string AccessTokenSecret
         {
-            get { return GetEnvironmentVariable("AccessTokenSecret"); }
-            set { SetEnvironmentVariable("AccessTokenSecret", value); }
+            get { return GetRegistryKey("AccessTokenSecret"); }
+            set { SetRegistryKey("AccessTokenSecret", value); }
         }
 
-        private static void SetEnvironmentVariable(string name, string value)
+        private static void SetRegistryKey(string name, string value)
         {
-            Environment.SetEnvironmentVariable("FLICKR_TEST_" + name.ToUpper(), value);
+            Environment.SetEnvironmentVariable($"FLICKR_TEST_{name.ToUpper()}", value, EnvironmentVariableTarget.User);
         }
 
-        private static string GetEnvironmentVariable(string name)
+        private static string GetRegistryKey(string name)
         {
-            return Environment.GetEnvironmentVariable("FLICKR_TEST_" + name.ToUpper());
+            return Environment.GetEnvironmentVariable("FLICKR_TEST_" + name.ToUpper(), EnvironmentVariableTarget.User);
         }
 
         public static Flickr GetInstance()

@@ -12,105 +12,107 @@ namespace FlickrNetTest
     public class PhotosetsGetPhotosTests : BaseTest
     {
         [Test]
-        public async Task PhotosetsGetPhotosBasicTest(CancellationToken cancellationToken = default)
+        public async Task PhotosetsGetPhotosBasicTest()
         {
-            PhotosetPhotoCollection set = await Instance.PhotosetsGetPhotosAsync("72157618515066456", PhotoSearchExtras.All, PrivacyFilter.None, 1, 10, cancellationToken);
-
-            Assert.AreEqual(8, set.Total, "NumberOfPhotos should be 8.");
-            Assert.AreEqual(8, set.Count, "Should be 8 photos returned.");
+            PhotosetPhotoCollection set = await Instance.PhotosetsGetPhotosAsync("72157618515066456", PhotoSearchExtras.All, PrivacyFilter.None, 1, 10);
+            Assert.Multiple(() =>
+            {
+                Assert.That(set.Total, Is.EqualTo(8), "NumberOfPhotos should be 8.");
+                Assert.That(set, Has.Count.EqualTo(8), "Should be 8 photos returned.");
+            });
         }
 
         [Test]
-        public async Task PhotosetsGetPhotosMachineTagsTest(CancellationToken cancellationToken = default)
+        public async Task PhotosetsGetPhotosMachineTagsTest()
         {
-            var set = await Instance.PhotosetsGetPhotosAsync("72157594218885767", PhotoSearchExtras.MachineTags, PrivacyFilter.None, 1, 10, cancellationToken);
+            var set = await Instance.PhotosetsGetPhotosAsync("72157594218885767", PhotoSearchExtras.MachineTags, PrivacyFilter.None, 1, 10);
 
             var machineTagsFound = set.Any(p => !string.IsNullOrEmpty(p.MachineTags));
 
-            Assert.IsTrue(machineTagsFound, "No machine tags were found in the photoset");
+            Assert.That(machineTagsFound, Is.True, "No machine tags were found in the photoset");
         }
 
         [Test]
-        public async Task PhotosetsGetPhotosFilterMediaTest(CancellationToken cancellationToken = default)
+        public async Task PhotosetsGetPhotosFilterMediaTest()
         {
             // https://www.flickr.com/photos/sgoralnick/sets/72157600283870192/
             // Set contains videos and photos
-            var theset = await Instance.PhotosetsGetPhotosAsync("72157600283870192", PhotoSearchExtras.Media, PrivacyFilter.None, 1, 100, MediaType.Videos, cancellationToken);
+            var theset = await Instance.PhotosetsGetPhotosAsync("72157600283870192", PhotoSearchExtras.Media, PrivacyFilter.None, 1, 100, MediaType.Videos);
 
-            Assert.AreEqual("Canon 5D", theset.Title);
+            Assert.That(theset.Title, Is.EqualTo("Canon 5D"));
 
             foreach (var p in theset)
             {
-                Assert.AreEqual("video", p.Media, "Should be video.");
+                Assert.That(p.Media, Is.EqualTo("video"), "Should be video.");
             }
 
-            var theset2 = await Instance.PhotosetsGetPhotosAsync("72157600283870192", PhotoSearchExtras.Media, PrivacyFilter.None, 1, 100, MediaType.Photos, cancellationToken);
+            var theset2 = await Instance.PhotosetsGetPhotosAsync("72157600283870192", PhotoSearchExtras.Media, PrivacyFilter.None, 1, 100, MediaType.Photos);
             foreach (var p in theset2)
             {
-                Assert.AreEqual("photo", p.Media, "Should be photo.");
+                Assert.That(p.Media, Is.EqualTo("photo"), "Should be photo.");
             }
         }
 
         [Test]
-        public async Task PhotosetsGetPhotosWebUrlTest(CancellationToken cancellationToken = default)
+        public async Task PhotosetsGetPhotosWebUrlTest()
         {
-            var theset = await Instance.PhotosetsGetPhotosAsync("72157618515066456", cancellationToken);
+            var theset = await Instance.PhotosetsGetPhotosAsync("72157618515066456");
 
             foreach (var p in theset)
             {
-                Assert.IsNotNull(p.UserId, "UserId should not be null.");
-                Assert.AreNotEqual(string.Empty, p.UserId, "UserId should not be an empty string.");
+                Assert.That(p.UserId, Is.Not.Null, "UserId should not be null.");
+                Assert.That(p.UserId, Is.Not.EqualTo(string.Empty), "UserId should not be an empty string.");
                 var url = "https://www.flickr.com/photos/" + p.UserId + "/" + p.PhotoId + "/";
-                Assert.AreEqual(url, p.WebUrl);
+                Assert.That(p.WebUrl, Is.EqualTo(url));
             }
         }
 
         [Test]
-        public async Task PhotosetsGetPhotosPrimaryPhotoTest(CancellationToken cancellationToken = default)
+        public async Task PhotosetsGetPhotosPrimaryPhotoTest()
         {
-            var theset = await Instance.PhotosetsGetPhotosAsync("72157618515066456", 1, 100, cancellationToken);
+            var theset = await Instance.PhotosetsGetPhotosAsync("72157618515066456", 1, 100);
 
-            Assert.IsNotNull(theset.PrimaryPhotoId, "PrimaryPhotoId should not be null.");
+            Assert.That(theset.PrimaryPhotoId, Is.Not.Null, "PrimaryPhotoId should not be null.");
 
             if (theset.Total >= theset.PerPage) return;
 
             var primary = theset.FirstOrDefault(p => p.PhotoId == theset.PrimaryPhotoId);
 
-            Assert.IsNotNull(primary, "Primary photo should have been found.");
+            Assert.That(primary, Is.Not.Null, "Primary photo should have been found.");
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task PhotosetsGetPhotosOrignalTest(CancellationToken cancellationToken = default)
+        public async Task PhotosetsGetPhotosOrignalTest()
         {
-            var photos = await AuthInstance.PhotosetsGetPhotosAsync("72157623027759445", PhotoSearchExtras.AllUrls, cancellationToken);
+            var photos = await AuthInstance.PhotosetsGetPhotosAsync("72157623027759445", PhotoSearchExtras.AllUrls);
 
             foreach (var photo in photos)
             {
-                Assert.IsNotNull(photo.OriginalUrl, "Original URL should not be null.");
+                Assert.That(photo.OriginalUrl, Is.Not.Null, "Original URL should not be null.");
             }
         }
 
         [Test]
-        public async Task ShouldReturnDateTakenWhenAsked(CancellationToken cancellationToken = default)
+        public async Task ShouldReturnDateTakenWhenAsked()
         {
-            var theset = await Instance.PhotosetsGetPhotosAsync("72157618515066456", PhotoSearchExtras.DateTaken | PhotoSearchExtras.DateUploaded, 1, 10, cancellationToken);
+            var theset = await Instance.PhotosetsGetPhotosAsync("72157618515066456", PhotoSearchExtras.DateTaken | PhotoSearchExtras.DateUploaded, 1, 10);
 
             var firstInvalid = theset.FirstOrDefault(p => p.DateTaken == DateTime.MinValue || p.DateUploaded == DateTime.MinValue);
 
-            Assert.IsNull(firstInvalid, "There should not be a photo with not date taken or date uploaded");
+            Assert.That(firstInvalid, Is.Null, "There should not be a photo with not date taken or date uploaded");
 
-            theset = await Instance.PhotosetsGetPhotosAsync("72157618515066456", PhotoSearchExtras.All, 1, 10, cancellationToken);
+            theset = await Instance.PhotosetsGetPhotosAsync("72157618515066456", PhotoSearchExtras.All, 1, 10);
 
             firstInvalid = theset.FirstOrDefault(p => p.DateTaken == DateTime.MinValue || p.DateUploaded == DateTime.MinValue);
 
-            Assert.IsNull(firstInvalid, "There should not be a photo with not date taken or date uploaded");
+            Assert.That(firstInvalid, Is.Null, "There should not be a photo with not date taken or date uploaded");
 
-            theset = await Instance.PhotosetsGetPhotosAsync("72157618515066456", PhotoSearchExtras.None, 1, 10, cancellationToken);
+            theset = await Instance.PhotosetsGetPhotosAsync("72157618515066456", PhotoSearchExtras.None, 1, 10);
 
             var noDateCount = theset.Count(p => p.DateTaken == DateTime.MinValue || p.DateUploaded == DateTime.MinValue);
 
-            Assert.AreEqual(theset.Count, noDateCount, "All photos should have no date taken set.");
+            Assert.That(noDateCount, Is.EqualTo(theset.Count), "All photos should have no date taken set.");
         }
     }
 }

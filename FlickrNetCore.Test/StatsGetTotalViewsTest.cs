@@ -13,30 +13,39 @@ namespace FlickrNetTest
     public class StatsGetTotalViewsTest : BaseTest
     {
         [Test]
-        public async Task StatsGetTotalViewsBasicTest(CancellationToken cancellationToken = default)
+        public async Task StatsGetTotalViewsBasicTest()
         {
-            StatViews views = await AuthInstance.StatsGetTotalViewsAsync(cancellationToken);
+            StatViews views = await AuthInstance.StatsGetTotalViewsAsync();
 
-            Assert.IsNotNull(views, "StatViews should not be null.");
-            Assert.AreNotEqual(0, views.TotalViews, "TotalViews should be greater than zero.");
-            Assert.AreNotEqual(0, views.PhotostreamViews, "PhotostreamViews should be greater than zero.");
-            Assert.AreNotEqual(0, views.PhotoViews, "PhotoViews should be greater than zero.");
+            Assert.That(views, Is.Not.Null, "StatViews should not be null.");
+            Assert.Multiple(() =>
+            {
+                Assert.That(views.TotalViews, Is.Not.EqualTo(0), "TotalViews should be greater than zero.");
+                Assert.Multiple(() =>
+            {
+                Assert.That(views.PhotostreamViews, Is.Not.EqualTo(0), "PhotostreamViews should be greater than zero.");
+                Assert.That(views.PhotoViews, Is.Not.EqualTo(0), "PhotoViews should be greater than zero.");
+            });
+            });
         }
 
         [Test]
-        public async Task StatGetCsvFilesTest(CancellationToken cancellationToken = default)
+        public async Task StatGetCsvFilesTest()
         {
-            CsvFileCollection col = await AuthInstance.StatsGetCsvFilesAsync(cancellationToken);
+            CsvFileCollection col = await AuthInstance.StatsGetCsvFilesAsync();
 
-            Assert.IsNotNull(col, "CsvFileCollection should not be null.");
+            Assert.That(col, Is.Not.Null, "CsvFileCollection should not be null.");
 
-            Assert.IsTrue(col.Count > 1, "Should be more than one CsvFile returned.");
+            Assert.That(col, Has.Count.GreaterThan(1), "Should be more than one CsvFile returned.");
 
             foreach (var file in col)
             {
-                Assert.IsNotNull(file.Href, "Href should not be null.");
-                Assert.IsNotNull(file.Type, "Type should not be null.");
-                Assert.AreNotEqual(DateTime.MinValue, file.Date);
+                Assert.Multiple(() =>
+                {
+                    Assert.That(file.Href, Is.Not.Null, "Href should not be null.");
+                    Assert.That(file.Type, Is.Not.Null, "Type should not be null.");
+                });
+                Assert.That(file.Date, Is.Not.EqualTo(DateTime.MinValue));
             }
         }
     }

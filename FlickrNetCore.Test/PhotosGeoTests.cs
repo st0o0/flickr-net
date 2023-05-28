@@ -32,13 +32,18 @@ namespace FlickrNetTest
 
             var info = new PhotoInfo();
             ((IFlickrParsable)info).Load(xr);
+            Assert.Multiple(() =>
+            {
+                Assert.That(info.PhotoId, Is.EqualTo("7519320006"));
+                Assert.That(info.Location, Is.Not.Null);
+            });
+            Assert.Multiple(() =>
+            {
+                Assert.That(info.Location.Accuracy, Is.EqualTo((GeoAccuracy)16));
 
-            Assert.AreEqual("7519320006", info.PhotoId);
-            Assert.IsNotNull(info.Location);
-            Assert.AreEqual((GeoAccuracy)16, info.Location.Accuracy);
-
-            Assert.IsNotNull(info.Location.Country);
-            Assert.AreEqual("cnffEpdTUb5v258BBA", info.Location.Country.PlaceId);
+                Assert.That(info.Location.Country, Is.Not.Null);
+            });
+            Assert.That(info.Location.Country.PlaceId, Is.EqualTo("cnffEpdTUb5v258BBA"));
         }
 
         [Test]
@@ -54,71 +59,75 @@ namespace FlickrNetTest
 
             var info = new PhotoInfo();
             ((IFlickrParsable)info).Load(xr);
-
-            Assert.AreEqual("7519320006", info.PhotoId);
-            Assert.IsNotNull(info.Location);
-            Assert.AreEqual((GeoAccuracy)10, info.Location.Accuracy);
+            Assert.Multiple(() =>
+            {
+                Assert.That(info.PhotoId, Is.EqualTo("7519320006"));
+                Assert.That(info.Location, Is.Not.Null);
+            });
+            Assert.That(info.Location.Accuracy, Is.EqualTo((GeoAccuracy)10));
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task PhotosForLocationReturnsPhotos(CancellationToken cancellationToken = default)
+        public async Task PhotosForLocationReturnsPhotos()
         {
-            var photos = await Instance.PhotosSearchAsync(new PhotoSearchOptions { HasGeo = true, UserId = TestData.TestUserId, Extras = PhotoSearchExtras.Geo, PerPage = 10 }, cancellationToken);
+            var photos = await Instance.PhotosSearchAsync(new PhotoSearchOptions { HasGeo = true, UserId = TestData.TestUserId, Extras = PhotoSearchExtras.Geo, PerPage = 10 });
 
             var geoPhoto = photos.First();
 
-            var geoPhotos = await AuthInstance.PhotosGeoPhotosForLocationAsync(geoPhoto.Latitude, geoPhoto.Longitude, GeoAccuracy.Street, PhotoSearchExtras.None, 100, 1, cancellationToken);
+            var geoPhotos = await AuthInstance.PhotosGeoPhotosForLocationAsync(geoPhoto.Latitude, geoPhoto.Longitude, GeoAccuracy.Street, PhotoSearchExtras.None, 100, 1);
 
-            Assert.IsTrue(geoPhotos.Select(p => p.PhotoId).Contains(geoPhoto.PhotoId));
+            Assert.That(geoPhotos.Select(p => p.PhotoId).Contains(geoPhoto.PhotoId), Is.True);
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task PhotosGetGetLocationTest(CancellationToken cancellationToken = default)
+        public async Task PhotosGetGetLocationTest()
         {
-            var photos = await AuthInstance.PhotosSearchAsync(new PhotoSearchOptions { HasGeo = true, UserId = TestData.TestUserId, Extras = PhotoSearchExtras.Geo }, cancellationToken);
+            var photos = await AuthInstance.PhotosSearchAsync(new PhotoSearchOptions { HasGeo = true, UserId = TestData.TestUserId, Extras = PhotoSearchExtras.Geo });
 
             var photo = photos.First();
 
             Console.WriteLine(photo.PhotoId);
 
-            var location = await AuthInstance.PhotosGeoGetLocationAsync(photo.PhotoId, cancellationToken);
-
-            Assert.AreEqual(photo.Longitude, location.Longitude, "Longitudes should match exactly.");
-            Assert.AreEqual(photo.Latitude, location.Latitude, "Latitudes should match exactly.");
+            var location = await AuthInstance.PhotosGeoGetLocationAsync(photo.PhotoId);
+            Assert.Multiple(() =>
+            {
+                Assert.That(location.Longitude, Is.EqualTo(photo.Longitude), "Longitudes should match exactly.");
+                Assert.That(location.Latitude, Is.EqualTo(photo.Latitude), "Latitudes should match exactly.");
+            });
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task PhotosGetGetLocationNullTest(CancellationToken cancellationToken = default)
+        public async Task PhotosGetGetLocationNullTest()
         {
-            var photos = await AuthInstance.PhotosSearchAsync(new PhotoSearchOptions { HasGeo = false, UserId = TestData.TestUserId, Extras = PhotoSearchExtras.Geo }, cancellationToken);
+            var photos = await AuthInstance.PhotosSearchAsync(new PhotoSearchOptions { HasGeo = false, UserId = TestData.TestUserId, Extras = PhotoSearchExtras.Geo });
 
             var photo = photos.First();
 
-            var location = await AuthInstance.PhotosGeoGetLocationAsync(photo.PhotoId, cancellationToken);
+            var location = await AuthInstance.PhotosGeoGetLocationAsync(photo.PhotoId);
 
-            Assert.IsNull(location, "Location should be null.");
+            Assert.That(location, Is.Null, "Location should be null.");
         }
 
         [Test]
         [Category("AccessTokenRequired")]
         [Ignore("Flickr not returning place id correctly.")]
-        public async Task PhotosGetCorrectLocationTest(CancellationToken cancellationToken = default)
+        public async Task PhotosGetCorrectLocationTest()
         {
-            var photo = (await AuthInstance.PhotosSearchAsync(new PhotoSearchOptions { HasGeo = true, UserId = TestData.TestUserId, Extras = PhotoSearchExtras.Geo }, cancellationToken)).First();
+            var photo = (await AuthInstance.PhotosSearchAsync(new PhotoSearchOptions { HasGeo = true, UserId = TestData.TestUserId, Extras = PhotoSearchExtras.Geo })).First();
 
-            await AuthInstance.PhotosGeoCorrectLocationAsync(photo.PhotoId, photo.PlaceId, null, cancellationToken);
+            await AuthInstance.PhotosGeoCorrectLocationAsync(photo.PhotoId, photo.PlaceId, null);
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task PhotosGeoSetContextTest(CancellationToken cancellationToken = default)
+        public async Task PhotosGeoSetContextTest()
         {
-            var photo = (await AuthInstance.PhotosSearchAsync(new PhotoSearchOptions { HasGeo = true, UserId = TestData.TestUserId, Extras = PhotoSearchExtras.Geo }, cancellationToken)).First();
+            var photo = (await AuthInstance.PhotosSearchAsync(new PhotoSearchOptions { HasGeo = true, UserId = TestData.TestUserId, Extras = PhotoSearchExtras.Geo })).First();
 
-            Assert.IsTrue(photo.GeoContext.HasValue, "GeoContext should be set.");
+            Assert.That(photo.GeoContext.HasValue, Is.True, "GeoContext should be set.");
 
             var origContext = photo.GeoContext.Value;
 
@@ -126,20 +135,20 @@ namespace FlickrNetTest
 
             try
             {
-                await AuthInstance.PhotosGeoSetContextAsync(photo.PhotoId, newContext, cancellationToken);
+                await AuthInstance.PhotosGeoSetContextAsync(photo.PhotoId, newContext);
             }
             finally
             {
-                await AuthInstance.PhotosGeoSetContextAsync(photo.PhotoId, origContext, cancellationToken);
+                await AuthInstance.PhotosGeoSetContextAsync(photo.PhotoId, origContext);
             }
         }
 
         [Test]
         [Category("AccessTokenRequired")]
         [Ignore("Flickr returning 'Sorry, the Flickr API service is not currently available' error.")]
-        public async Task PhotosGeoSetLocationTest(CancellationToken cancellationToken = default)
+        public async Task PhotosGeoSetLocationTest()
         {
-            var photo = (await AuthInstance.PhotosSearchAsync(new PhotoSearchOptions { HasGeo = true, UserId = TestData.TestUserId, Extras = PhotoSearchExtras.Geo }, cancellationToken)).First();
+            var photo = (await AuthInstance.PhotosSearchAsync(new PhotoSearchOptions { HasGeo = true, UserId = TestData.TestUserId, Extras = PhotoSearchExtras.Geo })).First();
 
             if (photo.GeoContext == null)
             {
@@ -151,23 +160,29 @@ namespace FlickrNetTest
 
             try
             {
-                await AuthInstance.PhotosGeoSetLocationAsync(photo.PhotoId, newGeo.Latitude, newGeo.Longitude, newGeo.Accuracy, cancellationToken);
+                await AuthInstance.PhotosGeoSetLocationAsync(photo.PhotoId, newGeo.Latitude, newGeo.Longitude, newGeo.Accuracy);
 
-                var location = await AuthInstance.PhotosGeoGetLocationAsync(photo.PhotoId, cancellationToken);
-                Assert.AreEqual(newGeo.Latitude, location.Latitude, "New Latitude should be set.");
-                Assert.AreEqual(newGeo.Longitude, location.Longitude, "New Longitude should be set.");
-                Assert.AreEqual(newGeo.Context, location.Context, "New Context should be set.");
-                Assert.AreEqual(newGeo.Accuracy, location.Accuracy, "New Accuracy should be set.");
+                var location = await AuthInstance.PhotosGeoGetLocationAsync(photo.PhotoId);
+                Assert.Multiple(() =>
+                {
+                    Assert.That(location.Latitude, Is.EqualTo(newGeo.Latitude), "New Latitude should be set.");
+                    Assert.Multiple(() =>
+                {
+                    Assert.That(location.Longitude, Is.EqualTo(newGeo.Longitude), "New Longitude should be set.");
+                    Assert.That(location.Context, Is.EqualTo(newGeo.Context), "New Context should be set.");
+                    Assert.That(location.Accuracy, Is.EqualTo(newGeo.Accuracy), "New Accuracy should be set.");
+                });
+                });
             }
             finally
             {
-                await AuthInstance.PhotosGeoSetLocationAsync(photo.PhotoId, origGeo.Latitude, origGeo.Longitude, origGeo.Accuracy, cancellationToken);
+                await AuthInstance.PhotosGeoSetLocationAsync(photo.PhotoId, origGeo.Latitude, origGeo.Longitude, origGeo.Accuracy);
             }
         }
 
         [Test]
         [Category("AccessTokenRequired")]
-        public async Task PhotosGeoPhotosForLocationBasicTest(CancellationToken cancellationToken = default)
+        public async Task PhotosGeoPhotosForLocationBasicTest()
         {
             var o = new PhotoSearchOptions
             {
@@ -177,19 +192,25 @@ namespace FlickrNetTest
                 Extras = PhotoSearchExtras.Geo
             };
 
-            var photos = await AuthInstance.PhotosSearchAsync(o, cancellationToken);
+            var photos = await AuthInstance.PhotosSearchAsync(o);
             var photo = photos[0];
 
-            var photos2 = await AuthInstance.PhotosGeoPhotosForLocationAsync(photo.Latitude, photo.Longitude, photo.Accuracy, PhotoSearchExtras.All, 0, 0, cancellationToken);
+            var photos2 = await AuthInstance.PhotosGeoPhotosForLocationAsync(photo.Latitude, photo.Longitude, photo.Accuracy, PhotoSearchExtras.All, 0, 0);
 
-            Assert.IsNotNull(photos2, "PhotosGeoPhotosForLocation should not return null.");
-            Assert.IsTrue(photos2.Count > 0, "Should return one or more photos.");
+            Assert.That(photos2, Is.Not.Null, "PhotosGeoPhotosForLocation should not return null.");
+            Assert.That(photos2.Count > 0, Is.True, "Should return one or more photos.");
 
             foreach (var p in photos2)
             {
-                Assert.IsNotNull(p.PhotoId);
-                Assert.AreNotEqual(0, p.Longitude);
-                Assert.AreNotEqual(0, p.Latitude);
+                Assert.Multiple(() =>
+                {
+                    Assert.That(p.PhotoId, Is.Not.Null);
+                    Assert.Multiple(() =>
+                {
+                    Assert.That(p.Longitude, Is.Not.EqualTo(0));
+                    Assert.That(p.Latitude, Is.Not.EqualTo(0));
+                });
+                });
             }
         }
     }
