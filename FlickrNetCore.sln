@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32516.85
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlickrNetCore", "FlickrNetCore\FlickrNetCore.csproj", "{452A0289-6B4E-4F80-A46D-4888D633048A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlickrNetCore.Test", "FlickrNetCore.Test\FlickrNetCore.Test.csproj", "{F0ACDFEF-7279-4A6F-BD81-E705022A1BA7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{452A0289-6B4E-4F80-A46D-4888D633048A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{452A0289-6B4E-4F80-A46D-4888D633048A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{452A0289-6B4E-4F80-A46D-4888D633048A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{452A0289-6B4E-4F80-A46D-4888D633048A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F0ACDFEF-7279-4A6F-BD81-E705022A1BA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0ACDFEF-7279-4A6F-BD81-E705022A1BA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0ACDFEF-7279-4A6F-BD81-E705022A1BA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0ACDFEF-7279-4A6F-BD81-E705022A1BA7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {662A1E54-DBC8-4C06-8EDC-C7529EA619CA}
+	EndGlobalSection
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = FlickrNet.vsmdi
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = FlickrNet\FlickrNet.csproj
+	EndGlobalSection
+EndGlobal

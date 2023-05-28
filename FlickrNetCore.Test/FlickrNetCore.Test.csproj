@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<PackageId>FlickrNetCore.Test</PackageId>
+		<Description>.Net Core library for accessing Flickr.com Api functionality</Description>
+		<Copyright>Copyright © Sam Judson 2010</Copyright>
+		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>disable</Nullable>
+		<OutputType>Exe</OutputType>
+		<PlatformTarget>x64</PlatformTarget>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <DebugType>embedded</DebugType>
+	  <NoWarn>1701;1702;618;CS8604;CS8620</NoWarn>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <DebugType>embedded</DebugType>
+	  <NoWarn>1701;1702;618;CS8604;CS8620</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+		<PackageReference Include="System.Security.Permissions" Version="4.4.1" />
+		<PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Settings\**" />
+	  <EmbeddedResource Remove="Settings\**" />
+	  <None Remove="Settings\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
+		<PackageReference Include="NUnit" Version="3.13.3" />
+		<PackageReference Include="Shouldly" Version="4.2.1" />
+		<PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
+		<PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\FlickrNetCore\FlickrNetCore.csproj" />
+	</ItemGroup>
+</Project>

@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<PackageId>FlickrNet.Core</PackageId>
+		<Description>.Net Core library for accessing Flickr.com Api functionality</Description>
+		<Copyright>Copyright © Sam Judson 2010</Copyright>
+		<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+		<Nullable>disable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+		<PackageReference Include="System.Security.Permissions" Version="4.4.1" />
+		<PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="System.Configuration.ConfigurationManager" Version="6.0.0" />
+	  <PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
+	</ItemGroup>
+</Project>
